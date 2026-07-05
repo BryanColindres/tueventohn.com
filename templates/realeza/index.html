@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Emblema definido una sola vez, reutilizado con <use> -->
+  <svg style="display:none">
+    <symbol id="emblema-real" viewBox="0 0 120 130">
+      <!-- corona -->
+      <g fill="none" stroke="#B8944F" stroke-width="1.6" stroke-linejoin="round">
+        <path d="M38 22 L44 8 L52 18 L60 4 L68 18 L76 8 L82 22 L82 30 L38 30 Z"/>
+        <circle cx="44" cy="8" r="2.2" fill="#B8944F"/>
+        <circle cx="60" cy="4" r="2.4" fill="#B8944F"/>
+        <circle cx="76" cy="8" r="2.2" fill="#B8944F"/>
+      </g>
+      <!-- circulo central -->
+      <circle cx="60" cy="70" r="35" fill="none" stroke="#B8944F" stroke-width="1.4"/>
+      <circle cx="60" cy="70" r="30" fill="none" stroke="#B8944F" stroke-width=".7"/>
+      <!-- laureles izquierda -->
+      <g fill="#B8944F">
+        <ellipse cx="21" cy="60" rx="6" ry="3" transform="rotate(-30 21 60)"/>
+        <ellipse cx="18" cy="72" rx="6.5" ry="3" transform="rotate(-8 18 72)"/>
+        <ellipse cx="20" cy="84" rx="6" ry="3" transform="rotate(20 20 84)"/>
+        <ellipse cx="27" cy="95" rx="5.5" ry="3" transform="rotate(45 27 95)"/>
+        <ellipse cx="37" cy="103" rx="5" ry="2.6" transform="rotate(65 37 103)"/>
+      </g>
+      <!-- laureles derecha -->
+      <g fill="#B8944F">
+        <ellipse cx="99" cy="60" rx="6" ry="3" transform="rotate(30 99 60)"/>
+        <ellipse cx="102" cy="72" rx="6.5" ry="3" transform="rotate(8 102 72)"/>
+        <ellipse cx="100" cy="84" rx="6" ry="3" transform="rotate(-20 100 84)"/>
+        <ellipse cx="93" cy="95" rx="5.5" ry="3" transform="rotate(-45 93 95)"/>
+        <ellipse cx="83" cy="103" rx="5" ry="2.6" transform="rotate(-65 83 103)"/>
+      </g>
+      <!-- lazo inferior -->
+      <path d="M50 105 Q60 113 70 105" fill="none" stroke="#B8944F" stroke-width="1.4"/>
+      <!-- iniciales -->
+      <text x="60" y="78" text-anchor="middle" font-family="Playfair Display, serif" font-style="italic" font-size="26" fill="#B8944F">B&amp;S</text>
+    </symbol>
+  </svg>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <svg class="emblema emblema-chico"><use href="#emblema-real"/></svg>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero__marco marco-real">
+        <svg class="emblema hero__emblema"><use href="#emblema-real"/></svg>
+        <p class="hero__pre">Con la bendición de Dios y de sus familias</p>
+        <h1 class="hero__names">
+          <span id="hero-nombreA"></span><br><span class="hero__amp">&amp;</span><br><span id="hero-nombreB"></span>
+        </h1>
+        <p class="hero__apellidos" id="hero-apellidos"></p>
+        <p class="hero__fecha" id="hero-fecha"></p>
+      </div>
+    </section>
+
+    <section class="section-countdown">
+      <span class="eyebrow">Cuenta regresiva</span>
+      <div class="countdown" id="countdown"></div>
+    </section>
+
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <section class="section-story" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1rem">
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="titulo-real">Una promesa de amor</h2>
+        <div class="divisor-real"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5-6.5-4.5L5.5 21.5 8 14 2 9.5h7.5z"/></svg></div>
+      </div>
+      <div id="historia-contenido"></div>
+    </section>
+
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Orden de Ceremonia</span>
+        <h2 class="titulo-real">El gran día</h2>
+      </div>
+      <div class="programa" id="timeline-contenido"></div>
+    </section>
+
+    <section class="section-map">
+      <span class="eyebrow">Ubicación</span>
+      <h2 class="titulo-real" id="ubicacion-nombre"></h2>
+      <div class="divisor-real"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5-6.5-4.5L5.5 21.5 8 14 2 9.5h7.5z"/></svg></div>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-dorado">Cómo llegar</a>
+      </div>
+    </section>
+
+    <section class="section-galeria" id="section-galeria">
+      <span class="eyebrow">Comparte tus fotos</span>
+      <h2 class="titulo-real">Galería</h2>
+      <p class="subtitulo">Sube tus mejores momentos de la celebración</p>
+      <div style="margin-top:1.6rem">
+        <input type="file" id="input-foto" accept="image/*" hidden>
+        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
+      </div>
+      <div class="galeria-grid" id="galeria-grid"></div>
+    </section>
+
+    <section class="section-firmas" id="section-firmas">
+      <span class="eyebrow">Libro de Honor</span>
+      <h2 class="titulo-real">Déjanos un mensaje</h2>
+      <div class="firmas-wrap">
+        <form id="form-firma" class="form-firma">
+          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-dorado">Firmar</button>
+        </form>
+        <div class="firmas-lista" id="firmas-lista">
+          <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-rsvp" id="section-rsvp">
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo-real">Se solicita confirmar asistencia</h2>
+      <p class="rsvp-desc">Nos honraría contar con su presencia. Le rogamos confirmar antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-dorado">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <svg class="emblema footer__emblema"><use href="#emblema-real"/></svg>
+      <p class="footer__names" id="footer-iniciales"></p>
+      <p class="footer__date" id="footer-fecha"></p>
+      <p class="footer__phrase">Con amor, los esperamos.</p>
+      <div class="footer__foto-oculta" id="footer-photo" style="display:none"></div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

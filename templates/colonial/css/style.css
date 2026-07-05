@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Piazzolla:ital,wght@0,500;0,600;1,500&family=Lora:ital,wght@0,400;1,400&display=swap');
+
+:root{
+  --pared:#F3E9D8; --pared-mid:#EADFC4;
+  --terracota:#C1652F; --terracota-osc:#8F4720;
+  --azulejo:#2E6E7E; --azulejo-claro:#5B9AA8;
+  --madera:#6B4226; --hierro:#2B2420;
+  --ocre:#D9A441;
+  --texto:#3A2A1E; --texto-mid:#7a6552;
+  --font-display:'Piazzolla',Georgia,serif;
+  --font-serif:'Lora',Georgia,serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--pared);
+  color:var(--texto);font-family:var(--font-serif);font-weight:400;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+/* textura de pared enjalbegada */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+img{display:block;width:100%;height:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+.container{max-width:600px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+.eyebrow{font-family:var(--font-serif);font-style:italic;font-size:.78rem;letter-spacing:.06em;color:var(--terracota-osc);margin-bottom:.8rem;display:block}
+.titulo{font-family:var(--font-display);font-weight:600;font-size:clamp(1.5rem,3.4vw,2.1rem);color:var(--texto);margin-bottom:1.1rem}
+.subtitulo{font-family:var(--font-serif);font-style:italic;font-size:1rem;color:var(--texto-mid)}
+
+/* ═══ BANDA DE AZULEJOS — divisor firma, se repite entre secciones ═══ */
+.azulejos{height:22px;background-image:
+    repeating-linear-gradient(45deg, var(--azulejo) 0 6px, var(--pared) 6px 12px),
+    repeating-linear-gradient(-45deg, var(--azulejo-claro) 0 6px, transparent 6px 12px);
+  opacity:.85}
+
+/* ═══ CATEDRAL DE FONDO — atmósfera fija, se ve en todo el scroll ═══ */
+.catedral-fondo{position:fixed;top:0;left:50%;transform:translateX(-50%);width:min(700px,140vw);opacity:.05;z-index:0;pointer-events:none}
+
+/* ═══ ROSARIO — divisor alterno (elemento firma) ═══ */
+.rosario{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:1.6rem 0;background:var(--pared)}
+.rosario .cuenta{width:7px;height:7px;border-radius:50%;background:var(--madera);opacity:.5}
+.rosario .cuenta.grande{width:10px;height:10px;background:var(--terracota);opacity:.8}
+.rosario svg{width:16px;height:20px;color:var(--terracota);margin:0 .3rem}
+
+/* ═══ VELA — sección devocional nueva ═══ */
+.section-vela{padding:4rem 2rem;text-align:center;background:var(--hierro);position:relative;overflow:hidden}
+.vela-svg{width:34px;margin:0 auto 1.2rem}
+.vela-llama{animation:parpadeo 1.8s ease-in-out infinite}
+@keyframes parpadeo{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.75;transform:scaleY(.9)}}
+.section-vela .eyebrow{color:var(--ocre)}
+.section-vela h2{color:#fff}
+.section-vela p{font-family:var(--font-serif);font-style:italic;font-size:.96rem;color:rgba(255,255,255,.7);max-width:420px;margin:0 auto}
+
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2.1rem;font-family:var(--font-display);font-weight:600;font-size:.82rem;cursor:pointer;transition:all .3s var(--ease);border:1px solid var(--terracota);border-radius:2px}
+.btn-terracota{background:var(--terracota);color:#fff}
+.btn-terracota:hover{background:var(--terracota-osc)}
+.btn-outline{background:transparent;color:var(--terracota-osc)}
+.btn-outline:hover{background:rgba(193,101,47,.1)}
+
+/* ═══ VIDEO INTRO ═══ */
+.video-screen{position:fixed;inset:0;z-index:500;background:var(--hierro);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s var(--ease)}
+.video-screen.closing{opacity:0;pointer-events:none}
+.video-screen.gone{display:none}
+.video-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;cursor:pointer;opacity:0;transition:opacity .6s ease}
+.video-screen.playing .video-el{opacity:1}
+.video-overlay{position:absolute;inset:0;z-index:3;background:linear-gradient(160deg,rgba(43,36,32,.94),rgba(193,101,47,.55));display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease)}
+.video-overlay.hiding{opacity:0;pointer-events:none}
+.video-overlay.gone{display:none}
+.video-overlay__content{text-align:center;color:#fff;padding:2rem}
+.video-overlay__pre{font-family:var(--font-serif);font-style:italic;font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:1.6rem}
+.video-overlay__label{font-family:var(--font-display);font-weight:600;font-size:clamp(1.6rem,6vw,2.3rem);color:var(--ocre);margin-bottom:.4rem}
+.video-overlay__date{font-family:var(--font-serif);font-style:italic;font-size:.9rem;color:rgba(255,255,255,.6);margin-bottom:2.4rem}
+.video-overlay__tap{position:relative;width:54px;height:54px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--ocre);border-radius:50%}
+.video-tap-ring{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(217,164,65,.5);animation:tapRing 2s ease-out infinite}
+@keyframes tapRing{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.video-overlay__tap svg{width:16px;height:16px;color:var(--ocre);position:relative;z-index:1}
+.video-overlay__hint{font-family:var(--font-serif);font-style:italic;font-size:.8rem;color:rgba(255,255,255,.5)}
+.video-progress-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(217,164,65,.2);z-index:4}
+.video-progress-fill{height:100%;width:0%;background:var(--ocre);transition:width .3s linear}
+
+.invitation{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease),transform .8s var(--ease);pointer-events:none}
+.invitation.visible{opacity:1;transform:translateY(0);pointer-events:all}
+
+/* ═══ ARCO COLONIAL — elemento firma reutilizado ═══ */
+.arco{border-radius:50% 50% 6px 6px / 38% 38% 6px 6px;overflow:hidden;position:relative}
+.arco-marco{border:4px solid var(--madera);border-radius:50% 50% 8px 8px / 40% 40% 8px 8px;padding:6px;background:var(--pared)}
+
+/* ═══ HERO — FACHADA CON CAMPANARIO ═══ */
+.hero{padding:4.5rem 1.6rem 3rem;text-align:center;position:relative}
+.campanario{width:44px;margin:0 auto 1rem}
+.hero__arco-wrap{max-width:260px;margin:0 auto 1.6rem}
+.hero__arco-wrap .arco{aspect-ratio:3/4}
+.hero__arco-wrap .arco img{filter:sepia(.12) contrast(1.03)}
+.hero__label{font-family:var(--font-serif);font-style:italic;font-size:.86rem;color:var(--terracota-osc);margin-bottom:1rem}
+.hero__names{font-family:var(--font-display);font-weight:600;font-size:clamp(1.9rem,6.5vw,2.7rem);color:var(--texto)}
+.hero__amp{color:var(--terracota)}
+.hero__apellidos{font-family:var(--font-serif);font-style:italic;font-size:.82rem;color:var(--texto-mid);margin-top:.6rem}
+.hero__fecha{font-family:var(--font-display);font-weight:600;font-size:1rem;color:var(--azulejo);margin-top:1rem}
+
+/* ═══ COUNTDOWN — ARCOS EN FILA ═══ */
+.section-countdown{padding:3.6rem 0;text-align:center;background:var(--pared-mid)}
+.countdown{display:flex;align-items:flex-end;justify-content:center;gap:1rem;margin-top:1.2rem;flex-wrap:wrap}
+.cd-item{display:flex;flex-direction:column;align-items:center}
+.cd-arco{width:58px;height:64px;background:var(--madera);border-radius:50% 50% 4px 4px / 46% 46% 4px 4px;display:flex;align-items:center;justify-content:center;margin-bottom:.5rem}
+.cd-arco span{font-family:var(--font-display);font-weight:600;font-size:1.3rem;color:var(--pared)}
+.cd-item p{font-family:var(--font-serif);font-style:italic;font-size:.68rem;color:var(--texto-mid)}
+
+/* ═══ MENSAJES — NICHO DE CAPILLA ═══ */
+.section-mensajes{padding:4.4rem 0;text-align:center}
+.nicho{max-width:420px;margin:0 auto;padding:2.2rem 1.8rem 1.8rem;background:var(--pared-mid);border-radius:50% 50% 8px 8px / 26% 26% 8px 8px;border:1px solid rgba(107,66,38,.25)}
+.nicho p{font-family:var(--font-display);font-style:italic;font-size:clamp(1.05rem,2.2vw,1.3rem);line-height:1.7;color:var(--texto)}
+.nicho .ref{display:block;margin-top:1rem;font-family:var(--font-serif);font-size:.78rem;color:var(--azulejo)}
+
+/* ═══ HISTORIA — CALLE DE PUERTAS (scroll horizontal) ═══ */
+.section-historia{padding:4.6rem 0}
+.calle-scroll{display:flex;gap:1.2rem;overflow-x:auto;padding:0 2rem 1rem;scroll-snap-type:x mandatory}
+.puerta{flex:0 0 220px;scroll-snap-align:center;text-align:center}
+.puerta .arco{aspect-ratio:3/4}
+.puerta .arco img{filter:sepia(.15)}
+.puerta-texto{margin-top:1rem}
+.puerta-texto h3{font-family:var(--font-display);font-weight:600;font-size:1.05rem;color:var(--terracota-osc);margin-bottom:.4rem}
+.puerta-texto p{font-family:var(--font-serif);font-size:.86rem;line-height:1.6;color:var(--texto-mid)}
+.calle-hint{text-align:center;font-family:var(--font-serif);font-style:italic;font-size:.72rem;color:var(--texto-mid);opacity:.6;margin-top:.4rem}
+
+/* ═══ ITINERARIO — TOQUE DE CAMPANA ═══ */
+.section-timeline{padding:4.6rem 0;background:var(--pared-mid)}
+.programa{max-width:460px;margin:2.4rem auto 0;padding:0 2rem}
+.prog-item{display:flex;align-items:center;gap:1rem;padding:.9rem 0;border-bottom:1px solid rgba(107,66,38,.18)}
+.prog-item:last-child{border-bottom:none}
+.prog-campana{width:16px;height:16px;flex-shrink:0;color:var(--terracota)}
+.prog-titulo{font-family:var(--font-serif);font-size:.95rem;color:var(--texto);flex:1}
+.prog-hora{font-family:var(--font-display);font-weight:600;font-size:.8rem;color:var(--azulejo)}
+
+/* ═══ UBICACIÓN ═══ */
+.section-map{padding:4.6rem 0;text-align:center}
+.map-block{max-width:460px;margin:0 auto;padding:0 2rem}
+.map-block p{font-family:var(--font-serif);font-size:.96rem;line-height:1.8;color:var(--texto-mid);margin-bottom:1.4rem}
+
+/* ═══ GALERÍA — POSTALES CON ARCO ═══ */
+.section-galeria{padding:4.6rem 0;text-align:center;background:var(--pared-mid)}
+.galeria-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:2.4rem;max-width:640px;margin-left:auto;margin-right:auto;padding:0 2rem}
+.gal-item.arco{aspect-ratio:3/4}
+.gal-item img{filter:sepia(.12)}
+
+/* ═══ FIRMAS — LIBRO DEL CABILDO ═══ */
+.section-firmas{padding:4.6rem 0;text-align:center}
+.firmas-wrap{max-width:440px;margin:2rem auto 0;padding:0 2rem}
+.form-firma{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.2rem;text-align:left}
+.form-firma input,.form-firma textarea{background:#FBF4E4;border:1px solid rgba(107,66,38,.3);color:var(--texto);padding:.75rem .9rem;font-family:var(--font-serif);font-size:.92rem;outline:none}
+.form-firma textarea{min-height:70px;resize:none}
+.form-firma button{align-self:center;margin-top:.4rem}
+.firma-item{padding:1rem 0;border-bottom:1px solid rgba(107,66,38,.18);text-align:left}
+.firma-item .nombre{font-family:var(--font-display);font-weight:600;font-size:.92rem;color:var(--terracota-osc)}
+.firma-item .mensaje{font-family:var(--font-serif);font-style:italic;color:var(--texto-mid);margin-top:.2rem}
+.firmas-vacio{font-family:var(--font-serif);font-style:italic;color:var(--texto-mid);text-align:center}
+
+/* ═══ RSVP — TOQUE DE CAMPANA ═══ */
+.section-rsvp{padding:4.6rem 0 4.2rem;text-align:center;background:var(--pared-mid)}
+.campana-rsvp{width:52px;margin:0 auto 1.2rem;color:var(--terracota)}
+.rsvp-desc{font-family:var(--font-serif);font-size:.96rem;line-height:1.8;color:var(--texto-mid);max-width:440px;margin:0 auto 2rem}
+.rsvp-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ═══ FOOTER ═══ */
+.footer{position:relative;min-height:48vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.footer__photo{position:absolute;inset:0}
+.footer__photo img{filter:sepia(.2) brightness(.55)}
+.footer__overlay{position:absolute;inset:0;background:linear-gradient(rgba(43,36,32,.55),rgba(43,36,32,.8))}
+.footer__content{position:relative;z-index:1;color:#fff;padding:3.6rem 2rem}
+.footer__names{font-family:var(--font-display);font-weight:600;font-size:clamp(1.7rem,4.6vw,2.4rem);color:var(--ocre)}
+.footer__date{font-family:var(--font-serif);font-style:italic;font-size:.9rem;color:rgba(255,255,255,.65);margin:.9rem 0 1.1rem}
+.footer__phrase{font-family:var(--font-serif);font-style:italic;font-size:1.02rem;color:#fff}
+
+@media(max-width:640px){
+  .puerta{flex:0 0 200px}
+}

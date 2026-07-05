@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TuBoda Platform — Panel Administrativo</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===================== LOGIN ===================== -->
+  <div class="login-wrap" id="vista-login">
+    <div class="login-card">
+      <h1>TuBoda Platform</h1>
+      <p>Panel administrativo</p>
+      <form id="form-login">
+        <div class="campo">
+          <label>Correo</label>
+          <input type="email" id="login-correo" required>
+        </div>
+        <div class="campo">
+          <label>Contraseña</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="btn btn-dorado btn-full">Iniciar sesión</button>
+        <p class="error-msg oculto" id="login-error"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== APP (después de login) ===================== -->
+  <div class="app-shell oculto" id="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo">TuBoda<span>.</span></div>
+      <nav class="sidebar-nav">
+        <a href="#dashboard" data-vista="dashboard">Dashboard</a>
+        <a href="#invitaciones" data-vista="invitaciones">Invitaciones</a>
+        <a href="#crear" data-vista="crear">+ Nueva invitación</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="btn-logout">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- ---- DASHBOARD ---- -->
+      <section id="vista-dashboard" class="vista">
+        <h1>Buenas, Bryan</h1>
+        <p class="sub">Resumen de tu negocio</p>
+        <div class="stats-grid" id="dashboard-stats"></div>
+        <h2 style="font-size:1.05rem;margin-bottom:.8rem">Actividad reciente</h2>
+        <div id="dashboard-actividad"></div>
+      </section>
+
+      <!-- ---- INVITACIONES ---- -->
+      <section id="vista-invitaciones" class="vista oculto">
+        <h1>Invitaciones</h1>
+        <p class="sub">Todos los eventos que has creado</p>
+        <div class="toolbar">
+          <div class="buscador"><input type="text" id="buscador-eventos" placeholder="Buscar cliente, evento..."></div>
+          <a href="#crear" class="btn btn-dorado">+ Nueva invitación</a>
+        </div>
+        <div class="eventos-grid" id="eventos-grid"></div>
+      </section>
+
+      <!-- ---- CREAR (WIZARD) ---- -->
+      <section id="vista-crear" class="vista oculto">
+        <h1>Nueva invitación</h1>
+        <p class="sub">5 pasos rápidos</p>
+        <div class="wizard-pasos">
+          <div class="wizard-paso" data-paso="1"></div>
+          <div class="wizard-paso" data-paso="2"></div>
+          <div class="wizard-paso" data-paso="3"></div>
+          <div class="wizard-paso" data-paso="4"></div>
+          <div class="wizard-paso" data-paso="5"></div>
+        </div>
+
+        <div id="wizard-paso-1">
+          <h2 style="margin-bottom:1rem">1. Tipo de evento</h2>
+          <div class="opciones-grid" id="wizard-tipos"></div>
+        </div>
+
+        <div id="wizard-paso-2" class="oculto">
+          <h2 style="margin-bottom:1rem">2. Elegir plantilla</h2>
+          <div class="opciones-grid" id="wizard-plantillas"></div>
+        </div>
+
+        <div id="wizard-paso-3" class="oculto">
+          <h2 style="margin-bottom:1rem">3. Elegir paquete</h2>
+          <div class="opciones-grid" id="wizard-paquetes"></div>
+        </div>
+
+        <div id="wizard-paso-4" class="oculto">
+          <h2 style="margin-bottom:1rem">4. Add-ons extra (opcional)</h2>
+          <div class="opciones-grid" id="wizard-addons"></div>
+        </div>
+
+        <div id="wizard-paso-5" class="oculto">
+          <h2 style="margin-bottom:1rem">5. Datos del cliente</h2>
+          <div class="form-grid">
+            <div class="campo"><label>Nombre del cliente</label><input type="text" id="wizard-cliente-nombre" required></div>
+            <div class="campo"><label>Teléfono</label><input type="text" id="wizard-cliente-telefono"></div>
+            <div class="campo"><label>Correo</label><input type="email" id="wizard-cliente-correo"></div>
+            <div class="campo"><label>Nombre del evento (ej. "Bryan & Stefany")</label><input type="text" id="wizard-nombre-evento" required></div>
+          </div>
+        </div>
+
+        <div class="wizard-nav">
+          <button class="btn btn-fantasma" id="wizard-btn-atras">Atrás</button>
+          <button class="btn btn-dorado" id="wizard-btn-siguiente">Siguiente</button>
+        </div>
+      </section>
+
+      <!-- ---- EDITAR EVENTO ---- -->
+      <section id="vista-editar" class="vista oculto">
+        <h1 id="editar-titulo">Editar invitación</h1>
+        <div class="estado-barra" id="editar-estado-barra"></div>
+        <div class="portal-link-box" id="editar-portal-box"></div>
+
+        <div class="tabs">
+          <button class="tab-btn activo" data-tab="cliente">Cliente</button>
+          <button class="tab-btn" data-tab="evento">Evento</button>
+          <button class="tab-btn" data-tab="modulos">Módulos</button>
+        </div>
+
+        <div class="tab-panel activo" id="tab-cliente">
+          <div class="form-grid">
+            <div class="campo"><label>Nombre</label><input type="text" id="ed-cliente-nombre"></div>
+            <div class="campo"><label>Teléfono</label><input type="text" id="ed-cliente-telefono"></div>
+            <div class="campo"><label>Correo</label><input type="email" id="ed-cliente-correo"></div>
+            <div class="campo"><label>Estado del pago</label>
+              <select id="ed-cliente-pago"><option value="pendiente">Pendiente</option><option value="parcial">Parcial</option><option value="pagado">Pagado</option></select>
+            </div>
+          </div>
+          <div class="campo"><label>Notas internas</label><textarea id="ed-cliente-notas"></textarea></div>
+        </div>
+
+        <div class="tab-panel" id="tab-evento">
+          <div class="form-grid">
+            <div class="campo"><label>Novio/a A — nombre</label><input type="text" id="ed-novio-a-nombre"></div>
+            <div class="campo"><label>Novio/a A — apellido</label><input type="text" id="ed-novio-a-apellido"></div>
+            <div class="campo"><label>Novio/a B — nombre</label><input type="text" id="ed-novio-b-nombre"></div>
+            <div class="campo"><label>Novio/a B — apellido</label><input type="text" id="ed-novio-b-apellido"></div>
+            <div class="campo"><label>WhatsApp A</label><input type="text" id="ed-whatsapp-a"></div>
+            <div class="campo"><label>WhatsApp B</label><input type="text" id="ed-whatsapp-b"></div>
+            <div class="campo"><label>Fecha</label><input type="date" id="ed-fecha"></div>
+            <div class="campo"><label>Hora</label><input type="time" id="ed-hora"></div>
+            <div class="campo"><label>Lugar — nombre</label><input type="text" id="ed-lugar-nombre"></div>
+            <div class="campo"><label>Lugar — dirección</label><input type="text" id="ed-lugar-direccion"></div>
+            <div class="campo"><label>Link de Google Maps</label><input type="text" id="ed-lugar-maps"></div>
+            <div class="campo"><label>Foto principal (URL de Cloudinary)</label><input type="text" id="ed-foto-hero"></div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-modulos">
+          <div id="ed-modulos-lista"></div>
+        </div>
+
+        <div style="display:flex;gap:.8rem;margin-top:2rem">
+          <button class="btn btn-dorado" id="btn-guardar-evento">Guardar</button>
+          <button class="btn btn-fantasma" id="btn-publicar-evento">Publicar</button>
+          <a href="#invitaciones" class="btn btn-fantasma">Volver</a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast oculto" id="toast"></div>
+
+  <script src="js/supabase-admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

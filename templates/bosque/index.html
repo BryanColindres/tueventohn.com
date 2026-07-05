@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Luciérnagas de fondo -->
+  <div class="luciernagas" id="luciernagas"></div>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero__luna"></div>
+      <svg class="hero__vina" viewBox="0 0 140 300" fill="none" stroke="#5C7A5F" stroke-width="2">
+        <path d="M10 0 C40 30 10 60 40 90 C70 120 30 150 60 180 C90 210 50 240 70 270"/>
+        <circle cx="40" cy="90" r="5" fill="#5C7A5F"/><circle cx="60" cy="180" r="4" fill="#5C7A5F"/>
+      </svg>
+      <svg class="hero__vina hero__vina--der" viewBox="0 0 140 300" fill="none" stroke="#5C7A5F" stroke-width="2">
+        <path d="M10 0 C40 30 10 60 40 90 C70 120 30 150 60 180 C90 210 50 240 70 270"/>
+        <circle cx="40" cy="90" r="5" fill="#5C7A5F"/><circle cx="60" cy="180" r="4" fill="#5C7A5F"/>
+      </svg>
+      <p class="hero__label">Tienen el honor de invitarles</p>
+      <div class="hero__photo-wrap">
+        <div class="hero__photo" id="hero-photo"></div>
+      </div>
+      <h1 class="hero__names">
+        <span id="hero-nombreA"></span><span class="hero__amp">&amp;</span><span id="hero-nombreB"></span>
+      </h1>
+      <p class="hero__apellidos" id="hero-apellidos"></p>
+      <p class="hero__fecha" id="hero-fecha"></p>
+    </section>
+
+    <section class="section-countdown">
+      <span class="eyebrow">Cuenta regresiva</span>
+      <div class="countdown" id="countdown"></div>
+    </section>
+
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <section class="section-story" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1.4rem">
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="titulo-fantasia">Una Promesa<br>Bajo las Estrellas</h2>
+      </div>
+      <div id="historia-contenido"></div>
+    </section>
+
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Itinerario</span>
+        <h2 class="titulo-fantasia">El Gran Día</h2>
+      </div>
+      <div class="programa" id="timeline-contenido"></div>
+    </section>
+
+    <section class="section-map">
+      <span class="eyebrow">Ubicación</span>
+      <h2 class="titulo-fantasia" id="ubicacion-nombre"></h2>
+      <div class="linea-corta"></div>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-bosque">Cómo llegar</a>
+      </div>
+    </section>
+
+    <!-- GALERÍA — CARRUSEL -->
+    <section class="section-galeria" id="section-galeria">
+      <div class="container">
+        <span class="eyebrow">Comparte tus fotos</span>
+        <h2 class="titulo-fantasia">Momentos del Bosque</h2>
+        <p class="subtitulo">Sube tus mejores momentos de la celebración</p>
+        <div style="margin-top:1.4rem">
+          <input type="file" id="input-foto" accept="image/*" hidden>
+          <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
+        </div>
+      </div>
+      <div class="carrusel-wrap">
+        <div class="carrusel-track" id="galeria-grid"></div>
+      </div>
+    </section>
+
+    <section class="section-firmas" id="section-firmas">
+      <span class="eyebrow">Libro de firmas</span>
+      <h2 class="titulo-fantasia">Déjanos un mensaje</h2>
+      <div class="firmas-wrap">
+        <form id="form-firma" class="form-firma">
+          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-bosque">Firmar</button>
+        </form>
+        <div class="firmas-lista" id="firmas-lista">
+          <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-rsvp" id="section-rsvp">
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo-fantasia">¿Nos Acompañas?</h2>
+      <p class="rsvp-desc">Nos encantaría contar con tu presencia. Por favor confirma antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-bosque">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__photo" id="footer-photo"></div>
+      <div class="footer__overlay"></div>
+      <div class="footer__content">
+        <p class="footer__names" id="footer-iniciales"></p>
+        <p class="footer__date" id="footer-fecha"></p>
+        <p class="footer__phrase">Con amor, los esperamos.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

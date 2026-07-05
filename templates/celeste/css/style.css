@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap');
+
+:root{
+  --noche:#0A0E24; --noche-mid:#141B3D; --noche-claro:#1E2A54;
+  --dorado:#C9A968; --dorado-claro:#E4CE9A;
+  --plata:#C9D3E8; --plata-suave:rgba(201,211,232,.4);
+  --texto:#EDEFF7; --texto-mid:rgba(237,239,247,.62); --texto-light:rgba(237,239,247,.4);
+  --font-serif:'EB Garamond',Georgia,serif;
+  --font-caps:'Cinzel',serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:radial-gradient(ellipse at 50% 0%, var(--noche-claro) 0%, var(--noche) 60%);
+  color:var(--texto);font-family:var(--font-serif);font-weight:400;overflow-x:hidden;-webkit-font-smoothing:antialiased;position:relative
+}
+img{display:block;width:100%;height:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+.container{max-width:600px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+
+/* Estrellas de fondo fijas */
+.estrellas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.estrella{position:absolute;border-radius:50%;background:var(--plata);animation:centellear 3.5s ease-in-out infinite}
+@keyframes centellear{0%,100%{opacity:.2}50%{opacity:.95}}
+
+/* ═══ NEBULOSAS — atmósfera de sueño ═══ */
+.nebulosas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.nebulosa{position:absolute;border-radius:50%;filter:blur(60px);opacity:.28;animation:derivar 26s ease-in-out infinite}
+.nebulosa--1{width:380px;height:380px;background:#6B5B95;top:-5%;left:-10%;animation-duration:32s}
+.nebulosa--2{width:320px;height:320px;background:#3B4C7A;top:35%;right:-12%;animation-duration:28s;animation-delay:-6s}
+.nebulosa--3{width:340px;height:340px;background:#8A5A6B;bottom:5%;left:-8%;animation-duration:34s;animation-delay:-14s}
+@keyframes derivar{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.12)}}
+
+/* ═══ ESTRELLA FUGAZ ═══ */
+.fugaz{position:fixed;top:8%;left:-10%;width:3px;height:3px;background:#fff;border-radius:50%;box-shadow:0 0 6px 2px rgba(255,255,255,.8);z-index:1;pointer-events:none;animation:cruzar 9s linear infinite;animation-delay:3s;opacity:0}
+.fugaz::before{content:'';position:absolute;top:50%;right:0;width:90px;height:1px;background:linear-gradient(to left,rgba(255,255,255,.8),transparent);transform:translateY(-50%)}
+@keyframes cruzar{
+  0%{opacity:0;transform:translate(0,0)}
+  2%{opacity:1}
+  16%{opacity:0;transform:translate(130vw,90vh)}
+  100%{opacity:0;transform:translate(130vw,90vh)}
+}
+
+/* ═══ SENDERO DE CONSTELACIÓN (SVG generado por JS) ═══ */
+#sendero-constelacion{position:absolute;top:0;left:0;width:100%;z-index:0;pointer-events:none}
+
+/* ═══ DESPLAZAMIENTO ASIMÉTRICO — nada centrado igual ═══ */
+.deriva-izq{margin-left:2%;margin-right:auto;max-width:520px;text-align:left}
+.deriva-der{margin-left:auto;margin-right:2%;max-width:520px;text-align:right}
+.deriva-der .historia-item{flex-direction:row-reverse}
+.deriva-der .mensaje-card{text-align:right}
+@media(max-width:760px){
+  .deriva-izq,.deriva-der{margin-left:auto;margin-right:auto;text-align:center;max-width:90%}
+  .deriva-der .historia-item{flex-direction:column}
+}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+.eyebrow{font-family:var(--font-caps);font-size:.62rem;font-weight:600;letter-spacing:.36em;text-transform:uppercase;color:var(--dorado);margin-bottom:1rem;display:block}
+.titulo{font-family:var(--font-caps);font-size:clamp(1.35rem,3vw,1.9rem);font-weight:600;color:var(--texto);margin-bottom:1.1rem;letter-spacing:.02em}
+.subtitulo{font-family:var(--font-serif);font-style:italic;font-size:1rem;color:var(--texto-mid)}
+
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2.1rem;font-family:var(--font-caps);font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .35s var(--ease);border:1px solid var(--dorado)}
+.btn-dorado{background:var(--dorado);color:var(--noche)}
+.btn-dorado:hover{background:var(--dorado-claro)}
+.btn-outline{background:transparent;color:var(--dorado-claro)}
+.btn-outline:hover{background:rgba(201,169,104,.15)}
+
+/* ═══ VIDEO INTRO ═══ */
+.video-screen{position:fixed;inset:0;z-index:500;background:var(--noche);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s var(--ease)}
+.video-screen.closing{opacity:0;pointer-events:none}
+.video-screen.gone{display:none}
+.video-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;cursor:pointer;opacity:0;transition:opacity .6s ease}
+.video-screen.playing .video-el{opacity:1}
+.video-overlay{position:absolute;inset:0;z-index:3;background:radial-gradient(ellipse at 50% 40%,rgba(30,42,84,.7),rgba(10,14,36,.96));display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease)}
+.video-overlay.hiding{opacity:0;pointer-events:none}
+.video-overlay.gone{display:none}
+.video-overlay__content{text-align:center;color:var(--texto);padding:2rem}
+.video-overlay__pre{font-family:var(--font-caps);font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--texto-light);margin-bottom:1.8rem}
+.video-overlay__label{font-family:var(--font-caps);font-size:clamp(1.4rem,5.2vw,2rem);color:var(--dorado-claro);margin-bottom:.5rem;letter-spacing:.05em}
+.video-overlay__date{font-family:var(--font-serif);font-style:italic;font-size:.95rem;color:var(--texto-light);margin-bottom:2.4rem}
+.video-overlay__tap{position:relative;width:52px;height:52px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--dorado);border-radius:50%}
+.video-tap-ring{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(201,169,104,.5);animation:tapRing 2s ease-out infinite}
+@keyframes tapRing{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.video-overlay__tap svg{width:16px;height:16px;color:var(--dorado-claro);position:relative;z-index:1}
+.video-overlay__hint{font-family:var(--font-caps);font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--texto-light)}
+.video-progress-bar{position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(201,169,104,.2);z-index:4}
+.video-progress-fill{height:100%;width:0%;background:var(--dorado);transition:width .3s linear}
+
+.invitation{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease),transform .8s var(--ease);pointer-events:none;position:relative;z-index:1}
+.invitation.visible{opacity:1;transform:translateY(0);pointer-events:all}
+
+/* ═══ HERO — ASTROLABIO ═══ */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.6rem 3rem;text-align:center;overflow:hidden}
+.astrolabio{position:relative;width:min(320px,80vw);aspect-ratio:1;margin:0 auto 1.6rem}
+.astrolabio svg{width:100%;height:100%}
+.astrolabio-foto{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58%;height:58%;border-radius:50%;overflow:hidden;border:1px solid var(--dorado);box-shadow:0 0 40px rgba(201,169,104,.25)}
+.astrolabio-foto img{filter:grayscale(.3) brightness(.85) contrast(1.05)}
+.hero__label{font-family:var(--font-caps);font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--dorado);margin-bottom:1.2rem}
+.hero__names{font-family:var(--font-caps);font-weight:600;font-size:clamp(1.6rem,5.5vw,2.3rem);color:var(--texto);letter-spacing:.03em}
+.hero__amp{color:var(--dorado)}
+.hero__coord{font-family:var(--font-serif);font-style:italic;font-size:.88rem;color:var(--texto-mid);margin-top:1rem}
+
+/* ═══ COUNTDOWN — ANILLOS ORBITALES ═══ */
+.section-countdown{padding:4rem 0;text-align:center}
+.countdown{display:flex;align-items:center;justify-content:center;gap:1.4rem;margin-top:1.2rem;flex-wrap:wrap}
+.cd-item{display:flex;flex-direction:column;align-items:center}
+.cd-orbita{width:74px;height:74px;border-radius:50%;border:1px solid var(--dorado);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:.6rem}
+.cd-orbita::before{content:'';position:absolute;inset:-6px;border:1px solid rgba(201,169,104,.3);border-radius:50%}
+.cd-orbita span{font-family:var(--font-caps);font-size:1.35rem;color:var(--texto)}
+.cd-item p{font-family:var(--font-caps);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-light)}
+
+/* ═══ MENSAJES ═══ */
+.section-mensajes{padding:5rem 0;text-align:center}
+.mensaje-card{max-width:520px;margin:0 auto;padding:2.4rem 2rem;border-top:1px solid rgba(201,169,104,.3);border-bottom:1px solid rgba(201,169,104,.3)}
+.mensaje-card p{font-family:var(--font-serif);font-style:italic;font-size:clamp(1.1rem,2.3vw,1.35rem);line-height:1.75;color:var(--texto)}
+.mensaje-card .ref{display:block;margin-top:1.1rem;font-family:var(--font-caps);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado)}
+
+/* ═══ HISTORIA — PUNTOS DE CONSTELACIÓN ═══ */
+.section-historia{padding:5.5rem 0;position:relative}
+.constelacion-linea{position:relative;max-width:640px;margin:2.6rem auto 0}
+.constelacion-linea::before{content:'';position:absolute;left:29px;top:12px;bottom:12px;width:1px;background:repeating-linear-gradient(to bottom,var(--dorado) 0 4px,transparent 4px 9px)}
+.historia-item{display:flex;gap:1.6rem;align-items:flex-start;padding:1.4rem 2rem;position:relative}
+.historia-item__estrella{width:14px;height:14px;border-radius:50%;background:var(--dorado);box-shadow:0 0 12px 3px rgba(201,169,104,.5);flex-shrink:0;margin-top:.35rem;position:relative;z-index:1}
+.historia-item__texto{flex:1}
+.historia-item__coord{font-family:var(--font-caps);font-size:.62rem;letter-spacing:.14em;color:var(--dorado);text-transform:uppercase;display:block;margin-bottom:.3rem}
+.historia-item__texto h3{font-family:var(--font-serif);font-style:italic;font-size:1.2rem;color:var(--texto);margin-bottom:.5rem}
+.historia-item__texto p{font-family:var(--font-serif);font-size:.96rem;line-height:1.75;color:var(--texto-mid)}
+.historia-item__foto{width:70px;height:70px;border-radius:50%;overflow:hidden;border:1px solid var(--dorado);flex-shrink:0;margin-left:.6rem}
+.historia-item__foto img{filter:grayscale(.3)}
+
+/* ═══ ITINERARIO — ALMANAQUE ═══ */
+.section-timeline{padding:5.5rem 0;background:var(--noche-mid)}
+.programa{max-width:460px;margin:2.6rem auto 0;padding:0 2rem}
+.prog-item{display:flex;align-items:center;gap:.8rem;padding:.9rem 0;border-bottom:1px solid rgba(201,169,104,.18)}
+.prog-item:last-child{border-bottom:none}
+.prog-icono{width:8px;height:8px;border-radius:50%;background:var(--dorado);flex-shrink:0;box-shadow:0 0 8px 2px rgba(201,169,104,.4)}
+.prog-titulo{font-family:var(--font-serif);font-size:1rem;color:var(--texto);flex:1}
+.prog-hora{font-family:var(--font-caps);font-size:.66rem;letter-spacing:.1em;color:var(--dorado-claro)}
+
+/* ═══ UBICACIÓN ═══ */
+.section-map{padding:5.5rem 0;text-align:center}
+.map-block{max-width:460px;margin:0 auto;padding:0 2rem}
+.map-block p{font-family:var(--font-serif);font-size:.98rem;line-height:1.8;color:var(--texto-mid);margin-bottom:1.4rem}
+
+/* ═══ GALERÍA — SISTEMA ORBITAL ═══ */
+.section-galeria{padding:5.5rem 0;text-align:center;background:var(--noche-mid)}
+.galeria-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;margin-top:2.6rem;padding:0 1.6rem}
+.gal-item{width:100px;height:100px;border-radius:50%;overflow:hidden;border:1px solid var(--dorado);box-shadow:0 0 20px rgba(201,169,104,.15)}
+.gal-item:nth-child(3n+2){width:76px;height:76px;margin-top:1.2rem}
+.gal-item img{filter:grayscale(.3)}
+
+/* ═══ FIRMAS ═══ */
+.section-firmas{padding:5.5rem 0;text-align:center}
+.firmas-wrap{max-width:440px;margin:2rem auto 0;padding:0 2rem}
+.form-firma{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.2rem;text-align:left}
+.form-firma input,.form-firma textarea{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,104,.35);color:var(--texto);padding:.75rem .9rem;font-family:var(--font-serif);font-size:.96rem;outline:none}
+.form-firma textarea{min-height:70px;resize:none}
+.form-firma button{align-self:center;margin-top:.4rem}
+.firma-item{padding:1rem 0;border-bottom:1px solid rgba(201,169,104,.2);text-align:left}
+.firma-item .nombre{font-family:var(--font-caps);font-size:.72rem;letter-spacing:.12em;color:var(--dorado-claro);text-transform:uppercase}
+.firma-item .mensaje{font-family:var(--font-serif);font-style:italic;color:var(--texto-mid);margin-top:.3rem}
+.firmas-vacio{font-family:var(--font-serif);font-style:italic;color:var(--texto-light);text-align:center}
+
+/* ═══ RSVP ═══ */
+.section-rsvp{padding:5.5rem 0 4.5rem;text-align:center;background:var(--noche-mid)}
+.rsvp-desc{font-family:var(--font-serif);font-size:.98rem;line-height:1.8;color:var(--texto-mid);max-width:440px;margin:0 auto 2rem}
+.rsvp-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ═══ FOOTER ═══ */
+.footer{position:relative;min-height:48vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.footer__photo{position:absolute;inset:0}
+.footer__photo img{filter:grayscale(.4) brightness(.4)}
+.footer__overlay{position:absolute;inset:0;background:linear-gradient(rgba(10,14,36,.7),rgba(10,14,36,.92))}
+.footer__content{position:relative;z-index:1;color:var(--texto);padding:3.6rem 2rem}
+.footer__names{font-family:var(--font-caps);font-size:clamp(1.5rem,4.4vw,2.1rem);color:var(--dorado-claro)}
+.footer__date{font-family:var(--font-serif);font-style:italic;font-size:.9rem;color:var(--texto-light);margin:.8rem 0 1.1rem}
+.footer__phrase{font-family:var(--font-serif);font-style:italic;font-size:1.02rem;color:var(--texto)}
+
+@media(max-width:640px){
+  .constelacion-linea::before{left:26px}
+  .historia-item{padding:1.2rem .8rem}
+  .historia-item__foto{display:none}
+}

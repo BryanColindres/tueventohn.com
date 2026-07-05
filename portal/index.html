@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de tu invitación — TuBoda</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="wrap" id="wrap-portal">
+    <div class="header">
+      <p class="eyebrow">Portal de tu invitación</p>
+      <h1 id="portal-nombre-evento">Cargando...</h1>
+    </div>
+
+    <div id="portal-contenido" class="oculto">
+
+      <!-- DATOS PRINCIPALES -->
+      <div class="tarjeta">
+        <h2>Datos principales</h2>
+        <p class="desc">Nombres, contacto y fecha del evento.</p>
+        <div class="form-grid">
+          <div class="campo"><label>Tu nombre</label><input type="text" id="p-novio-a-nombre"></div>
+          <div class="campo"><label>Tu apellido</label><input type="text" id="p-novio-a-apellido"></div>
+          <div class="campo"><label>Nombre de tu pareja</label><input type="text" id="p-novio-b-nombre"></div>
+          <div class="campo"><label>Apellido de tu pareja</label><input type="text" id="p-novio-b-apellido"></div>
+          <div class="campo"><label>Tu WhatsApp</label><input type="text" id="p-whatsapp-a" placeholder="504XXXXXXXX"></div>
+          <div class="campo"><label>WhatsApp de tu pareja</label><input type="text" id="p-whatsapp-b" placeholder="504XXXXXXXX"></div>
+          <div class="campo"><label>Fecha</label><input type="date" id="p-fecha"></div>
+          <div class="campo"><label>Hora</label><input type="time" id="p-hora"></div>
+        </div>
+        <div class="campo"><label>Lugar</label><input type="text" id="p-lugar-nombre"></div>
+        <div class="campo"><label>Dirección</label><input type="text" id="p-lugar-direccion"></div>
+        <div class="campo"><label>Link de Google Maps</label><input type="text" id="p-lugar-maps"></div>
+        <button class="btn btn-dorado" onclick="guardarDatosPrincipales()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-datos">Guardado ✓</p>
+      </div>
+
+      <!-- FOTOS -->
+      <div class="tarjeta">
+        <h2>Fotos principales</h2>
+        <p class="desc">La foto de portada y la del cierre de la invitación.</p>
+        <div class="campo">
+          <label>Foto de portada</label>
+          <input type="file" accept="image/*" onchange="subirFotoPrincipal(event, 'hero')">
+          <input type="hidden" id="p-foto-hero">
+        </div>
+        <div class="campo">
+          <label>Foto de cierre</label>
+          <input type="file" accept="image/*" onchange="subirFotoPrincipal(event, 'footer')">
+          <input type="hidden" id="p-foto-footer">
+        </div>
+        <button class="btn btn-dorado" onclick="guardarFotos()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-fotos">Guardado ✓</p>
+      </div>
+
+      <!-- HISTORIA -->
+      <div class="tarjeta">
+        <h2>Nuestra historia</h2>
+        <p class="desc">Agrega los momentos que quieres contar (cómo se conocieron, primera cita, la propuesta...).</p>
+        <div id="lista-historia"></div>
+        <button class="btn btn-outline btn-chico" onclick="agregarHistoria()">+ Agregar momento</button>
+        <br><br>
+        <button class="btn btn-dorado" onclick="guardarHistoria()">Guardar historia</button>
+        <p class="mensaje-ok oculto" id="ok-historia">Guardado ✓</p>
+      </div>
+
+      <!-- ITINERARIO -->
+      <div class="tarjeta">
+        <h2>Itinerario</h2>
+        <p class="desc">Los momentos del día, en orden.</p>
+        <div id="lista-timeline"></div>
+        <button class="btn btn-outline btn-chico" onclick="agregarTimeline()">+ Agregar momento</button>
+        <br><br>
+        <button class="btn btn-dorado" onclick="guardarTimeline()">Guardar itinerario</button>
+        <p class="mensaje-ok oculto" id="ok-timeline">Guardado ✓</p>
+      </div>
+
+      <!-- MENSAJES -->
+      <div class="tarjeta">
+        <h2>Versículo o mensaje especial</h2>
+        <p class="desc">El mensaje que aparece destacado en la invitación.</p>
+        <div id="lista-mensajes"></div>
+        <button class="btn btn-outline btn-chico" onclick="agregarMensaje()">+ Agregar mensaje</button>
+        <br><br>
+        <button class="btn btn-dorado" onclick="guardarMensajes()">Guardar mensajes</button>
+        <p class="mensaje-ok oculto" id="ok-mensajes">Guardado ✓</p>
+      </div>
+
+      <!-- RSVP PREMIUM -->
+      <div class="tarjeta">
+        <h2>Links personalizados por invitado (opcional)</h2>
+        <p class="desc">Sube un Excel con una columna "Nombre" y te devolvemos el mismo archivo con el link de cada quien. No guardamos tu Excel, solo la lista de nombres.</p>
+        <div class="excel-box">
+          <p>Arrastra tu archivo o selecciónalo</p>
+          <input type="file" id="input-excel" accept=".xlsx,.xls">
+          <br><br>
+          <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Generar links</button>
+        </div>
+        <div id="resultado-excel"></div>
+      </div>
+
+      <!-- FINALIZAR -->
+      <div class="tarjeta" style="text-align:center">
+        <h2>¿Ya terminaste?</h2>
+        <p class="desc">Avísanos para que revisemos tu invitación.</p>
+        <button class="btn btn-dorado" onclick="marcarCompleto()">Marcar como completo</button>
+        <p class="mensaje-ok oculto" id="ok-completo">¡Listo! Te avisaremos cuando esté publicada.</p>
+      </div>
+
+    </div>
+
+    <div id="portal-error" class="estado-error oculto">
+      <p>Este link no es válido o ya expiró.</p>
+      <p style="font-size:.85rem">Contacta a quien te lo compartió para obtener uno nuevo.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

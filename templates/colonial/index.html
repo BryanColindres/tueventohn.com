@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <svg class="catedral-fondo" viewBox="0 0 400 300" fill="none" stroke="#2B2420" stroke-width="1.5">
+    <rect x="60" y="120" width="30" height="140"/>
+    <path d="M60 120 L75 95 L90 120"/>
+    <rect x="310" y="120" width="30" height="140"/>
+    <path d="M310 120 L325 95 L340 120"/>
+    <rect x="130" y="90" width="140" height="170"/>
+    <path d="M130 90 L200 20 L270 90"/>
+    <circle cx="200" cy="60" r="22"/>
+    <path d="M200 38 V82 M178 60 H222 M186 46 L214 74 M214 46 L186 74"/>
+    <path d="M180 260 V190 A20 20 0 0 1 220 190 V260"/>
+    <path d="M75 95 V80 M325 95 V80"/>
+  </svg>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- HERO — FACHADA COLONIAL -->
+    <section class="hero" id="hero">
+      <svg class="campanario" viewBox="0 0 60 80" fill="none" stroke="#6B4226" stroke-width="2">
+        <path d="M30 4 L20 16 H40 Z" fill="#6B4226"/>
+        <rect x="18" y="16" width="24" height="40" rx="2"/>
+        <path d="M22 24 a8 8 0 0 1 16 0" />
+        <circle cx="30" cy="30" r="4" fill="#C1652F" stroke="none"/>
+        <rect x="10" y="56" width="40" height="20"/>
+      </svg>
+      <div class="hero__arco-wrap">
+        <div class="arco arco-marco">
+          <div class="arco" id="hero-photo"></div>
+        </div>
+      </div>
+      <p class="hero__label">Tienen el honor de invitarles</p>
+      <h1 class="hero__names">
+        <span id="hero-nombreA"></span> <span class="hero__amp">&amp;</span> <span id="hero-nombreB"></span>
+      </h1>
+      <p class="hero__apellidos" id="hero-apellidos"></p>
+      <p class="hero__fecha" id="hero-fecha"></p>
+    </section>
+
+    <div class="rosario">
+      <span class="cuenta"></span><span class="cuenta"></span><span class="cuenta grande"></span>
+      <svg viewBox="0 0 16 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1v18M2 6h12"/></svg>
+      <span class="cuenta grande"></span><span class="cuenta"></span><span class="cuenta"></span>
+    </div>
+
+    <!-- LA BENDICIÓN — antes iba al final, ahora abre la invitación -->
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" style="text-align:center;margin-bottom:.5rem">
+        <span class="eyebrow">La bendición</span>
+      </div>
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <div class="azulejos"></div>
+
+    <!-- ORDEN DE LA SANTA MISA — antes se llamaba "itinerario" y estaba a la mitad -->
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Orden de la Santa Misa</span>
+        <h2 class="titulo">Así se vivirá el día</h2>
+      </div>
+      <div class="programa" id="timeline-contenido"></div>
+    </section>
+
+    <div class="rosario">
+      <span class="cuenta"></span><span class="cuenta"></span><span class="cuenta grande"></span>
+      <svg viewBox="0 0 16 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1v18M2 6h12"/></svg>
+      <span class="cuenta grande"></span><span class="cuenta"></span><span class="cuenta"></span>
+    </div>
+
+    <!-- CUENTA REGRESIVA — ahora dice "faltan para la bendición" -->
+    <section class="section-countdown">
+      <span class="eyebrow">Faltan para la bendición</span>
+      <div class="countdown" id="countdown"></div>
+    </section>
+
+    <!-- HISTORIA — CALLE DE PUERTAS -->
+    <section class="section-historia" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1rem">
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="titulo">Una calle, tres puertas</h2>
+      </div>
+      <div class="calle-scroll" id="historia-contenido"></div>
+      <p class="calle-hint">← desliza para recorrer la calle →</p>
+    </section>
+
+    <div class="azulejos"></div>
+
+    <section class="section-map">
+      <span class="eyebrow">Ubicación</span>
+      <h2 class="titulo" id="ubicacion-nombre"></h2>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-terracota">Cómo llegar</a>
+      </div>
+    </section>
+
+    <!-- GALERÍA -->
+    <section class="section-galeria" id="section-galeria">
+      <span class="eyebrow">Comparte tus fotos</span>
+      <h2 class="titulo">Postales del pueblo</h2>
+      <div style="margin-top:1.2rem">
+        <input type="file" id="input-foto" accept="image/*" hidden>
+        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
+      </div>
+      <div class="galeria-grid" id="galeria-grid"></div>
+    </section>
+
+    <div class="rosario">
+      <span class="cuenta"></span><span class="cuenta"></span><span class="cuenta grande"></span>
+      <svg viewBox="0 0 16 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1v18M2 6h12"/></svg>
+      <span class="cuenta grande"></span><span class="cuenta"></span><span class="cuenta"></span>
+    </div>
+
+    <!-- LIBRO DE INTENCIONES — antes "Libro del Cabildo" -->
+    <section class="section-firmas" id="section-firmas">
+      <span class="eyebrow">Libro de Intenciones</span>
+      <h2 class="titulo">Déjanos un mensaje</h2>
+      <div class="firmas-wrap">
+        <form id="form-firma" class="form-firma">
+          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-terracota">Firmar</button>
+        </form>
+        <div class="firmas-lista" id="firmas-lista">
+          <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENCIENDE UNA VELA — sección devocional nueva -->
+    <section class="section-vela">
+      <svg class="vela-svg" viewBox="0 0 24 40" fill="none">
+        <path class="vela-llama" d="M12 2c3 4 3 7 0 9-3-2-3-5 0-9z" fill="#D9A441"/>
+        <rect x="8" y="11" width="8" height="24" rx="1" fill="#F3E9D8"/>
+        <rect x="8" y="11" width="8" height="24" rx="1" stroke="#6B4226" stroke-width="1"/>
+      </svg>
+      <span class="eyebrow">Antes de confirmar</span>
+      <h2 class="titulo">Encienda una vela por nosotros</h2>
+      <p>Como se hace en cada visita a la parroquia, le pedimos un momento de oración por este nuevo camino que comenzamos juntos.</p>
+    </section>
+
+    <div class="azulejos"></div>
+
+    <!-- RSVP — TOQUE DE CAMPANA -->
+    <section class="section-rsvp" id="section-rsvp">
+      <svg class="campana-rsvp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M12 2a6 6 0 00-6 6c0 4-2 6-2 6h16s-2-2-2-6a6 6 0 00-6-6z"/>
+        <path d="M9 18a3 3 0 006 0"/>
+      </svg>
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo">Toque la campana si vendrá</h2>
+      <p class="rsvp-desc">Nos encantaría contar con su presencia. Por favor confirme antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-terracota">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__photo" id="footer-photo"></div>
+      <div class="footer__overlay"></div>
+      <div class="footer__content">
+        <p class="footer__names" id="footer-iniciales"></p>
+        <p class="footer__date" id="footer-fecha"></p>
+        <p class="footer__phrase">Con amor, los esperamos.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

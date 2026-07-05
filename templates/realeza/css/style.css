@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Cinzel:wght@500;600&display=swap');
+
+:root{
+  --blanco:#FFFFFF; --marfil:#FBF8F2; --marfil-mid:#F3ECDC;
+  --dorado:#B8944F; --dorado-claro:#D8BC7E; --dorado-oscuro:#8A6C34;
+  --texto:#2B2620; --texto-mid:#5C5346; --texto-light:#A69880;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-serif:'EB Garamond',Georgia,serif;
+  --font-caps:'Cinzel',serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--blanco);color:var(--texto);font-family:var(--font-serif);font-weight:400;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;width:100%;height:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+.container{max-width:600px;margin:0 auto;padding:0 2rem}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+.eyebrow{font-family:var(--font-caps);font-size:.64rem;font-weight:600;letter-spacing:.38em;text-transform:uppercase;color:var(--dorado);margin-bottom:1rem;display:block}
+.titulo-real{font-family:var(--font-display);font-size:clamp(1.5rem,3.2vw,2.1rem);font-style:italic;font-weight:400;color:var(--texto);margin-bottom:1rem}
+.subtitulo{font-family:var(--font-serif);font-style:italic;font-size:clamp(1rem,2vw,1.1rem);color:var(--texto-mid)}
+
+/* ═══ MARCO DOBLE LÍNEA (elemento repetido en toda la boda) ═══ */
+.marco-real{border:1px solid var(--dorado);position:relative;padding:2.6rem 2rem}
+.marco-real::before{content:'';position:absolute;inset:7px;border:1px solid rgba(184,148,79,.4);pointer-events:none}
+
+/* ═══ EMBLEMA — corona + laureles (elemento firma) ═══ */
+.emblema{width:100px;height:100px;margin:0 auto}
+.emblema-chico{width:56px;height:56px}
+
+/* ═══ DIVISOR ═══ */
+.divisor-real{display:flex;align-items:center;justify-content:center;gap:1rem;max-width:260px;margin:1.4rem auto}
+.divisor-real::before,.divisor-real::after{content:'';flex:1;height:1px;background:linear-gradient(to var(--dir,right),transparent,var(--dorado))}
+.divisor-real::after{--dir:left}
+.divisor-real svg{width:14px;height:14px;color:var(--dorado);flex-shrink:0}
+
+/* ═══ BOTONES ═══ */
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2.2rem;font-family:var(--font-caps);font-size:.68rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .35s var(--ease);border:1px solid var(--dorado)}
+.btn-dorado{background:var(--dorado);color:#fff}
+.btn-dorado:hover{background:var(--dorado-oscuro)}
+.btn-outline{background:transparent;color:var(--dorado-oscuro)}
+.btn-outline:hover{background:var(--dorado);color:#fff}
+
+/* ═══ VIDEO INTRO ═══ */
+.video-screen{position:fixed;inset:0;z-index:500;background:var(--blanco);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s var(--ease)}
+.video-screen.closing{opacity:0;pointer-events:none}
+.video-screen.gone{display:none}
+.video-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;cursor:pointer;opacity:0;transition:opacity .6s ease}
+.video-screen.playing .video-el{opacity:1}
+.video-overlay{position:absolute;inset:0;z-index:3;background:linear-gradient(160deg,rgba(255,255,255,.97),rgba(251,248,242,.9));display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease)}
+.video-overlay.hiding{opacity:0;pointer-events:none}
+.video-overlay.gone{display:none}
+.video-overlay__content{text-align:center;color:var(--texto);padding:2rem}
+.video-overlay__pre{font-family:var(--font-caps);font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:1.4rem}
+.video-overlay__label{font-family:var(--font-display);font-style:italic;font-size:clamp(1.5rem,5.5vw,2.2rem);color:var(--texto);margin:1.2rem 0 .4rem}
+.video-overlay__date{font-family:var(--font-caps);font-size:.66rem;letter-spacing:.24em;color:var(--texto-light);margin-bottom:2.2rem;text-transform:uppercase}
+.video-overlay__tap{position:relative;width:52px;height:52px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--dorado);border-radius:50%}
+.video-tap-ring{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(184,148,79,.5);animation:tapRing 2s ease-out infinite}
+@keyframes tapRing{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.video-overlay__tap svg{width:16px;height:16px;color:var(--dorado-oscuro);position:relative;z-index:1}
+.video-overlay__hint{font-family:var(--font-caps);font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--texto-light)}
+.video-progress-bar{position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(184,148,79,.15);z-index:4}
+.video-progress-fill{height:100%;width:0%;background:var(--dorado);transition:width .3s linear}
+
+.invitation{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease),transform .8s var(--ease);pointer-events:none}
+.invitation.visible{opacity:1;transform:translateY(0);pointer-events:all}
+
+/* ═══ HERO — simétrico, marco real ═══ */
+.hero{padding:4.6rem 1.6rem;text-align:center;background:var(--marfil)}
+.hero__marco{max-width:420px;margin:0 auto;padding:3rem 1.8rem}
+.hero__emblema{margin-bottom:1.4rem}
+.hero__pre{font-family:var(--font-caps);font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:1.4rem}
+.hero__names{font-family:var(--font-display);font-weight:500;font-size:clamp(1.9rem,6.5vw,2.8rem);color:var(--texto);line-height:1.3}
+.hero__amp{font-style:italic;color:var(--dorado);font-size:.7em}
+.hero__apellidos{font-family:var(--font-caps);font-size:.6rem;letter-spacing:.2em;color:var(--texto-light);margin-top:.9rem;text-transform:uppercase}
+.hero__fecha{font-family:var(--font-serif);font-style:italic;font-size:1.05rem;color:var(--dorado-oscuro);margin-top:1.2rem}
+
+/* ═══ FOTO CON MARCO DORADO ═══ */
+.foto-marco{position:relative;padding:8px;border:1px solid var(--dorado)}
+.foto-marco::before{content:'';position:absolute;inset:3px;border:1px solid rgba(184,148,79,.35);pointer-events:none;z-index:1}
+.foto-marco img{position:relative}
+
+/* ═══ COUNTDOWN ═══ */
+.section-countdown{background:var(--blanco);padding:4.2rem 0;text-align:center;border-top:1px solid var(--marfil-mid);border-bottom:1px solid var(--marfil-mid)}
+.countdown{display:flex;align-items:center;justify-content:center;gap:1.4rem;margin-top:1.2rem;flex-wrap:wrap}
+.cd-item{border:1px solid var(--marfil-mid);padding:1rem 1.2rem;min-width:78px}
+.cd-item span{display:block;font-family:var(--font-display);font-size:clamp(1.7rem,5vw,2.3rem);color:var(--texto)}
+.cd-item p{font-family:var(--font-caps);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-light);margin-top:.3rem}
+
+/* ═══ MENSAJES ═══ */
+.section-mensajes{padding:5rem 0;text-align:center}
+.mensaje-card{max-width:500px;margin:0 auto}
+.mensaje-card p{font-family:var(--font-display);font-style:italic;font-size:clamp(1.15rem,2.3vw,1.4rem);line-height:1.75;color:var(--texto)}
+.mensaje-card .ref{display:block;margin-top:1.2rem;font-family:var(--font-caps);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado-oscuro)}
+
+/* ═══ HISTORIA — simétrica ═══ */
+.section-story{padding:5rem 0;background:var(--marfil)}
+.historia-item{display:flex;align-items:center;gap:2.6rem;max-width:720px;margin:0 auto 3.4rem;padding:0 2rem}
+.historia-item:nth-child(even){flex-direction:row-reverse}
+.historia-item__foto{width:150px;height:190px;flex-shrink:0}
+.historia-item__texto h3{font-family:var(--font-caps);font-size:.85rem;letter-spacing:.14em;color:var(--dorado-oscuro);text-transform:uppercase;margin-bottom:.6rem}
+.historia-item__texto p{font-family:var(--font-serif);font-size:clamp(1rem,1.8vw,1.12rem);line-height:1.8;color:var(--texto-mid);font-style:italic}
+
+/* ═══ ITINERARIO — orden de ceremonia ═══ */
+.section-timeline{padding:5rem 0;background:var(--blanco)}
+.programa{max-width:440px;margin:2.6rem auto 0;padding:0 2rem}
+.prog-item{display:flex;align-items:baseline;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--marfil-mid)}
+.prog-item:last-child{border-bottom:none}
+.prog-num{font-family:var(--font-caps);font-size:.72rem;color:var(--dorado);min-width:24px}
+.prog-titulo{font-family:var(--font-display);font-style:italic;font-size:1.1rem;color:var(--texto);flex:1}
+.prog-hora{font-family:var(--font-caps);font-size:.64rem;letter-spacing:.1em;color:var(--texto-light)}
+
+/* ═══ UBICACIÓN ═══ */
+.section-map{padding:5rem 0;text-align:center;background:var(--marfil)}
+.map-block{max-width:460px;margin:0 auto;padding:0 2rem}
+.map-block p{font-family:var(--font-serif);font-style:italic;font-size:1rem;line-height:1.8;color:var(--texto-mid);margin-bottom:1.4rem}
+
+/* ═══ GALERÍA ═══ */
+.section-galeria{padding:5rem 0;text-align:center}
+.galeria-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.6rem;max-width:760px;margin-left:auto;margin-right:auto;padding:0 2rem}
+.gal-item{aspect-ratio:4/5}
+
+/* ═══ FIRMAS — libro de honor ═══ */
+.section-firmas{padding:5rem 0;text-align:center;background:var(--marfil)}
+.firmas-wrap{max-width:460px;margin:2rem auto 0;padding:0 2rem}
+.form-firma{display:flex;flex-direction:column;gap:1.1rem;margin-bottom:2.4rem;text-align:left}
+.form-firma input,.form-firma textarea{background:var(--blanco);border:1px solid var(--marfil-mid);color:var(--texto);padding:.75rem .9rem;font-family:var(--font-serif);font-size:1rem;outline:none}
+.form-firma textarea{min-height:74px;resize:none}
+.form-firma button{align-self:center;margin-top:.4rem}
+.firma-item{padding:1rem 0;border-bottom:1px solid var(--marfil-mid);text-align:left}
+.firma-item .nombre{font-family:var(--font-caps);font-size:.72rem;letter-spacing:.12em;color:var(--dorado-oscuro);text-transform:uppercase}
+.firma-item .mensaje{font-family:var(--font-serif);font-style:italic;color:var(--texto-mid);margin-top:.3rem}
+.firmas-vacio{font-family:var(--font-display);font-style:italic;color:var(--texto-light);text-align:center}
+
+/* ═══ RSVP ═══ */
+.section-rsvp{padding:5rem 0 4.5rem;text-align:center;background:var(--blanco)}
+.rsvp-desc{font-family:var(--font-serif);font-style:italic;font-size:1.02rem;line-height:1.8;color:var(--texto-mid);max-width:440px;margin:0 auto 2rem}
+.rsvp-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ═══ FOOTER ═══ */
+.footer{position:relative;padding:5rem 2rem;text-align:center;background:var(--marfil)}
+.footer__emblema{margin:0 auto 1.4rem}
+.footer__names{font-family:var(--font-display);font-style:italic;font-size:clamp(1.5rem,4.2vw,2rem);color:var(--texto)}
+.footer__date{font-family:var(--font-caps);font-size:.6rem;letter-spacing:.24em;color:var(--texto-light);margin:.8rem 0 1.1rem;text-transform:uppercase}
+.footer__phrase{font-family:var(--font-serif);font-style:italic;font-size:1rem;color:var(--dorado-oscuro)}
+
+@media(max-width:640px){
+  .historia-item,.historia-item:nth-child(even){flex-direction:column;text-align:center}
+}

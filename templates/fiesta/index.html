@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="bokeh-wrap" id="bokeh-hero"></div>
+      <!-- Guirnalda de luces -->
+      <div class="guirnalda">
+        <svg viewBox="0 0 400 60" preserveAspectRatio="none">
+          <path d="M0 10 Q50 50 100 15 T200 15 T300 15 T400 10" stroke="#4a4a3a" stroke-width="1.5" fill="none"/>
+          <circle class="foco" cx="30" cy="22" r="5" fill="#F4B860" style="animation-delay:.2s"/>
+          <circle class="foco" cx="75" cy="38" r="5" fill="#F4B860" style="animation-delay:.7s"/>
+          <circle class="foco" cx="120" cy="26" r="5" fill="#F4B860" style="animation-delay:1.1s"/>
+          <circle class="foco" cx="165" cy="15" r="5" fill="#F4B860" style="animation-delay:.4s"/>
+          <circle class="foco" cx="210" cy="16" r="5" fill="#F4B860" style="animation-delay:1.6s"/>
+          <circle class="foco" cx="255" cy="15" r="5" fill="#F4B860" style="animation-delay:.9s"/>
+          <circle class="foco" cx="300" cy="17" r="5" fill="#F4B860" style="animation-delay:1.3s"/>
+          <circle class="foco" cx="345" cy="16" r="5" fill="#F4B860" style="animation-delay:.1s"/>
+          <circle class="foco" cx="380" cy="20" r="5" fill="#F4B860" style="animation-delay:1.8s"/>
+        </svg>
+      </div>
+      <p class="hero__label">Nos casamos y lo vamos a celebrar</p>
+      <div class="hero__photo-wrap">
+        <div class="hero__photo" id="hero-photo"></div>
+      </div>
+      <h1 class="hero__names">
+        <span id="hero-nombreA"></span><span class="hero__amp"> &amp; </span><span id="hero-nombreB"></span>
+      </h1>
+      <p class="hero__fecha" id="hero-fecha"></p>
+    </section>
+
+    <section class="section-countdown">
+      <div class="bokeh-wrap" id="bokeh-countdown"></div>
+      <span class="eyebrow">Cuenta regresiva</span>
+      <div class="countdown" id="countdown"></div>
+    </section>
+
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <section class="section-story" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1rem">
+        <span class="eyebrow eyebrow--oscuro">Nuestra historia</span>
+        <h2 class="titulo-fiesta titulo-fiesta--oscuro">Antes de la fiesta, esto pasó</h2>
+      </div>
+      <div id="historia-contenido"></div>
+    </section>
+
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Itinerario</span>
+        <h2 class="titulo-fiesta">Se arma la fiesta</h2>
+      </div>
+      <div class="programa" id="timeline-contenido"></div>
+    </section>
+
+    <section class="section-map">
+      <span class="eyebrow eyebrow--oscuro">Ubicación</span>
+      <h2 class="titulo-fiesta titulo-fiesta--oscuro" id="ubicacion-nombre"></h2>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-outline--oscuro">Cómo llegar</a>
+      </div>
+    </section>
+
+    <!-- PIDE UNA CANCIÓN -->
+    <section class="section-cancion" id="section-cancion">
+      <div class="bokeh-wrap" id="bokeh-cancion"></div>
+      <div class="container">
+        <span class="eyebrow">Para el DJ</span>
+        <h2 class="titulo-fiesta">Pide una canción</h2>
+        <p class="subtitulo">Esa que no puede faltar para que bailes toda la noche</p>
+        <form id="form-cancion" class="form-cancion">
+          <input type="text" id="cancion-nombre" placeholder="Tu nombre" required>
+          <input type="text" id="cancion-titulo" placeholder="Canción y artista" required>
+          <button type="submit" class="btn btn-fiesta">Enviar pedido</button>
+        </form>
+        <div class="canciones-lista" id="canciones-lista"></div>
+      </div>
+    </section>
+
+    <section class="section-galeria" id="section-galeria">
+      <span class="eyebrow">Comparte tus fotos</span>
+      <h2 class="titulo-fiesta">Galería</h2>
+      <p class="subtitulo">Sube tus mejores momentos de la celebración</p>
+      <div style="margin-top:1.4rem">
+        <input type="file" id="input-foto" accept="image/*" hidden>
+        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
+      </div>
+      <div class="galeria-grid" id="galeria-grid"></div>
+    </section>
+
+    <section class="section-firmas" id="section-firmas">
+      <span class="eyebrow eyebrow--oscuro">Libro de firmas</span>
+      <h2 class="titulo-fiesta titulo-fiesta--oscuro">Déjanos un mensaje</h2>
+      <div class="firmas-wrap">
+        <form id="form-firma" class="form-firma">
+          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-fiesta">Firmar</button>
+        </form>
+        <div class="firmas-lista" id="firmas-lista">
+          <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-rsvp" id="section-rsvp">
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo-fiesta">¿Vienes a la fiesta?</h2>
+      <p class="rsvp-desc">Nos encantaría contar con tu presencia. Confirma antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-fiesta">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__photo" id="footer-photo"></div>
+      <div class="footer__overlay"></div>
+      <div class="footer__content">
+        <p class="footer__names" id="footer-iniciales"></p>
+        <p class="footer__date" id="footer-fecha"></p>
+        <p class="footer__phrase">Con amor, los esperamos.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

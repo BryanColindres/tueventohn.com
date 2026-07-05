@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital@1&display=swap');
+
+:root{
+  --crema:#F7F3EC; --blanco:#fff; --texto:#2A2620; --texto-mid:#7a7264;
+  --dorado:#C9A25A; --borde:#E4DCC8; --verde:#22C55E;
+  --font:'Inter',sans-serif; --font-display:'Playfair Display',serif;
+}
+*{box-sizing:border-box}
+body{background:var(--crema);color:var(--texto);font-family:var(--font);margin:0}
+.oculto{display:none !important}
+.wrap{max-width:640px;margin:0 auto;padding:2.4rem 1.6rem 5rem}
+
+.header{text-align:center;margin-bottom:2.4rem}
+.header .eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado);margin-bottom:.6rem}
+.header h1{font-family:var(--font-display);font-style:italic;font-size:1.8rem}
+
+.tarjeta{background:var(--blanco);border:1px solid var(--borde);border-radius:16px;padding:1.8rem;margin-bottom:1.6rem}
+.tarjeta h2{font-size:1.05rem;margin-bottom:.3rem}
+.tarjeta .desc{color:var(--texto-mid);font-size:.85rem;margin-bottom:1.4rem}
+
+.campo{margin-bottom:1rem}
+.campo label{display:block;font-size:.78rem;color:var(--texto-mid);margin-bottom:.4rem}
+.campo input, .campo textarea{width:100%;padding:.7rem .9rem;border:1px solid var(--borde);border-radius:8px;font-family:var(--font);font-size:.9rem;outline:none}
+.campo textarea{min-height:70px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr}}
+
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.3rem;border-radius:8px;border:none;font-family:var(--font);font-size:.85rem;font-weight:600;cursor:pointer}
+.btn-dorado{background:var(--dorado);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--borde);color:var(--texto)}
+.btn-chico{padding:.45rem .8rem;font-size:.78rem}
+
+.repetidor-item{border:1px dashed var(--borde);border-radius:10px;padding:1.1rem;margin-bottom:.9rem;position:relative}
+.repetidor-item .quitar{position:absolute;top:.6rem;right:.6rem;background:transparent;border:none;color:var(--texto-mid);cursor:pointer;font-size:.9rem}
+
+.estado-error{text-align:center;padding:4rem 2rem;color:var(--texto-mid)}
+.mensaje-ok{color:var(--verde);font-size:.85rem;margin-top:.6rem}
+
+.excel-box{border:2px dashed var(--borde);border-radius:12px;padding:1.6rem;text-align:center}
+.excel-box input[type="file"]{margin-top:.8rem}
+.lista-links{margin-top:1rem;text-align:left;font-size:.82rem}
+.lista-links div{padding:.4rem 0;border-bottom:1px dotted var(--borde)}

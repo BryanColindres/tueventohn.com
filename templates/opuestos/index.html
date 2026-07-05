@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- HERO — DÍPTICO EDITORIAL -->
+    <section class="hero" id="hero">
+      <div class="hero__panel hero__panel--a" id="hero-fotoA"></div>
+      <div class="hero__panel hero__panel--b" id="hero-fotoB"></div>
+      <p class="hero__marca">His &amp; Hers</p>
+      <div class="hero__nombres">
+        <span class="nombreA" id="hero-nombreA"></span>
+        <span class="amp">&amp;</span>
+        <span class="nombreB" id="hero-nombreB"></span>
+      </div>
+      <p class="hero__fecha" id="hero-fecha"></p>
+    </section>
+
+    <!-- PLACAS DE MUSEO -->
+    <section class="section-placas" id="section-placas"></section>
+
+    <!-- MENSAJES -->
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <!-- HISTORIA -->
+    <section class="section-historia" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1rem">
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="titulo">Una promesa de amor</h2>
+      </div>
+      <div id="historia-contenido"></div>
+    </section>
+
+    <!-- ITINERARIO -->
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Itinerario</span>
+        <h2 class="titulo">El gran día</h2>
+      </div>
+      <div class="programa" id="timeline-contenido"></div>
+    </section>
+
+    <!-- UBICACIÓN -->
+    <section class="section-map">
+      <span class="eyebrow">Ubicación</span>
+      <h2 class="titulo" id="ubicacion-nombre"></h2>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-oscuro">Cómo llegar</a>
+      </div>
+    </section>
+
+    <!-- GALERÍA -->
+    <section class="section-galeria" id="section-galeria">
+      <span class="eyebrow">Comparte tus fotos</span>
+      <h2 class="titulo">Galería</h2>
+      <div style="margin-top:1.4rem">
+        <input type="file" id="input-foto" accept="image/*" hidden>
+        <button id="btn-subir-foto" class="btn btn-claro" style="color:#fff;border-color:#fff">Subir foto</button>
+      </div>
+      <div class="galeria-grid" id="galeria-grid"></div>
+    </section>
+
+    <!-- FIRMAS -->
+    <section class="section-firmas" id="section-firmas">
+      <span class="eyebrow">Libro de firmas</span>
+      <h2 class="titulo">Déjanos un mensaje</h2>
+      <div class="firmas-wrap">
+        <form id="form-firma" class="form-firma">
+          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-oscuro">Firmar</button>
+        </form>
+        <div class="firmas-lista" id="firmas-lista">
+          <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section class="section-rsvp" id="section-rsvp">
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo">¿Vienes?</h2>
+      <p class="rsvp-desc">Nos encantaría contar con tu presencia. Por favor confirma antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-oscuro">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-claro">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__photo" id="footer-photo"></div>
+      <div class="footer__overlay"></div>
+      <div class="footer__content">
+        <p class="footer__names" id="footer-iniciales"></p>
+        <p class="footer__date" id="footer-fecha"></p>
+        <p class="footer__phrase">Diferentes en todo, elegidos el uno al otro.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

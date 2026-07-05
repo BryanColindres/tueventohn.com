@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invita — Invitaciones digitales de boda</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <span class="nav-logo">Invita.</span>
+    <div class="nav-links">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#precios">Precios</a>
+      <a href="#faq">Preguntas</a>
+    </div>
+    <a href="#" class="nav-cta" id="nav-whatsapp">Escríbenos</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Invitaciones digitales de boda</p>
+    <h1>Una experiencia <em>distinta</em>, no otra invitación digital más.</h1>
+    <p>Doce diseños completamente distintos entre sí — cada uno pensado para un tipo de boda, no solo con otro color. Elige el tuyo y lo hacemos con tus datos, tus fotos y tu historia.</p>
+    <div class="hero-btns">
+      <a href="#catalogo" class="btn btn-dorado">Ver catálogo</a>
+      <a href="#como-funciona" class="btn btn-outline-claro">Cómo funciona</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><b>12</b><span>Diseños únicos</span></div>
+      <div class="hero-stat"><b>100%</b><span>Personalizable</span></div>
+      <div class="hero-stat"><b>48h</b><span>Entrega estimada</span></div>
+    </div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section class="seccion" id="catalogo">
+    <div class="container">
+      <div class="seccion-header">
+        <span class="seccion-eyebrow">Nuestro catálogo</span>
+        <h2>Doce mundos, una sola boda: la tuya</h2>
+        <p>Toca cualquier vista previa para explorarla en vivo, tal como la verán tus invitados.</p>
+      </div>
+      <div class="catalogo-grid" id="catalogo-grid"></div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="seccion" id="como-funciona" style="background:#fff">
+    <div class="container">
+      <div class="seccion-header">
+        <span class="seccion-eyebrow">Proceso</span>
+        <h2>Cómo funciona</h2>
+      </div>
+      <div class="pasos">
+        <div class="paso">
+          <div class="paso-num">1</div>
+          <h3>Elige tu plantilla</h3>
+          <p>Explora el catálogo y elige el diseño que más se parezca a la boda que estás soñando.</p>
+        </div>
+        <div class="paso">
+          <div class="paso-num">2</div>
+          <h3>Envíanos tus datos</h3>
+          <p>Nombres, fecha, fotos, tu historia y el itinerario — todo por WhatsApp, sin formularios complicados.</p>
+        </div>
+        <div class="paso">
+          <div class="paso-num">3</div>
+          <h3>La armamos por ti</h3>
+          <p>En un plazo estimado de 48 horas tendrás tu invitación lista para revisar y ajustar.</p>
+        </div>
+        <div class="paso">
+          <div class="paso-num">4</div>
+          <h3>Compártela</h3>
+          <p>Te entregamos el link — lo mandas por WhatsApp a cada invitado y listo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRECIOS -->
+  <section class="seccion" id="precios">
+    <div class="container">
+      <div class="seccion-header">
+        <span class="seccion-eyebrow">Inversión</span>
+        <h2>Precios y paquetes</h2>
+        <p>Cualquiera de las 12 plantillas del catálogo está disponible en los 3 paquetes.</p>
+      </div>
+
+      <div class="precios-grid" id="precios-grid">
+        <p style="text-align:center;color:var(--texto-mid);grid-column:1/-1">Cargando paquetes...</p>
+      </div>
+
+      <div style="margin-top:3.5rem">
+        <h3 style="font-family:var(--font-display);font-style:italic;font-size:1.2rem;margin-bottom:.6rem">Add-ons individuales</h3>
+        <p style="color:var(--texto-mid);font-size:.9rem;margin-bottom:1rem">Si quieres agregar algo suelto a cualquier paquete:</p>
+        <table class="addons-tabla">
+          <tr><th>Add-on</th><th>Precio</th></tr>
+          <tr><td>Foto adicional en galería</td><td>L. 30 c/u</td></tr>
+          <tr><td>Mensaje o versículo adicional</td><td>L. 50 c/u</td></tr>
+          <tr><td>Evento adicional en itinerario</td><td>L. 40 c/u</td></tr>
+          <tr><td>Libro de firmas (si no viene incluido)</td><td>L. 500</td></tr>
+          <tr><td>Video de apertura personalizado</td><td>L. 800</td></tr>
+          <tr><td>Dominio propio (.com)</td><td>L. 350 + costo del dominio</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="seccion" id="faq" style="background:#fff">
+    <div class="container" style="max-width:720px">
+      <div class="seccion-header">
+        <span class="seccion-eyebrow">Dudas frecuentes</span>
+        <h2>Preguntas frecuentes</h2>
+      </div>
+      <div id="faq-lista"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER FINAL -->
+  <section class="footer-final">
+    <h2>¿Lista la fecha? Falta la invitación.</h2>
+    <p>Escríbenos y en minutos tienes tu cotización.</p>
+    <a href="#" class="btn btn-dorado" id="footer-whatsapp">Escríbenos por WhatsApp</a>
+    <p class="footer-brand">Invita. — Invitaciones digitales de boda en Honduras</p>
+  </section>
+
+  <script src="js/preview.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

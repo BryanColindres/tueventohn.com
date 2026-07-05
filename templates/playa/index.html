@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- Navegación de capítulos -->
+    <div class="cap-nav-dots" id="cap-dots"></div>
+    <button class="cap-flecha cap-flecha--prev" id="cap-prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="cap-flecha cap-flecha--next" id="cap-next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+
+    <div class="capitulos" id="capitulos">
+
+      <!-- 1. HERO -->
+      <section class="capitulo activo" data-cap="hero">
+        <div class="hero">
+          <div class="hero__photo" id="hero-photo"></div>
+          <div class="hero__overlay"></div>
+
+          <!-- Sol kawaii -->
+          <svg class="deco deco-sol" style="top:1.6rem;right:1.2rem" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="26" fill="#F5C860"/>
+            <g stroke="#F5C860" stroke-width="6" stroke-linecap="round">
+              <line x1="50" y1="4" x2="50" y2="16"/><line x1="50" y1="84" x2="50" y2="96"/>
+              <line x1="4" y1="50" x2="16" y2="50"/><line x1="84" y1="50" x2="96" y2="50"/>
+              <line x1="17" y1="17" x2="25" y2="25"/><line x1="75" y1="75" x2="83" y2="83"/>
+              <line x1="83" y1="17" x2="75" y2="25"/><line x1="25" y1="75" x2="17" y2="83"/>
+            </g>
+            <circle cx="42" cy="46" r="3" fill="#1B4B5A"/><circle cx="58" cy="46" r="3" fill="#1B4B5A"/>
+            <path d="M42 58 Q50 64 58 58" stroke="#1B4B5A" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+
+          <!-- Palmera izquierda -->
+          <svg class="deco deco-palmera" style="bottom:44px;left:-6px" viewBox="0 0 100 160">
+            <path d="M50 160 C48 110 46 80 44 60" stroke="#A9713F" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <g fill="#3E8E63">
+              <path d="M44 60 C20 50 4 55 -6 40 C10 42 30 45 44 55 Z"/>
+              <path d="M44 60 C18 42 8 20 -2 8 C16 18 34 34 46 52 Z"/>
+              <path d="M44 60 C40 30 44 12 38 -4 C48 8 52 32 48 54 Z"/>
+              <path d="M44 60 C58 34 76 22 84 6 C78 26 64 44 48 56 Z"/>
+              <path d="M44 60 C64 52 82 54 96 42 C84 52 66 60 46 62 Z"/>
+            </g>
+          </svg>
+
+          <!-- Palmera derecha (más chica, atrás) -->
+          <svg class="deco deco-palmera deco-palmera--der" style="bottom:60px;right:-10px;width:64px;opacity:.85" viewBox="0 0 100 160">
+            <path d="M50 160 C48 110 46 80 44 60" stroke="#A9713F" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <g fill="#5CAE7E">
+              <path d="M44 60 C20 50 4 55 -6 40 C10 42 30 45 44 55 Z"/>
+              <path d="M44 60 C18 42 8 20 -2 8 C16 18 34 34 46 52 Z"/>
+              <path d="M44 60 C40 30 44 12 38 -4 C48 8 52 32 48 54 Z"/>
+              <path d="M44 60 C58 34 76 22 84 6 C78 26 64 44 48 56 Z"/>
+              <path d="M44 60 C64 52 82 54 96 42 C84 52 66 60 46 62 Z"/>
+            </g>
+          </svg>
+
+          <div class="hero__ola"></div>
+          <div class="hero__content">
+            <p class="eyebrow eyebrow--claro">Nos casamos frente al mar</p>
+            <h1 class="hero__names">
+              <span id="hero-nombreA"></span><span class="hero__amp"> &amp; </span><span id="hero-nombreB"></span>
+            </h1>
+            <p class="hero__fecha" id="hero-fecha"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. CUENTA REGRESIVA -->
+      <section class="capitulo" data-cap="countdown">
+        <svg class="deco deco-concha deco-flotante" style="top:2rem;left:1.4rem" viewBox="0 0 64 64"><path d="M32 6 C40 20 48 30 48 42 C48 52 40 58 32 58 C24 58 16 52 16 42 C16 30 24 20 32 6Z" fill="#E8927C"/><path d="M32 14v40M22 30c4 6 4 18 0 24M42 30c-4 6-4 18 0 24" stroke="#fff" stroke-width="2" fill="none" opacity=".6"/></svg>
+        <svg class="deco deco-estrella deco-flotante" style="bottom:2.4rem;right:1.6rem;animation-delay:1s" viewBox="0 0 64 64"><path d="M32 4l6 18h19l-15 12 6 18-16-11-16 11 6-18-15-12h19z" fill="#2CA6A6"/></svg>
+        <div class="cap-contenido cap-centrado">
+          <span class="eyebrow">Cuenta regresiva</span>
+          <div class="countdown" id="countdown"></div>
+        </div>
+      </section>
+
+      <!-- 3. MENSAJE -->
+      <section class="capitulo" data-cap="mensaje" id="section-mensajes">
+        <div class="cap-contenido cap-centrado" id="mensajes-contenido"></div>
+      </section>
+
+      <!-- 4. HISTORIA -->
+      <section class="capitulo" data-cap="historia" id="section-historia">
+        <div class="cap-contenido">
+          <span class="eyebrow">Nuestra historia</span>
+          <h2 class="titulo-cap">Cómo empezó todo</h2>
+          <div id="historia-contenido" class="historia-scroll"></div>
+        </div>
+      </section>
+
+      <!-- 5. ITINERARIO -->
+      <section class="capitulo" data-cap="itinerario" id="section-timeline">
+        <div class="cap-contenido">
+          <span class="eyebrow">Itinerario</span>
+          <h2 class="titulo-cap">El gran día</h2>
+          <div id="timeline-contenido" class="programa-scroll"></div>
+        </div>
+      </section>
+
+      <!-- 6. UBICACIÓN -->
+      <section class="capitulo" data-cap="ubicacion">
+        <div class="cap-contenido cap-centrado">
+          <span class="eyebrow">Ubicación</span>
+          <h2 class="titulo-cap" id="ubicacion-nombre"></h2>
+          <p class="cap-texto" id="ubicacion-direccion"></p>
+          <a id="ubicacion-link" href="#" target="_blank" class="btn btn-mar">Ir a Google Maps</a>
+        </div>
+      </section>
+
+      <!-- 7. VESTIMENTA -->
+      <section class="capitulo" data-cap="vestimenta" id="section-vestimenta">
+        <svg class="deco deco-nube deco-flotante" style="top:2.2rem;right:1.4rem" viewBox="0 0 100 60"><ellipse cx="30" cy="38" rx="22" ry="16" fill="#fff"/><ellipse cx="55" cy="30" rx="26" ry="20" fill="#fff"/><ellipse cx="78" cy="40" rx="18" ry="14" fill="#fff"/></svg>
+        <div class="cap-contenido cap-centrado">
+          <span class="eyebrow">Código de vestimenta</span>
+          <h2 class="titulo-cap" id="vestimenta-titulo"></h2>
+          <p class="cap-texto" id="vestimenta-texto"></p>
+          <div class="paleta-colores" id="vestimenta-paleta"></div>
+        </div>
+      </section>
+
+      <!-- 8. GALERÍA -->
+      <section class="capitulo" data-cap="galeria" id="section-galeria">
+        <div class="cap-contenido">
+          <span class="eyebrow">Comparte tus fotos</span>
+          <h2 class="titulo-cap">Galería</h2>
+          <div style="text-align:center;margin-bottom:1.2rem">
+            <input type="file" id="input-foto" accept="image/*" hidden>
+            <button id="btn-subir-foto" class="btn btn-outline-mar">Subir foto</button>
+          </div>
+          <div class="galeria-scroll" id="galeria-grid"></div>
+        </div>
+      </section>
+
+      <!-- 9. LIBRO DE FIRMAS -->
+      <section class="capitulo" data-cap="firmas" id="section-firmas">
+        <div class="cap-contenido">
+          <span class="eyebrow">Libro de firmas</span>
+          <h2 class="titulo-cap">Déjanos un mensaje</h2>
+          <form id="form-firma" class="form-firma">
+            <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+            <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+            <button type="submit" class="btn btn-mar" style="align-self:center">Firmar</button>
+          </form>
+          <div class="firmas-lista-scroll" id="firmas-lista"><p class="firmas-vacio">Sé el primero en firmar</p></div>
+        </div>
+      </section>
+
+      <!-- 10. RSVP -->
+      <section class="capitulo" data-cap="rsvp">
+        <svg class="deco deco-estrella deco-flotante" style="top:2.4rem;left:1.6rem" viewBox="0 0 64 64"><path d="M32 4l6 18h19l-15 12 6 18-16-11-16 11 6-18-15-12h19z" fill="#F5C860"/></svg>
+        <svg class="deco deco-concha deco-flotante" style="bottom:2.4rem;right:1.4rem;animation-delay:1.4s" viewBox="0 0 64 64"><path d="M32 6 C40 20 48 30 48 42 C48 52 40 58 32 58 C24 58 16 52 16 42 C16 30 24 20 32 6Z" fill="#2CA6A6"/></svg>
+        <div class="cap-contenido cap-centrado">
+          <span class="eyebrow">Confirmación</span>
+          <h2 class="titulo-cap">¿Vienes?</h2>
+          <p class="cap-texto">Nos encantaría contar con tu presencia. Confirma antes del 15 de septiembre de 2026.</p>
+          <div class="rsvp-btns">
+            <a id="rsvp-novio" href="#" target="_blank" class="btn btn-mar">Confirmar con Bryan</a>
+            <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline-mar">Confirmar con Stefany</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. FOOTER -->
+      <section class="capitulo" data-cap="footer">
+        <div class="footer">
+          <div class="footer__photo" id="footer-photo"></div>
+          <div class="footer__overlay"></div>
+          <svg class="deco deco-palmera" style="bottom:0;left:-4px;width:70px;opacity:.9" viewBox="0 0 100 160">
+            <path d="M50 160 C48 110 46 80 44 60" stroke="#A9713F" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <g fill="#3E8E63">
+              <path d="M44 60 C20 50 4 55 -6 40 C10 42 30 45 44 55 Z"/>
+              <path d="M44 60 C18 42 8 20 -2 8 C16 18 34 34 46 52 Z"/>
+              <path d="M44 60 C40 30 44 12 38 -4 C48 8 52 32 48 54 Z"/>
+              <path d="M44 60 C58 34 76 22 84 6 C78 26 64 44 48 56 Z"/>
+            </g>
+          </svg>
+          <div class="footer__content">
+            <p class="footer__names" id="footer-iniciales"></p>
+            <p class="footer__date" id="footer-fecha"></p>
+            <p class="footer__phrase">Con amor, los esperamos.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

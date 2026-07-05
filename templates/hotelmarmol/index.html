@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <section class="hero" id="hero">
+      <div class="reserva-card">
+        <div class="reserva-foto" id="hero-photo"></div>
+        <div class="reserva-stub">
+          <p class="reserva-eyebrow">Confirmación de reserva</p>
+          <h1 class="reserva-nombres">
+            <span id="hero-nombreA"></span> <span class="reserva-amp">&amp;</span> <span id="hero-nombreB"></span>
+          </h1>
+          <div class="reserva-campo">
+            <span class="label">Lugar</span>
+            <span class="valor" id="hero-lugar"></span>
+          </div>
+          <div class="reserva-campo">
+            <span class="label">Fecha</span>
+            <span class="valor" id="hero-fecha"></span>
+          </div>
+          <div class="reserva-sello"><span>B&amp;S<br>2026</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-countdown">
+      <span class="eyebrow">Cuenta regresiva</span>
+      <div class="countdown" id="countdown"></div>
+    </section>
+
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <section class="section-story" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1rem">
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="titulo-hotel">Una promesa de amor</h2>
+        <div class="linea-dorada"></div>
+      </div>
+      <div class="folio">
+        <div class="folio-header"><span>Folio</span><span>Detalle</span></div>
+        <div id="historia-contenido"></div>
+      </div>
+    </section>
+
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Itinerario</span>
+        <h2 class="titulo-hotel">El gran día</h2>
+      </div>
+      <div class="directorio" id="timeline-contenido"></div>
+    </section>
+
+    <section class="section-map">
+      <span class="eyebrow">Ubicación</span>
+      <h2 class="titulo-hotel" id="ubicacion-nombre"></h2>
+      <div class="linea-dorada"></div>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-dorado">Cómo llegar</a>
+      </div>
+    </section>
+
+    <section class="section-galeria" id="section-galeria">
+      <span class="eyebrow">Comparte tus fotos</span>
+      <h2 class="titulo-hotel">Galería</h2>
+      <p class="subtitulo">Sube tus mejores momentos de la celebración</p>
+      <div style="margin-top:1.6rem">
+        <input type="file" id="input-foto" accept="image/*" hidden>
+        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
+      </div>
+      <div class="tiras-wrap" id="galeria-grid"></div>
+    </section>
+
+    <section class="section-firmas" id="section-firmas">
+      <span class="eyebrow">Libro de firmas</span>
+      <h2 class="titulo-hotel">Déjanos un mensaje</h2>
+      <div class="firmas-wrap">
+        <form id="form-firma" class="form-firma">
+          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-dorado">Firmar</button>
+        </form>
+        <div class="firmas-lista" id="firmas-lista">
+          <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-rsvp" id="section-rsvp">
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo-hotel">¿Vienes?</h2>
+      <div class="keycard">
+        <div class="keycard-chip"></div>
+        <p class="keycard-marca" id="keycard-marca"></p>
+        <p class="keycard-titulo">Acceso de invitado</p>
+      </div>
+      <p class="rsvp-desc">Nos encantaría contar con tu presencia. Por favor confirma antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-dorado">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__photo" id="footer-photo"></div>
+      <div class="footer__overlay"></div>
+      <div class="footer__content">
+        <p class="footer__names" id="footer-iniciales"></p>
+        <p class="footer__date" id="footer-fecha"></p>
+        <p class="footer__phrase">Con amor, los esperamos.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

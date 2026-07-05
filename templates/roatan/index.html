@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan &amp; Stefany — Invitación</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <svg id="sendero-huellas"></svg>
+
+  <div class="video-screen" id="video-screen">
+    <video class="video-el" id="video-el" playsinline muted></video>
+    <div class="video-overlay" id="video-overlay">
+      <div class="video-overlay__content">
+        <p class="video-overlay__pre">Tienen el honor de invitarles</p>
+        <p class="video-overlay__label" id="overlay-nombres"></p>
+        <p class="video-overlay__date" id="overlay-fecha"></p>
+        <div class="video-overlay__tap">
+          <span class="video-tap-ring"></span>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p class="video-overlay__hint">Toca para comenzar</p>
+      </div>
+    </div>
+    <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
+  </div>
+
+  <div class="invitation" id="invitation">
+
+    <!-- HERO — MAPA DEL TESORO -->
+    <section class="hero" id="hero">
+      <div class="mapa-marco">
+        <svg class="mapa-brujula" viewBox="0 0 60 60" fill="none" stroke="#2E2418" stroke-width="1.2">
+          <circle cx="30" cy="30" r="27"/>
+          <circle cx="30" cy="30" r="20" opacity=".5"/>
+          <path d="M30 6 L34 28 L30 30 L26 28 Z" fill="#E8735A" stroke="none"/>
+          <path d="M30 54 L26 32 L30 30 L34 32 Z" fill="#2E2418" stroke="none"/>
+          <text x="30" y="16" text-anchor="middle" font-size="6" fill="#2E2418" stroke="none">N</text>
+        </svg>
+        <div class="hero__porthole" id="hero-photo"></div>
+        <h1 class="hero__names">
+          <span id="hero-nombreA"></span> <span class="hero__amp">&amp;</span> <span id="hero-nombreB"></span>
+        </h1>
+        <p class="hero__x">✕ Aquí comienza el tesoro</p>
+        <p class="hero__fecha" id="hero-fecha"></p>
+      </div>
+    </section>
+
+    <section class="section-countdown">
+      <span class="eyebrow">Cuenta regresiva</span>
+      <div class="countdown" id="countdown"></div>
+    </section>
+
+    <section class="section-mensajes" id="section-mensajes">
+      <div class="container" id="mensajes-contenido"></div>
+    </section>
+
+    <!-- HISTORIA — RUTA CON X -->
+    <section class="section-historia" id="section-historia">
+      <div class="container" style="text-align:center;margin-bottom:1rem">
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="titulo">La ruta hasta aquí</h2>
+      </div>
+      <div class="ruta-mapa" id="historia-contenido"></div>
+    </section>
+
+    <!-- ITINERARIO — OLAS REALES -->
+    <section class="section-timeline" id="section-timeline">
+      <div class="container" style="text-align:center">
+        <span class="eyebrow">Itinerario</span>
+        <h2 class="titulo">La ruta del día, ola por ola</h2>
+      </div>
+      <div class="olas-wrap">
+        <svg class="ola-atras" viewBox="0 0 800 70" preserveAspectRatio="none"><path d="M0 40 Q50 10 100 40 T200 40 T300 40 T400 40 T500 40 T600 40 T700 40 T800 40 T900 40 T1000 40 V70 H0 Z" fill="#1E8A8A" opacity="0.35"/></svg>
+        <svg class="ola-frente" viewBox="0 0 800 70" preserveAspectRatio="none" style="margin-top:-30px"><path d="M0 45 Q50 20 100 45 T200 45 T300 45 T400 45 T500 45 T600 45 T700 45 T800 45 T900 45 T1000 45 V70 H0 Z" fill="#0F5C5C" opacity="0.55"/></svg>
+      </div>
+      <div class="programa-mar" id="timeline-contenido"></div>
+    </section>
+
+    <section class="section-map">
+      <span class="eyebrow">Ubicación</span>
+      <h2 class="titulo" id="ubicacion-nombre"></h2>
+      <div class="map-block">
+        <p id="ubicacion-direccion"></p>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-mar">Cómo llegar</a>
+      </div>
+    </section>
+
+    <!-- GALERÍA — BARCO REAL -->
+    <section class="section-galeria" id="section-galeria">
+      <div id="burbujas-galeria"></div>
+      <span class="eyebrow">Comparte tus fotos</span>
+      <h2 class="titulo">Vistas desde el barco</h2>
+      <div style="margin-top:1.2rem">
+        <input type="file" id="input-foto" accept="image/*" hidden>
+        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
+      </div>
+      <div class="barco-wrap">
+        <svg class="barco-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+          <rect x="150" y="20" width="60" height="50" fill="#E8735A" rx="4"/>
+          <rect x="90" y="70" width="220" height="55" fill="#EDE0C0" stroke="#2E2418" stroke-width="2"/>
+          <path d="M60 125 H340 L310 170 H90 Z" fill="#0F5C5C" stroke="#2E2418" stroke-width="2"/>
+          <rect x="70" y="60" width="260" height="12" fill="#2E2418"/>
+        </svg>
+        <div class="barco-ventanas" id="galeria-grid"></div>
+      </div>
+    </section>
+
+    <!-- SUELTA TU DESEO -->
+    <section class="section-deseo" id="section-deseo">
+      <span class="eyebrow">En vez de un libro de firmas</span>
+      <h2 class="titulo">Suelta tu deseo al mar</h2>
+      <p class="subtitulo">Escribe tu deseo en el papel, y míralo entrar a la botella.</p>
+
+      <div class="deseo-escena">
+        <div class="deseo-papel" id="deseo-papel">
+          <form id="form-deseo" class="botella-form" style="margin:0">
+            <input type="text" id="deseo-nombre" placeholder="Tu nombre" required>
+            <textarea id="deseo-texto" placeholder="Tu deseo para Bryan y Stefany..." required></textarea>
+          </form>
+        </div>
+        <svg class="deseo-botella" id="deseo-botella" viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40 10 h20 v20 l10 10 v100 a10 10 0 01-10 10 H40 a10 10 0 01-10-10 V40 l10-10 z"
+            fill="rgba(30,138,138,.35)" stroke="#0F5C5C" stroke-width="2.5"/>
+          <rect x="42" y="4" width="16" height="10" rx="2" fill="#6B4226"/>
+          <path d="M35 70 q15 -10 30 0 v50 q-15 10 -30 0 z" fill="#FBF6E8" opacity=".85"/>
+        </svg>
+      </div>
+      <button id="btn-soltar" class="btn btn-mar">Soltar botella</button>
+      <p class="deseo-gracias" id="deseo-gracias">Tu deseo ya va mar adentro. Gracias.</p>
+
+      <div class="deseos-lista" id="deseos-lista"></div>
+    </section>
+
+    <!-- RSVP — FARO -->
+    <section class="section-rsvp" id="section-rsvp">
+      <svg class="faro-fondo" viewBox="0 0 100 220" fill="#fff">
+        <rect x="40" y="60" width="20" height="140"/>
+        <path d="M35 60 L50 20 L65 60 Z"/>
+        <rect x="30" y="200" width="40" height="16"/>
+        <rect x="38" y="30" width="24" height="10"/>
+      </svg>
+      <span class="eyebrow">Confirmación</span>
+      <h2 class="titulo">¿Nos acompañas?</h2>
+      <p class="rsvp-desc">Nos encantaría contar con tu presencia. Confirma antes del 15 de septiembre de 2026.</p>
+      <div class="rsvp-btns">
+        <a id="rsvp-novio" href="#" target="_blank" class="btn btn-mar" style="background:#fff;color:var(--turquesa-osc);border-color:#fff">Confirmar con Bryan</a>
+        <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline" style="color:#fff;border-color:#fff">Confirmar con Stefany</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__photo" id="footer-photo"></div>
+      <div class="footer__overlay"></div>
+      <div class="footer__content">
+        <p class="footer__names" id="footer-iniciales"></p>
+        <p class="footer__date" id="footer-fecha"></p>
+        <p class="footer__phrase">Con amor, los esperamos.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/config-demo.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

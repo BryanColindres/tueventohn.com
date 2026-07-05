@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;1,500&family=Raleway:wght@300;400;500&display=swap');
+
+:root{
+  --marmol-blanco:#FAFAF7; --marmol-crema:#F2F0EA;
+  --veta-gris:#C9C4B8; --veta-gris-suave:#DEDACE;
+  --dorado:#C6A15B; --dorado-claro:#E0C486; --dorado-oscuro:#8C6F35;
+  --texto:#2B2823; --texto-mid:#6B6355; --texto-light:#A69C87;
+  --font-display:'Bodoni Moda',Georgia,serif;
+  --font-sans:'Raleway',sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--marmol-blanco);
+  color:var(--texto);font-family:var(--font-sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  position:relative;
+}
+/* Vetas de mármol sutiles en todo el fondo */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:
+    linear-gradient(115deg, transparent 20%, rgba(201,196,184,.35) 21%, transparent 23%),
+    linear-gradient(70deg, transparent 40%, rgba(201,196,184,.25) 41%, transparent 43%),
+    linear-gradient(160deg, transparent 65%, rgba(201,196,184,.3) 66%, transparent 68%),
+    linear-gradient(25deg, transparent 78%, rgba(222,218,206,.4) 79%, transparent 81%);
+  background-size:100% 100%;
+}
+img{display:block;width:100%;height:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+.container{max-width:620px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+.eyebrow{font-family:var(--font-sans);font-size:.68rem;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:.9rem;display:block}
+.titulo-hotel{font-family:var(--font-display);font-style:italic;font-weight:500;font-size:clamp(1.5rem,3.4vw,2.15rem);color:var(--texto);margin-bottom:1.1rem}
+.subtitulo{font-family:var(--font-sans);font-weight:300;font-size:clamp(.94rem,2vw,1.02rem);color:var(--texto-mid)}
+.linea-dorada{width:52px;height:1px;background:var(--dorado);margin:1.2rem auto}
+
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2.1rem;font-family:var(--font-sans);font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .35s var(--ease);border:1px solid var(--dorado)}
+.btn-dorado{background:var(--dorado);color:#fff}
+.btn-dorado:hover{background:var(--dorado-oscuro)}
+.btn-outline{background:transparent;color:var(--dorado-oscuro)}
+.btn-outline:hover{background:var(--dorado);color:#fff}
+
+/* ═══ VIDEO INTRO ═══ */
+.video-screen{position:fixed;inset:0;z-index:500;background:var(--marmol-blanco);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s var(--ease)}
+.video-screen.closing{opacity:0;pointer-events:none}
+.video-screen.gone{display:none}
+.video-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;cursor:pointer;opacity:0;transition:opacity .6s ease}
+.video-screen.playing .video-el{opacity:1}
+.video-overlay{position:absolute;inset:0;z-index:3;background:linear-gradient(160deg,rgba(250,250,247,.97),rgba(242,240,234,.92));display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease)}
+.video-overlay.hiding{opacity:0;pointer-events:none}
+.video-overlay.gone{display:none}
+.video-overlay__content{text-align:center;color:var(--texto);padding:2rem}
+.video-overlay__pre{font-family:var(--font-sans);font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:1.6rem}
+.video-overlay__label{font-family:var(--font-display);font-style:italic;font-size:clamp(1.5rem,5.5vw,2.2rem);color:var(--texto);margin-bottom:.4rem}
+.video-overlay__date{font-family:var(--font-sans);font-size:.68rem;letter-spacing:.24em;color:var(--texto-light);margin-bottom:2.4rem;text-transform:uppercase}
+.video-overlay__tap{position:relative;width:52px;height:52px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--dorado);border-radius:50%}
+.video-tap-ring{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(198,161,91,.5);animation:tapRing 2s ease-out infinite}
+@keyframes tapRing{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.video-overlay__tap svg{width:16px;height:16px;color:var(--dorado-oscuro);position:relative;z-index:1}
+.video-overlay__hint{font-family:var(--font-sans);font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--texto-light)}
+.video-progress-bar{position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(198,161,91,.2);z-index:4}
+.video-progress-fill{height:100%;width:0%;background:var(--dorado);transition:width .3s linear}
+
+.invitation{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease),transform .8s var(--ease);pointer-events:none;position:relative;z-index:1}
+.invitation.visible{opacity:1;transform:translateY(0);pointer-events:all}
+
+/* ═══ HERO — TARJETA DE RESERVACIÓN (boarding pass) ═══ */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:2rem 1.2rem;background:var(--marmol-crema)}
+.reserva-card{position:relative;display:flex;max-width:520px;width:100%;background:#fff;box-shadow:0 30px 70px rgba(43,40,35,.18);z-index:2}
+.reserva-foto{flex:1.1;position:relative;overflow:hidden}
+.reserva-foto img{filter:grayscale(.1)}
+.reserva-stub{flex:1;padding:2.2rem 1.8rem;position:relative;display:flex;flex-direction:column;justify-content:center;border-left:2px dashed var(--veta-gris)}
+.reserva-stub::before,.reserva-stub::after{content:'';position:absolute;left:-11px;width:20px;height:20px;border-radius:50%;background:var(--marmol-crema)}
+.reserva-stub::before{top:-10px}
+.reserva-stub::after{bottom:-10px}
+.reserva-eyebrow{font-family:var(--font-sans);font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:1.2rem}
+.reserva-nombres{font-family:var(--font-display);font-style:italic;font-size:clamp(1.4rem,4.4vw,1.9rem);color:var(--texto);line-height:1.3;margin-bottom:1.2rem}
+.reserva-amp{color:var(--dorado)}
+.reserva-campo{margin-bottom:.85rem}
+.reserva-campo .label{display:block;font-family:var(--font-sans);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--texto-light)}
+.reserva-campo .valor{display:block;font-family:var(--font-sans);font-size:.82rem;color:var(--texto);letter-spacing:.03em;margin-top:.15rem}
+.reserva-sello{position:absolute;bottom:1.4rem;right:1.6rem;width:52px;height:52px;border:1.5px solid var(--dorado);border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-12deg);opacity:.75}
+.reserva-sello span{font-family:var(--font-display);font-style:italic;font-size:.62rem;color:var(--dorado-oscuro);text-align:center;line-height:1.15}
+
+/* ═══ COUNTDOWN ═══ */
+.section-countdown{background:var(--marmol-crema);padding:4.2rem 0;text-align:center;position:relative;z-index:1;border-top:1px solid var(--veta-gris-suave);border-bottom:1px solid var(--veta-gris-suave)}
+.countdown{display:flex;align-items:baseline;justify-content:center;gap:1.6rem;margin-top:1.2rem;flex-wrap:wrap}
+.cd-item span{display:block;font-family:var(--font-display);font-size:clamp(2rem,6vw,2.8rem);color:var(--texto)}
+.cd-item p{font-family:var(--font-sans);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-light);margin-top:.2rem}
+
+/* ═══ MENSAJES ═══ */
+.section-mensajes{padding:5rem 0;text-align:center}
+.mensaje-card{max-width:520px;margin:0 auto;padding:2.4rem 2rem;border-top:1px solid var(--dorado);border-bottom:1px solid var(--dorado)}
+.mensaje-card p{font-family:var(--font-display);font-style:italic;font-size:clamp(1.15rem,2.3vw,1.4rem);line-height:1.75;color:var(--texto)}
+.mensaje-card .ref{display:block;margin-top:1.1rem;font-family:var(--font-sans);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado-oscuro)}
+
+/* ═══ HISTORIA — FOLIO DE CUENTA (ledger de hotel) ═══ */
+.section-story{padding:5rem 0}
+.folio{max-width:560px;margin:0 auto;padding:0 2rem}
+.folio-header{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:1rem;border-bottom:2px solid var(--texto);margin-bottom:.5rem;font-family:var(--font-sans);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--texto-light)}
+.historia-item{display:flex;gap:1.2rem;align-items:flex-start;padding:1.3rem 0;border-bottom:1px dashed var(--veta-gris)}
+.historia-item__num{font-family:var(--font-display);font-style:italic;font-size:1.1rem;color:var(--dorado-oscuro);min-width:28px}
+.historia-item__foto{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid var(--dorado)}
+.historia-item__foto img{filter:grayscale(.3)}
+.historia-item__texto{flex:1}
+.historia-item__texto h3{font-family:var(--font-sans);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--texto);margin-bottom:.4rem}
+.historia-item__texto p{font-family:var(--font-display);font-style:italic;font-size:1rem;line-height:1.65;color:var(--texto-mid)}
+
+/* ═══ ITINERARIO — DIRECTORIO DE LOBBY ═══ */
+.section-timeline{padding:5rem 0;background:#20201D}
+.section-timeline .eyebrow{color:var(--dorado-claro)}
+.section-timeline .titulo-hotel{color:#fff}
+.directorio{max-width:520px;margin:2.6rem auto 0;padding:0 2rem;border:1px solid rgba(198,161,91,.35)}
+.dir-item{display:flex;align-items:baseline;gap:.5rem;padding:1rem 1.4rem;border-bottom:1px solid rgba(198,161,91,.2)}
+.dir-item:last-child{border-bottom:none}
+.dir-evento{font-family:var(--font-sans);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#F4EFE3;white-space:nowrap}
+.dir-puntos{flex:1;border-bottom:2px dotted rgba(198,161,91,.5);transform:translateY(-4px)}
+.dir-hora{font-family:var(--font-display);font-style:italic;font-size:.85rem;color:var(--dorado-claro);white-space:nowrap}
+
+/* ═══ UBICACIÓN ═══ */
+.section-map{padding:5rem 0;text-align:center}
+.map-block{max-width:480px;margin:0 auto;padding:0 2rem}
+.map-block p{font-family:var(--font-sans);font-size:.92rem;line-height:1.8;color:var(--texto-mid);margin-bottom:1.4rem}
+
+/* ═══ GALERÍA — TIRAS DE FOTOMATÓN ═══ */
+.section-galeria{padding:5rem 0;text-align:center;background:var(--marmol-crema);border-top:1px solid var(--veta-gris-suave);border-bottom:1px solid var(--veta-gris-suave)}
+.tiras-wrap{display:flex;gap:1.4rem;justify-content:center;flex-wrap:wrap;margin-top:2.8rem;padding:0 1.4rem}
+.tira{background:#fff;padding:.6rem .6rem 1.1rem;box-shadow:0 12px 30px rgba(43,40,35,.15);width:120px;transform:rotate(var(--rot,0deg))}
+.tira:nth-child(1){--rot:-3deg}
+.tira:nth-child(2){--rot:2deg}
+.tira:nth-child(3){--rot:-1.5deg}
+.tira-foto{aspect-ratio:1;overflow:hidden;margin-bottom:.5rem;filter:grayscale(.25) contrast(1.05)}
+.tira-marca{font-family:var(--font-sans);font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--texto-light);text-align:center;margin-top:.4rem}
+
+/* ═══ FIRMAS ═══ */
+.section-firmas{padding:5rem 0;text-align:center}
+.firmas-wrap{max-width:440px;margin:2rem auto 0;padding:0 2rem}
+.form-firma{display:flex;flex-direction:column;gap:1.1rem;margin-bottom:2.4rem;text-align:left}
+.form-firma input,.form-firma textarea{background:#fff;border:1px solid var(--veta-gris-suave);color:var(--texto);padding:.75rem .9rem;font-family:var(--font-sans);font-size:.92rem;outline:none}
+.form-firma textarea{min-height:74px;resize:none}
+.form-firma button{align-self:center;margin-top:.4rem}
+.firma-item{padding:1rem 0;border-bottom:1px solid var(--veta-gris-suave);text-align:left}
+.firma-item .nombre{font-family:var(--font-display);font-style:italic;font-size:1.02rem;color:var(--dorado-oscuro)}
+.firma-item .mensaje{font-family:var(--font-sans);font-size:.86rem;color:var(--texto-mid);margin-top:.2rem}
+.firmas-vacio{font-family:var(--font-display);font-style:italic;color:var(--texto-light);text-align:center}
+
+/* ═══ RSVP — TARJETA LLAVE DE HABITACIÓN ═══ */
+.section-rsvp{padding:5rem 0 4.5rem;text-align:center;background:var(--marmol-crema);border-top:1px solid var(--veta-gris-suave)}
+.keycard{max-width:340px;margin:2rem auto 2.2rem;background:linear-gradient(135deg,#2B2823,#3d3830);border-radius:14px;padding:1.6rem 1.6rem 1.4rem;position:relative;box-shadow:0 20px 40px rgba(43,40,35,.25);text-align:left}
+.keycard::before{content:'';position:absolute;top:1.1rem;left:0;right:0;height:26px;background:repeating-linear-gradient(90deg,#111 0,#111 3px,#3d3830 3px,#3d3830 6px)}
+.keycard-marca{font-family:var(--font-sans);font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--dorado-claro);margin-top:2.6rem}
+.keycard-titulo{font-family:var(--font-display);font-style:italic;font-size:1.3rem;color:#fff;margin-top:.5rem}
+.keycard-chip{position:absolute;top:1.6rem;right:1.6rem;width:26px;height:20px;background:linear-gradient(135deg,var(--dorado-claro),var(--dorado-oscuro));border-radius:3px}
+.rsvp-desc{font-family:var(--font-sans);font-size:.96rem;line-height:1.8;color:var(--texto-mid);max-width:440px;margin:0 auto 2rem}
+.rsvp-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ═══ FOOTER ═══ */
+.footer{position:relative;min-height:52vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.footer__photo{position:absolute;inset:0}
+.footer__photo img{filter:grayscale(.3) brightness(.75)}
+.footer__overlay{position:absolute;inset:0;background:linear-gradient(rgba(43,40,35,.5),rgba(43,40,35,.75))}
+.footer__content{position:relative;z-index:1;color:#fff;padding:4rem 2rem}
+.footer__names{font-family:var(--font-display);font-style:italic;font-size:clamp(1.9rem,5vw,2.8rem);color:var(--dorado-claro)}
+.footer__date{font-family:var(--font-sans);font-size:.68rem;letter-spacing:.22em;color:rgba(255,255,255,.7);margin:.9rem 0 1.2rem;text-transform:uppercase}
+.footer__phrase{font-family:var(--font-display);font-style:italic;font-size:1.05rem;color:#fff}
+
+@media(max-width:640px){
+  .historia-item,.historia-item:nth-child(even){flex-direction:column;text-align:center}
+}
+
+/* ═══ HERO — TARJETA LLAVE DE HOTEL (elemento firma) ═══ */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.6rem;text-align:center;overflow:visible}
+.hero__marco-superior{font-family:var(--font-sans);font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:2.2rem}
+.keycard{
+  width:min(320px,86vw); aspect-ratio:1.586;
+  background:linear-gradient(135deg,#fff 0%,#F2EFE6 45%,#E7DFC9 100%);
+  border:1px solid var(--dorado);
+  border-radius:14px;
+  position:relative;
+  box-shadow:0 24px 50px rgba(43,40,35,.16), inset 0 1px 0 rgba(255,255,255,.8);
+  padding:1.3rem 1.4rem;
+  display:flex; flex-direction:column; justify-content:space-between;
+  text-align:left;
+}
+.keycard::before{content:'';position:absolute;top:22%;left:0;right:0;height:13%;background:repeating-linear-gradient(90deg,#2B2823,#2B2823 3px,#3a362f 3px,#3a362f 6px)}
+.keycard__top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.keycard__hotel{font-family:var(--font-display);font-style:italic;font-size:.95rem;color:var(--texto)}
+.keycard__chip{width:32px;height:24px;border-radius:4px;background:linear-gradient(135deg,var(--dorado-claro),var(--dorado-oscuro));border:1px solid var(--dorado-oscuro)}
+.keycard__label{font-family:var(--font-sans);font-size:.55rem;letter-spacing:.24em;text-transform:uppercase;color:var(--texto-light);margin-top:2.6rem}
+.keycard__names{font-family:var(--font-display);font-style:italic;font-size:clamp(1.3rem,4.4vw,1.7rem);color:var(--texto);margin-top:.2rem;line-height:1.25}
+.keycard__bottom{display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--font-sans);font-size:.6rem;letter-spacing:.12em;color:var(--texto-light);text-transform:uppercase}
+.keycard__bottom b{display:block;font-family:var(--font-display);font-style:italic;font-size:.85rem;color:var(--dorado-oscuro);letter-spacing:0;text-transform:none}
+.hero__lugar-abajo{margin-top:2rem;font-family:var(--font-sans);font-size:.7rem;letter-spacing:.2em;color:var(--texto-mid);text-transform:uppercase}
+
+/* ═══ ITINERARIO — MENÚ TIPO ROOM SERVICE ═══ */
+.menu-restaurante{max-width:460px;margin:2.6rem auto 0;padding:0 2rem;text-align:left}
+.menu-item{display:flex;align-items:baseline;gap:.4rem;padding:.85rem 0}
+.menu-item__titulo{font-family:var(--font-display);font-style:italic;font-size:1.05rem;color:var(--texto);white-space:nowrap}
+.menu-item__puntos{flex:1;border-bottom:1px dotted var(--veta-gris);position:relative;top:-3px}
+.menu-item__hora{font-family:var(--font-sans);font-size:.72rem;letter-spacing:.1em;color:var(--dorado-oscuro);white-space:nowrap}
+
+/* ═══ UBICACIÓN — TICKET DE RESERVA ═══ */
+.ticket-reserva{max-width:420px;margin:2rem auto 0;background:#fff;border:1px solid var(--dorado);position:relative;text-align:left;padding:1.8rem 1.6rem;box-shadow:0 14px 34px rgba(43,40,35,.1)}
+.ticket-reserva::before,.ticket-reserva::after{content:'';position:absolute;width:18px;height:18px;background:var(--marmol-blanco);border:1px solid var(--dorado);border-radius:50%;top:50%;transform:translateY(-50%)}
+.ticket-reserva::before{left:-10px}
+.ticket-reserva::after{right:-10px}
+.ticket-reserva__linea{border-top:1px dashed var(--veta-gris);margin:1rem 0}
+.ticket-reserva__fila{display:flex;justify-content:space-between;padding:.4rem 0;font-family:var(--font-sans);font-size:.82rem}
+.ticket-reserva__fila span:first-child{color:var(--texto-light);text-transform:uppercase;font-size:.66rem;letter-spacing:.1em}
+.ticket-reserva__fila span:last-child{color:var(--texto);font-family:var(--font-display);font-style:italic;text-align:right}
+
+/* ═══ GALERÍA — POSTALES ═══ */
+.postales-wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:1.4rem;margin-top:2.8rem;padding:0 1.6rem}
+.postal{width:140px;background:#fff;padding:8px 8px 20px;box-shadow:0 10px 24px rgba(43,40,35,.16);position:relative}
+.postal:nth-child(odd){transform:rotate(-3deg)}
+.postal:nth-child(even){transform:rotate(2.5deg)}
+.postal__cinta{position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-2deg);width:38px;height:16px;background:rgba(198,161,91,.55)}
+.postal img{aspect-ratio:1}
+
+/* ═══ FIRMAS — RESEÑAS 5 ESTRELLAS ═══ */
+.review-card{max-width:460px;margin:0 auto 1.2rem;background:#fff;border:1px solid var(--veta-gris-suave);padding:1.4rem 1.6rem;text-align:left;box-shadow:0 6px 18px rgba(43,40,35,.06)}
+.review-card__estrellas{color:var(--dorado);font-size:.9rem;letter-spacing:.1em;margin-bottom:.5rem}
+.review-card__nombre{font-family:var(--font-display);font-style:italic;font-size:.95rem;color:var(--texto)}
+.review-card__msg{font-family:var(--font-sans);font-size:.86rem;color:var(--texto-mid);margin-top:.3rem;line-height:1.6}
+
+/* ═══ RSVP — BOOKING WIDGET ═══ */
+.booking-widget{max-width:420px;margin:2rem auto 0;background:#fff;border:1px solid var(--dorado);padding:1.8rem;text-align:left}
+.booking-widget__fila{display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--veta-gris-suave);font-family:var(--font-sans);font-size:.82rem}
+.booking-widget__fila:last-of-type{border-bottom:none;margin-bottom:1.2rem}
+.booking-widget__fila span:first-child{color:var(--texto-light);text-transform:uppercase;font-size:.66rem;letter-spacing:.1em}
+.booking-widget__fila span:last-child{font-family:var(--font-display);font-style:italic;color:var(--texto)}
