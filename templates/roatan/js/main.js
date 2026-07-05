@@ -29,7 +29,19 @@ function iniciarVideo(){
   document.getElementById('overlay-fecha').textContent = C.fechaTexto || '';
   if (C.video) video.src = C.video;
 
-  overlay.addEventListener('click', () => {
+    function cerrarTodo(){
+    overlay.classList.add('gone');
+    screen.classList.add('closing');
+    setTimeout(() => screen.classList.add('gone'), 800);
+    invitation.classList.add('visible');
+  }
+
+  // Dentro de un iframe (vista previa del catálogo) se abre directo,
+  // sin esperar el toque del usuario y sin reproducir video.
+  if (window.self !== window.top) {
+    cerrarTodo();
+  } else {
+    overlay.addEventListener('click', () => {
     overlay.classList.add('hiding');
     screen.classList.add('playing');
     if (C.video) {
@@ -40,11 +52,6 @@ function iniciarVideo(){
       video.addEventListener('ended', () => setTimeout(cerrarTodo, (C.videoDelay || 0) * 1000));
     } else { setTimeout(cerrarTodo, 500); }
   });
-  function cerrarTodo(){
-    overlay.classList.add('gone');
-    screen.classList.add('closing');
-    setTimeout(() => screen.classList.add('gone'), 800);
-    invitation.classList.add('visible');
   }
 }
 
