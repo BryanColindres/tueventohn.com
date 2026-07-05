@@ -5,7 +5,7 @@
 // propio repo si algún día se separan).
 //
 // Responsabilidad única: hablar con Supabase. Las plantillas nunca hacen
-// fetch() directo a Supabase — todo pasa por window.TuBodaBackend.ss
+// fetch() directo a Supabase — todo pasa por window.TuBodaBackend.
 // ============================================================================
 
 const SUPABASE_URL = "https://npfgugnoycokhtljbwkw.supabase.co";
