@@ -10,12 +10,18 @@ window.CONFIG_DEMO = {
   lugar: {
     nombre: "Gran Hotel Valletal",
     direccion: "Cerro Grande, Valle de Ángeles, Honduras",
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Valletal+Eventos+Valle+de+Angeles+Honduras"
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Valletal+Eventos+Valle+de+Angeles+Honduras",
+    wazeUrl: "https://waze.com/ul?q=Valletal%20Eventos%20Valle%20de%20Angeles%20Honduras&navigate=yes",
+    foto: "img/preboda9.jpg"
   },
 
   fotos: { hero: "img/hero.jpg", footer: "img/preboda6.jpg" },
   video: "img/video-intro.mp4",
   videoDelay: 1.5,
+  musicaUrl: "audio/musica.mp3",
+
+  invitado: { nombre: "Familia Pérez" },
+  mensajePersonalizado: { tipo: "audio", url: "audio/musica.mp3" },
 
   mensajes: [
     { texto: "El amor es paciente, el amor es bondadoso. No es envidioso, no se jacta, no se envanece.", referencia: "1 Corintios 13:4" }
@@ -37,7 +43,34 @@ window.CONFIG_DEMO = {
     { hora: "10:00 PM", titulo: "Fiesta — Salón Imperial" }
   ],
 
-  modules: { firmas: true, galeria: true },
+
+  videoInterno: { url: "img/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
+
+  detallesImportantes: [
+    { icono: "reloj", titulo: "Hora de llegada", texto: "Te pedimos llegar 30 minutos antes de la ceremonia para ubicarte con comodidad." },
+    { icono: "adultos", titulo: "Solo adultos", texto: "Esperamos compartir una celebración pensada exclusivamente para adultos." },
+    { icono: "regalo", titulo: "Regalos", texto: "Tu presencia es el mejor regalo. Cualquier otro detalle será una contribución a nuestro nuevo hogar." }
+  ],
+
+  vestimenta: {
+    texto: "Etiqueta formal, colores suaves y elegantes. Nos reservamos el blanco para la novia.",
+    botonUrl: "https://pinterest.com"
+  },
+
+  regalos: {
+    texto: "Tu presencia es nuestro regalo más grande. Si deseas hacernos un obsequio, aquí puedes encontrar los detalles.",
+    cuentaTexto: "Banco Atlántida\nCuenta de ahorros: 1234567890\nA nombre de: Bryan Colindres"
+  },
+
+  rsvpFotoUrl: "img/preboda12.jpg",
+  firmasFotoUrl: "img/preboda13.jpg",
+
+  modules: {
+    countdown: true, musica: true, mapa: true, historia: true, mensajes: true,
+    timeline: true, galeria: true, firmas: true, rsvp: true, rsvp_premium: true,
+    video: true, cancion: true, detalles: true, regalos: true, vestimenta: true,
+    mensaje_personalizado: true, video_interno: true
+  },
 
   airtable: { apiKey: "PEGAR_API_KEY", baseId: "PEGAR_BASE_ID", tableId: "Firmas" },
   cloudinary: { cloudName: "PEGAR_CLOUD_NAME", uploadPreset: "PEGAR_UPLOAD_PRESET" },

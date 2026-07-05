@@ -8,6 +8,25 @@
 </head>
 <body>
 
+  <!-- ============ MENSAJE PERSONALIZADO ============ -->
+  <div class="mp-screen oculto" id="mp-screen">
+    <div class="mp-tarjeta">
+      <div class="mp-foto" id="mp-foto"></div>
+      <div class="mp-texto">
+        <span class="eyebrow">Un mensaje para ti</span>
+        <h1 class="mp-nombre" id="mp-nombre"></h1>
+        <p class="mp-sub" id="mp-sub"></p>
+        <button class="btn btn-terracota mp-btn" id="mp-btn-play">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg>
+          Escuchar mensaje
+        </button>
+        <audio id="mp-audio" class="oculto"></audio>
+        <video id="mp-video" class="oculto mp-video" playsinline controls></video>
+        <button class="btn btn-outline mp-btn oculto" id="mp-btn-continuar">Continuar a la invitación</button>
+      </div>
+    </div>
+  </div>
+
   <svg class="catedral-fondo" viewBox="0 0 400 300" fill="none" stroke="#2B2420" stroke-width="1.5">
     <rect x="60" y="120" width="30" height="140"/>
     <path d="M60 120 L75 95 L90 120"/>
@@ -38,6 +57,12 @@
     <div class="video-progress-bar"><div class="video-progress-fill" id="video-progress"></div></div>
   </div>
 
+  <!-- ============ BOTÓN FLOTANTE DE MÚSICA ============ -->
+  <button class="musica-btn oculto" id="musica-btn" aria-label="Reproducir música">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+  </button>
+  <audio id="musica-audio" loop class="oculto"></audio>
+
   <div class="invitation" id="invitation">
 
     <!-- HERO — FACHADA COLONIAL -->
@@ -61,6 +86,14 @@
       <p class="hero__apellidos" id="hero-apellidos"></p>
       <p class="hero__fecha" id="hero-fecha"></p>
     </section>
+
+    <!-- BANNER PERSONALIZADO -->
+    <div class="banner-personal oculto" id="banner-personal">
+      <p class="banner-personal__linea1">Esta invitación es personal e intransferible</p>
+      <p class="banner-personal__linea2">Ha sido enviada especialmente para:</p>
+      <p class="banner-personal__nombre" id="banner-personal-nombre"></p>
+      <p class="banner-personal__linea3">Por favor no compartas este enlace con otras personas</p>
+    </div>
 
     <div class="rosario">
       <span class="cuenta"></span><span class="cuenta"></span><span class="cuenta grande"></span>
@@ -87,6 +120,20 @@
       <div class="programa" id="timeline-contenido"></div>
     </section>
 
+    <section class="section-detalles" id="section-detalles">
+      <div style="text-align:center">
+        <span class="eyebrow">Detalles importantes</span>
+      </div>
+      <div class="detalles-grid" id="detalles-grid"></div>
+    </section>
+
+    <section class="section-vestimenta" id="section-vestimenta">
+      <span class="eyebrow">Código de vestimenta</span>
+      <h2 class="titulo" id="vestimenta-titulo">Etiqueta formal</h2>
+      <p class="vestimenta-texto" id="vestimenta-texto"></p>
+      <a href="#" target="_blank" class="btn btn-outline oculto" id="vestimenta-boton">Ver referencias de vestimenta</a>
+    </section>
+
     <div class="rosario">
       <span class="cuenta"></span><span class="cuenta"></span><span class="cuenta grande"></span>
       <svg viewBox="0 0 16 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1v18M2 6h12"/></svg>
@@ -94,7 +141,7 @@
     </div>
 
     <!-- CUENTA REGRESIVA — ahora dice "faltan para la bendición" -->
-    <section class="section-countdown">
+    <section class="section-countdown" id="section-countdown">
       <span class="eyebrow">Faltan para la bendición</span>
       <div class="countdown" id="countdown"></div>
     </section>
@@ -109,15 +156,30 @@
       <p class="calle-hint">← desliza para recorrer la calle →</p>
     </section>
 
+    <section class="section-video-interno" id="section-video-interno">
+      <video id="video-interno-el" class="video-interno-el" playsinline controls></video>
+      <p class="video-interno-frase" id="video-interno-frase"></p>
+    </section>
+
     <div class="azulejos"></div>
 
     <section class="section-map">
       <span class="eyebrow">Ubicación</span>
       <h2 class="titulo" id="ubicacion-nombre"></h2>
+      <div class="map-foto oculto" id="map-foto"></div>
       <div class="map-block">
         <p id="ubicacion-direccion"></p>
         <a id="ubicacion-link" href="#" target="_blank" class="btn btn-terracota">Cómo llegar</a>
+          <a id="ubicacion-waze" href="#" target="_blank" class="btn btn-outline oculto">Waze</a>
       </div>
+    </section>
+
+    <section class="section-regalos" id="section-regalos">
+      <span class="eyebrow">Regalos</span>
+      <h2 class="titulo">Tu presencia es nuestro regalo</h2>
+      <p class="regalos-texto" id="regalos-texto"></p>
+      <button class="btn btn-outline oculto" id="regalos-boton">Más detalles de cuenta</button>
+      <div class="regalos-detalle oculto" id="regalos-detalle"></div>
     </section>
 
     <!-- GALERÍA -->
@@ -139,6 +201,7 @@
 
     <!-- LIBRO DE INTENCIONES — antes "Libro del Cabildo" -->
     <section class="section-firmas" id="section-firmas">
+      <div class="firmas-foto oculto" id="firmas-foto"></div>
       <span class="eyebrow">Libro de Intenciones</span>
       <h2 class="titulo">Déjanos un mensaje</h2>
       <div class="firmas-wrap">
@@ -169,6 +232,7 @@
 
     <!-- RSVP — TOQUE DE CAMPANA -->
     <section class="section-rsvp" id="section-rsvp">
+      <div class="rsvp-foto oculto" id="rsvp-foto"></div>
       <svg class="campana-rsvp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
         <path d="M12 2a6 6 0 00-6 6c0 4-2 6-2 6h16s-2-2-2-6a6 6 0 00-6-6z"/>
         <path d="M9 18a3 3 0 006 0"/>

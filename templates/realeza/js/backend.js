@@ -72,6 +72,7 @@ async function _insert(tabla, filas) {
 async function cargarConfig() {
   const params = new URLSearchParams(window.location.search);
   const slug = params.get("evento");
+  const idInvitado = params.get("id");
 
   if (!slug) {
     if (window.CONFIG_DEMO) return window.CONFIG_DEMO;
@@ -85,6 +86,16 @@ async function cargarConfig() {
       mostrarErrorCarga("Esta invitación no existe o todavía no ha sido publicada.");
       return null;
     }
+
+    // Si la invitación tiene RSVP Premium y la URL trae un identificador de
+    // invitado, se resuelve su nombre para personalizar el banner y (si
+    // corresponde) la pantalla de mensaje personalizado.
+    data.invitado = null;
+    if (data.modules && data.modules.rsvp_premium && idInvitado) {
+      const invitado = await obtenerInvitado(slug, idInvitado);
+      if (invitado) data.invitado = { nombre: invitado.nombre, identificador: idInvitado };
+    }
+
     return data;
   } catch (err) {
     console.error(err);
@@ -147,13 +158,24 @@ async function cargarCanciones(eventoId) {
   return _select("canciones", `evento_id=eq.${eventoId}&order=fecha.desc&select=nombre,cancion`);
 }
 
-// ---------------- RSVP PREMIUM: validar link de invitado ----------------
+// ---------------- RSVP PREMIUM: validar y obtener nombre de invitado ----------------
 async function validarInvitado(slug, identificador) {
   try {
     return await _rpc("validar_identificador_invitado", { p_slug: slug, p_identificador: identificador });
   } catch (err) {
     console.error(err);
     return false;
+  }
+}
+
+async function obtenerInvitado(slug, identificador) {
+  try {
+    const data = await _rpc("obtener_invitado", { p_slug: slug, p_identificador: identificador });
+    if (!data || data.error) return null;
+    return data;
+  } catch (err) {
+    console.error(err);
+    return null;
   }
 }
 
@@ -165,5 +187,6 @@ window.TuBodaBackend = {
   cargarGaleria,
   enviarCancion,
   cargarCanciones,
-  validarInvitado
+  validarInvitado,
+  obtenerInvitado
 };

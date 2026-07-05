@@ -155,3 +155,53 @@ a{text-decoration:none;color:inherit}
   .gal-item{width:150px;height:200px}
   .hero__vina{width:90px}
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   PAQUETE COMPLETO — secciones nuevas, mismo lenguaje visual
+   ══════════════════════════════════════════════════════════ */
+.oculto{display:none !important}
+
+.mp-screen{position:fixed;inset:0;z-index:600;background:var(--negro-bosque);display:flex;align-items:center;justify-content:center;padding:1.6rem}
+.mp-tarjeta{background:var(--bosque-mid);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.4);max-width:680px;width:100%;display:flex;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.mp-foto{width:200px;flex-shrink:0;border-radius:50%;overflow:hidden;margin:2rem;background:var(--negro-bosque)}
+.mp-foto img{width:100%;height:100%;object-fit:cover}
+.mp-texto{padding:2rem 2.2rem 2rem 0;display:flex;flex-direction:column;justify-content:center}
+.mp-nombre{font-family:var(--font-serif);font-size:clamp(1.5rem,4vw,2rem);color:var(--texto);margin:.3rem 0}
+.mp-sub{color:var(--texto-mid);font-size:.92rem;margin-bottom:1.2rem}
+.mp-btn{align-self:flex-start;margin-top:.6rem}
+.mp-video{width:100%;max-width:320px;border-radius:12px;margin-top:1rem}
+@media(max-width:600px){.mp-tarjeta{flex-direction:column;text-align:center}.mp-foto{margin:2rem auto 0}.mp-texto{padding:1.4rem 1.8rem 2rem}.mp-btn{align-self:center}}
+
+.musica-btn{position:fixed;bottom:1.4rem;right:1.4rem;z-index:80;width:48px;height:48px;border-radius:50%;background:var(--luciernaga);color:var(--negro-bosque);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,.4);cursor:pointer}
+.musica-btn.sonando svg{animation:girar-nota 3s linear infinite}
+@keyframes girar-nota{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.banner-personal{max-width:460px;margin:2rem auto;padding:1.6rem 1.8rem;text-align:center;border:1px solid var(--luciernaga);background:var(--bosque-mid)}
+.banner-personal__linea1{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--luciernaga);margin-bottom:.6rem}
+.banner-personal__linea2{font-family:var(--font-serif);font-size:.95rem;color:var(--texto-mid)}
+.banner-personal__nombre{font-family:var(--font-fantasia);font-size:1.5rem;color:var(--texto);margin:.4rem 0}
+.banner-personal__linea3{font-size:.68rem;color:var(--texto-mid);margin-top:.6rem}
+
+.section-video-interno{padding:4.5rem 2rem;text-align:center;background:var(--bosque-mid)}
+.video-interno-el{width:100%;max-width:480px;border-radius:12px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.video-interno-frase{font-family:var(--font-serif);font-style:italic;font-size:1.1rem;color:var(--texto-mid);margin-top:1.4rem;max-width:420px;margin-left:auto;margin-right:auto}
+
+.section-detalles{padding:4.5rem 2rem}
+.detalles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem;max-width:900px;margin:2rem auto 0}
+.detalle-card{background:var(--bosque-mid);border-radius:14px;padding:2rem 1.6rem;text-align:center;border:1px solid rgba(255,255,255,.06)}
+.detalle-card__icono{width:34px;height:34px;margin:0 auto 1rem;color:var(--luciernaga)}
+.detalle-card h3{font-family:var(--font-serif);font-size:1.15rem;color:var(--texto);margin-bottom:.6rem}
+.detalle-card p{font-size:.88rem;color:var(--texto-mid);line-height:1.6}
+
+.section-vestimenta{padding:4.5rem 2rem;text-align:center;background:var(--bosque-mid)}
+.vestimenta-texto{color:var(--texto-mid);font-size:.94rem;max-width:460px;margin:1rem auto 1.6rem;line-height:1.7}
+
+.map-foto{max-width:480px;height:220px;margin:0 auto 1.6rem;border-radius:12px;overflow:hidden}
+.map-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+.section-regalos{padding:4.5rem 2rem;text-align:center}
+.regalos-texto{color:var(--texto-mid);font-size:.94rem;max-width:460px;margin:1rem auto 1.6rem;line-height:1.7}
+.regalos-detalle{max-width:400px;margin:1.4rem auto 0;padding:1.4rem;background:var(--bosque-mid);border-radius:10px;font-size:.9rem;color:var(--texto);white-space:pre-line}
+
+.rsvp-foto, .firmas-foto{max-width:190px;height:190px;border-radius:50%;overflow:hidden;margin:0 auto 1.4rem}
