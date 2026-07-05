@@ -14,7 +14,7 @@ window.CONFIG_DEMO = {
   },
 
   fotos: { hero: "img/hero.jpg", footer: "img/preboda6.jpg" },
-  video: "img/video-intro.mp4",
+  video: "",
   videoDelay: 1.5,
 
   mensajes: [
