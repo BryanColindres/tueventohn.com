@@ -24,8 +24,8 @@ window.CONFIG_DEMO = {
     footer: "img/preboda6.jpg"
   },
 
-  video: "img/video-intro.mp4",
-  videoDelay: 1.5,
+  video: "img/zapatos.mp4",
+  videoDelay: 0,
 
   // 0 a N — si el array queda vacío, la sección se oculta
   mensajes: [

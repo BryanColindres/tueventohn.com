@@ -14,8 +14,8 @@ window.CONFIG_DEMO = {
   },
 
   fotos: { hero: "img/hero.jpg", footer: "img/preboda6.jpg" },
-  video: "",
-  videoDelay: 1.5,
+  video: "img/campo.mp4",
+  videoDelay: 0.5,
 
   mensajes: [
     { texto: "El amor es paciente, el amor es bondadoso. No es envidioso, no se jacta, no se envanece.", referencia: "1 Corintios 13:4" }
