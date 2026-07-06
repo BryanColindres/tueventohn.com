@@ -67,7 +67,7 @@ function iniciarVideo(){
     overlay.classList.add('hiding');
     screen.classList.add('playing');
     if (videoActivo && C.video) {
-      video.muted = ture;
+      video.muted = true;
       video.play().catch(cerrarTodo);
       video.addEventListener('timeupdate', () => {
         if (video.duration) progress.style.width = (video.currentTime / video.duration * 100) + '%';
