@@ -1,8 +1,7 @@
 // ============================================================================
 // PORTAL DEL CLIENTE — acceso por código único (?codigo=XXXX), sin login.
 // Todas las escrituras pasan por funciones RPC (SECURITY DEFINER) que validan
-// el código dentro de Postgres — este archivo nunca escribe directo a las
-// tablas.
+// el código dentro de Postgres.
 // ============================================================================
 
 const SUPABASE_URL = "https://npfgugnoycokhtljbwkw.supabase.co";
@@ -14,6 +13,7 @@ let CODIGO = null;
 let historiaItems = [];
 let timelineItems = [];
 let mensajesItems = [];
+let detallesItems = [];
 
 async function rpc(nombre, parametros){
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombre}`, {
@@ -47,15 +47,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('p-lugar-nombre').value = datos.lugarNombre || '';
   document.getElementById('p-lugar-direccion').value = datos.lugarDireccion || '';
   document.getElementById('p-lugar-maps').value = datos.lugarMapsUrl || '';
+  document.getElementById('p-lugar-waze').value = datos.lugarWazeUrl || '';
+  document.getElementById('p-lugar-foto').value = datos.lugarFotoUrl || '';
   document.getElementById('p-foto-hero').value = datos.fotoHeroUrl || '';
   document.getElementById('p-foto-footer').value = datos.fotoFooterUrl || '';
+  document.getElementById('p-musica-url').value = datos.musicaUrl || '';
+  document.getElementById('p-mensaje-tipo').value = datos.mensajePersonalizadoTipo || 'audio';
+  document.getElementById('p-mensaje-url').value = datos.mensajePersonalizadoUrl || '';
+  document.getElementById('p-video-interno-url').value = datos.videoInternoUrl || '';
+  document.getElementById('p-video-interno-frase').value = datos.videoInternoFrase || '';
+  document.getElementById('p-vestimenta-texto').value = datos.vestimentaTexto || '';
+  document.getElementById('p-vestimenta-boton').value = datos.vestimentaBotonUrl || '';
+  document.getElementById('p-regalos-texto').value = datos.regalosTexto || '';
+  document.getElementById('p-regalos-cuenta').value = datos.regalosCuentaTexto || '';
+  document.getElementById('p-firmas-foto').value = datos.firmasFotoUrl || '';
+  document.getElementById('p-rsvp-foto').value = datos.rsvpFotoUrl || '';
 
   historiaItems = datos.historia || [];
   timelineItems = datos.timeline || [];
   mensajesItems = datos.mensajes || [];
+  detallesItems = datos.detallesImportantes || [];
   pintarHistoria();
   pintarTimeline();
   pintarMensajes();
+  pintarDetalles();
+
+  cargarInvitadosGenerados();
 });
 
 function mostrarError(){
@@ -69,46 +86,119 @@ function mostrarOk(idBoton){
   setTimeout(() => el.classList.add('oculto'), 2500);
 }
 
-// ---------------- DATOS PRINCIPALES ----------------
-async function guardarDatosPrincipales(){
-  await rpc('portal_actualizar_evento', {
-    p_codigo: CODIGO,
-    p_novio_a_nombre: valor('p-novio-a-nombre'),
-    p_novio_a_apellido: valor('p-novio-a-apellido'),
-    p_novio_b_nombre: valor('p-novio-b-nombre'),
-    p_novio_b_apellido: valor('p-novio-b-apellido'),
-    p_whatsapp_a: valor('p-whatsapp-a'),
-    p_whatsapp_b: valor('p-whatsapp-b'),
-    p_fecha: valor('p-fecha') || null,
-    p_hora: valor('p-hora') || null,
-    p_lugar_nombre: valor('p-lugar-nombre'),
-    p_lugar_direccion: valor('p-lugar-direccion'),
-    p_lugar_maps_url: valor('p-lugar-maps')
-  });
-  mostrarOk('ok-datos');
-}
 function valor(id){ return document.getElementById(id).value; }
 
-// ---------------- FOTOS ----------------
-async function subirFotoPrincipal(e, cual){
-  const archivo = e.target.files[0];
-  if (!archivo) return;
-  if (CLOUDINARY_CLOUD_NAME.startsWith('PEGAR_')) { alert('Cloudinary no está configurado todavía.'); return; }
+// ---------------- SUBIDA DE ARCHIVOS (foto/audio/video genérico) ----------------
+async function subirArchivoCloudinary(archivo, tipoRecurso){
+  if (CLOUDINARY_CLOUD_NAME.startsWith('PEGAR_')) { alert('Cloudinary no está configurado todavía.'); return null; }
   const formData = new FormData();
   formData.append('file', archivo);
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${tipoRecurso}/upload`, { method: 'POST', body: formData });
   const data = await res.json();
-  if (data.secure_url) document.getElementById(`p-foto-${cual}`).value = data.secure_url;
+  return data.secure_url || null;
+}
+
+async function subirFotoSimple(e, idDestino){
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  const esVideo = archivo.type.startsWith('video/');
+  const url = await subirArchivoCloudinary(archivo, esVideo ? 'video' : 'image');
+  if (url) document.getElementById(idDestino).value = url;
+}
+
+async function subirAudioSimple(e, idDestino){
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  const url = await subirArchivoCloudinary(archivo, 'video'); // Cloudinary sube audio bajo el recurso "video"
+  if (url) document.getElementById(idDestino).value = url;
+}
+
+async function subirMensajePersonalizado(e){
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  const url = await subirArchivoCloudinary(archivo, 'video');
+  if (url) document.getElementById('p-mensaje-url').value = url;
+}
+
+// ---------------- GUARDAR CADA BLOQUE ----------------
+async function guardarDatosPrincipales(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_novio_a_nombre: valor('p-novio-a-nombre'), p_novio_a_apellido: valor('p-novio-a-apellido'),
+    p_novio_b_nombre: valor('p-novio-b-nombre'), p_novio_b_apellido: valor('p-novio-b-apellido'),
+    p_whatsapp_a: valor('p-whatsapp-a'), p_whatsapp_b: valor('p-whatsapp-b'),
+    p_fecha: valor('p-fecha') || null, p_hora: valor('p-hora') || null
+  });
+  mostrarOk('ok-datos');
+}
+
+async function guardarUbicacion(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_lugar_nombre: valor('p-lugar-nombre'), p_lugar_direccion: valor('p-lugar-direccion'),
+    p_lugar_maps_url: valor('p-lugar-maps'), p_lugar_waze_url: valor('p-lugar-waze'),
+    p_lugar_foto_url: valor('p-lugar-foto')
+  });
+  mostrarOk('ok-ubicacion');
 }
 
 async function guardarFotos(){
   await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
-    p_foto_hero_url: valor('p-foto-hero'),
-    p_foto_footer_url: valor('p-foto-footer')
+    p_foto_hero_url: valor('p-foto-hero'), p_foto_footer_url: valor('p-foto-footer')
   });
   mostrarOk('ok-fotos');
+}
+
+async function guardarMusica(){
+  await rpc('portal_actualizar_evento', { p_codigo: CODIGO, p_musica_url: valor('p-musica-url') });
+  mostrarOk('ok-musica');
+}
+
+async function guardarMensajePersonalizado(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_mensaje_personalizado_tipo: valor('p-mensaje-tipo'),
+    p_mensaje_personalizado_url: valor('p-mensaje-url')
+  });
+  mostrarOk('ok-mensaje');
+}
+
+async function guardarVideoInterno(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_video_interno_url: valor('p-video-interno-url'),
+    p_video_interno_frase: valor('p-video-interno-frase')
+  });
+  mostrarOk('ok-video-interno');
+}
+
+async function guardarVestimenta(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_vestimenta_texto: valor('p-vestimenta-texto'),
+    p_vestimenta_boton_url: valor('p-vestimenta-boton')
+  });
+  mostrarOk('ok-vestimenta');
+}
+
+async function guardarRegalos(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_regalos_texto: valor('p-regalos-texto'),
+    p_regalos_cuenta_texto: valor('p-regalos-cuenta')
+  });
+  mostrarOk('ok-regalos');
+}
+
+async function guardarFotosDecorativas(){
+  await rpc('portal_actualizar_evento', {
+    p_codigo: CODIGO,
+    p_firmas_foto_url: valor('p-firmas-foto'),
+    p_rsvp_foto_url: valor('p-rsvp-foto')
+  });
+  mostrarOk('ok-fotos-decorativas');
 }
 
 // ---------------- HISTORIA (repetidor) ----------------
@@ -125,13 +215,9 @@ function agregarHistoria(){ historiaItems.push({ titulo: '', texto: '', foto: ''
 function quitarHistoria(i){ historiaItems.splice(i, 1); pintarHistoria(); }
 async function subirFotoHistoria(e, i){
   const archivo = e.target.files[0];
-  if (!archivo || CLOUDINARY_CLOUD_NAME.startsWith('PEGAR_')) return;
-  const formData = new FormData();
-  formData.append('file', archivo);
-  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
-  const data = await res.json();
-  if (data.secure_url) historiaItems[i].foto = data.secure_url;
+  if (!archivo) return;
+  const url = await subirArchivoCloudinary(archivo, 'image');
+  if (url) historiaItems[i].foto = url;
 }
 async function guardarHistoria(){
   await rpc('portal_guardar_historia', { p_codigo: CODIGO, p_items: historiaItems });
@@ -156,6 +242,32 @@ async function guardarTimeline(){
   mostrarOk('ok-timeline');
 }
 
+// ---------------- DETALLES IMPORTANTES (repetidor) ----------------
+function pintarDetalles(){
+  document.getElementById('lista-detalles').innerHTML = detallesItems.map((d, i) => `
+    <div class="repetidor-item">
+      <button class="quitar" onclick="quitarDetalle(${i})">✕</button>
+      <div class="form-grid">
+        <div class="campo"><label>Ícono</label>
+          <select class="select-campo" onchange="detallesItems[${i}].icono=this.value">
+            <option value="reloj" ${d.icono==='reloj'?'selected':''}>Reloj</option>
+            <option value="adultos" ${d.icono==='adultos'?'selected':''}>Solo adultos</option>
+            <option value="regalo" ${d.icono==='regalo'?'selected':''}>Regalo</option>
+            <option value="general" ${d.icono==='general'?'selected':''}>General</option>
+          </select>
+        </div>
+        <div class="campo"><label>Título</label><input type="text" value="${d.titulo || ''}" oninput="detallesItems[${i}].titulo=this.value"></div>
+      </div>
+      <div class="campo"><label>Texto</label><textarea oninput="detallesItems[${i}].texto=this.value">${d.texto || ''}</textarea></div>
+    </div>`).join('');
+}
+function agregarDetalle(){ detallesItems.push({ icono: 'general', titulo: '', texto: '' }); pintarDetalles(); }
+function quitarDetalle(i){ detallesItems.splice(i, 1); pintarDetalles(); }
+async function guardarDetalles(){
+  await rpc('portal_guardar_detalles', { p_codigo: CODIGO, p_items: detallesItems });
+  mostrarOk('ok-detalles');
+}
+
 // ---------------- MENSAJES (repetidor) ----------------
 function pintarMensajes(){
   document.getElementById('lista-mensajes').innerHTML = mensajesItems.map((m, i) => `
@@ -172,7 +284,30 @@ async function guardarMensajes(){
   mostrarOk('ok-mensajes');
 }
 
-// ---------------- RSVP PREMIUM: EXCEL ----------------
+// ---------------- GENERADOR DE INVITACIONES ----------------
+function cambiarTabGenerador(tab){
+  document.querySelectorAll('.gen-tab').forEach(b => b.classList.toggle('activo', b.dataset.tab === tab));
+  document.getElementById('gen-tab-manual').classList.toggle('oculto', tab !== 'manual');
+  document.getElementById('gen-tab-excel').classList.toggle('oculto', tab !== 'excel');
+}
+
+async function agregarInvitadoManual(){
+  const input = document.getElementById('invitado-nombre-nuevo');
+  const nombre = input.value.trim();
+  if (!nombre) return;
+  const resultado = await rpc('portal_agregar_invitado_manual', { p_codigo: CODIGO, p_nombre: nombre });
+  if (resultado.error) { alert('No se pudo agregar. Intenta de nuevo.'); return; }
+  input.value = '';
+  cargarInvitadosGenerados();
+}
+
+async function cargarInvitadosGenerados(){
+  const resultado = await rpc('portal_listar_invitados', { p_codigo: CODIGO });
+  const cont = document.getElementById('lista-invitados-generados');
+  if (!resultado || !Array.isArray(resultado) || !resultado.length) { cont.innerHTML = ''; return; }
+  cont.innerHTML = resultado.map(i => `<div><b>${i.nombre}</b> — ${i.link} ${i.confirmado === true ? '✅' : i.confirmado === false ? '❌' : '⏳'}</div>`).join('');
+}
+
 function procesarExcel(){
   const input = document.getElementById('input-excel');
   const archivo = input.files[0];
@@ -191,12 +326,10 @@ function procesarExcel(){
     const resultado = await rpc('portal_generar_links_invitados', { p_codigo: CODIGO, p_nombres: nombres });
     if (resultado.error) { alert('No se pudo procesar el archivo.'); return; }
 
-    // mostrar lista y armar el excel de descarga
-    const cont = document.getElementById('resultado-excel');
-    cont.innerHTML = '<div class="lista-links">' +
-      resultado.invitados.map(i => `<div><b>${i.nombre}</b> — ${i.link}</div>`).join('') +
-      '</div><br><button class="btn btn-dorado btn-chico" id="btn-descargar-excel">Descargar Excel con links</button>';
+    cargarInvitadosGenerados();
 
+    const cont = document.getElementById('lista-invitados-generados');
+    cont.innerHTML += '<br><button class="btn btn-dorado btn-chico" id="btn-descargar-excel">Descargar Excel con links</button>';
     document.getElementById('btn-descargar-excel').onclick = () => {
       const hojaNueva = XLSX.utils.json_to_sheet(resultado.invitados.map(i => ({ Nombre: i.nombre, Link: i.link })));
       const libroNuevo = XLSX.utils.book_new();

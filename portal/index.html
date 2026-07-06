@@ -30,35 +30,96 @@
           <div class="campo"><label>Fecha</label><input type="date" id="p-fecha"></div>
           <div class="campo"><label>Hora</label><input type="time" id="p-hora"></div>
         </div>
-        <div class="campo"><label>Lugar</label><input type="text" id="p-lugar-nombre"></div>
-        <div class="campo"><label>Dirección</label><input type="text" id="p-lugar-direccion"></div>
-        <div class="campo"><label>Link de Google Maps</label><input type="text" id="p-lugar-maps"></div>
         <button class="btn btn-dorado" onclick="guardarDatosPrincipales()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-datos">Guardado ✓</p>
       </div>
 
-      <!-- FOTOS -->
+      <!-- UBICACIÓN -->
+      <div class="tarjeta">
+        <h2>Ubicación</h2>
+        <p class="desc">Nombre del lugar, dirección y links de mapa.</p>
+        <div class="campo"><label>Lugar</label><input type="text" id="p-lugar-nombre"></div>
+        <div class="campo"><label>Dirección</label><input type="text" id="p-lugar-direccion"></div>
+        <div class="campo"><label>Link de Google Maps</label><input type="text" id="p-lugar-maps" placeholder="https://maps.google.com/..."></div>
+        <div class="campo"><label>Link de Waze (opcional)</label><input type="text" id="p-lugar-waze" placeholder="https://waze.com/ul?..."></div>
+        <div class="campo">
+          <label>Foto del lugar (opcional)</label>
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-lugar-foto')">
+          <input type="hidden" id="p-lugar-foto">
+        </div>
+        <button class="btn btn-dorado" onclick="guardarUbicacion()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-ubicacion">Guardado ✓</p>
+      </div>
+
+      <!-- FOTOS PRINCIPALES -->
       <div class="tarjeta">
         <h2>Fotos principales</h2>
         <p class="desc">La foto de portada y la del cierre de la invitación.</p>
         <div class="campo">
           <label>Foto de portada</label>
-          <input type="file" accept="image/*" onchange="subirFotoPrincipal(event, 'hero')">
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-hero')">
           <input type="hidden" id="p-foto-hero">
         </div>
         <div class="campo">
           <label>Foto de cierre</label>
-          <input type="file" accept="image/*" onchange="subirFotoPrincipal(event, 'footer')">
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-footer')">
           <input type="hidden" id="p-foto-footer">
         </div>
         <button class="btn btn-dorado" onclick="guardarFotos()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-fotos">Guardado ✓</p>
       </div>
 
+      <!-- MÚSICA DE FONDO -->
+      <div class="tarjeta">
+        <h2>Música de fondo</h2>
+        <p class="desc">Suena automáticamente al abrir la invitación.</p>
+        <div class="campo">
+          <label>Archivo de audio (MP3)</label>
+          <input type="file" accept="audio/*" onchange="subirAudioSimple(event, 'p-musica-url')">
+          <input type="hidden" id="p-musica-url">
+        </div>
+        <button class="btn btn-dorado" onclick="guardarMusica()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-musica">Guardado ✓</p>
+      </div>
+
+      <!-- MENSAJE PERSONALIZADO (VOZ O VIDEO) -->
+      <div class="tarjeta">
+        <h2>Mensaje para tus invitados</h2>
+        <p class="desc">Una grabación de audio o video que aparece dentro de la invitación (requiere que tus invitados tengan link personalizado).</p>
+        <div class="campo">
+          <label>Tipo</label>
+          <select id="p-mensaje-tipo" class="select-campo">
+            <option value="audio">Audio (mensaje de voz)</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Archivo</label>
+          <input type="file" accept="audio/*,video/*" onchange="subirMensajePersonalizado(event)">
+          <input type="hidden" id="p-mensaje-url">
+        </div>
+        <button class="btn btn-dorado" onclick="guardarMensajePersonalizado()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-mensaje">Guardado ✓</p>
+      </div>
+
+      <!-- VIDEO DENTRO DE LA INVITACIÓN -->
+      <div class="tarjeta">
+        <h2>Video dentro de la invitación</h2>
+        <p class="desc">Diferente al video de apertura — este aparece como una sección más, con una frase.</p>
+        <div class="campo">
+          <label>Video</label>
+          <input type="file" accept="video/*" onchange="subirFotoSimple(event, 'p-video-interno-url')">
+          <input type="hidden" id="p-video-interno-url">
+        </div>
+        <div class="campo"><label>Frase que acompaña al video</label><input type="text" id="p-video-interno-frase"></div>
+        <button class="btn btn-dorado" onclick="guardarVideoInterno()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-video-interno">Guardado ✓</p>
+      </div>
+
       <!-- HISTORIA -->
       <div class="tarjeta">
         <h2>Nuestra historia</h2>
-        <p class="desc">Agrega los momentos que quieres contar (cómo se conocieron, primera cita, la propuesta...).</p>
+        <p class="desc">Agrega los momentos que quieres contar.</p>
         <div id="lista-historia"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarHistoria()">+ Agregar momento</button>
         <br><br>
@@ -77,10 +138,38 @@
         <p class="mensaje-ok oculto" id="ok-timeline">Guardado ✓</p>
       </div>
 
+      <!-- DETALLES IMPORTANTES -->
+      <div class="tarjeta">
+        <h2>Detalles importantes</h2>
+        <p class="desc">Hora de llegada, código de vestimenta general, restricciones, etc.</p>
+        <div id="lista-detalles"></div>
+        <button class="btn btn-outline btn-chico" onclick="agregarDetalle()">+ Agregar detalle</button>
+        <br><br>
+        <button class="btn btn-dorado" onclick="guardarDetalles()">Guardar detalles</button>
+        <p class="mensaje-ok oculto" id="ok-detalles">Guardado ✓</p>
+      </div>
+
+      <!-- VESTIMENTA -->
+      <div class="tarjeta">
+        <h2>Código de vestimenta</h2>
+        <div class="campo"><label>Descripción</label><textarea id="p-vestimenta-texto" placeholder="Etiqueta formal, colores..."></textarea></div>
+        <div class="campo"><label>Link de referencias (Pinterest, etc. — opcional)</label><input type="text" id="p-vestimenta-boton"></div>
+        <button class="btn btn-dorado" onclick="guardarVestimenta()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-vestimenta">Guardado ✓</p>
+      </div>
+
+      <!-- REGALOS -->
+      <div class="tarjeta">
+        <h2>Regalos</h2>
+        <div class="campo"><label>Texto principal</label><textarea id="p-regalos-texto" placeholder="Tu presencia es nuestro regalo..."></textarea></div>
+        <div class="campo"><label>Datos de cuenta (opcional — aparece en un botón "más detalles")</label><textarea id="p-regalos-cuenta" placeholder="Banco, número de cuenta, a nombre de..."></textarea></div>
+        <button class="btn btn-dorado" onclick="guardarRegalos()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-regalos">Guardado ✓</p>
+      </div>
+
       <!-- MENSAJES -->
       <div class="tarjeta">
         <h2>Versículo o mensaje especial</h2>
-        <p class="desc">El mensaje que aparece destacado en la invitación.</p>
         <div id="lista-mensajes"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarMensaje()">+ Agregar mensaje</button>
         <br><br>
@@ -88,17 +177,51 @@
         <p class="mensaje-ok oculto" id="ok-mensajes">Guardado ✓</p>
       </div>
 
-      <!-- RSVP PREMIUM -->
+      <!-- FOTOS DECORATIVAS -->
       <div class="tarjeta">
-        <h2>Links personalizados por invitado (opcional)</h2>
-        <p class="desc">Sube un Excel con una columna "Nombre" y te devolvemos el mismo archivo con el link de cada quien. No guardamos tu Excel, solo la lista de nombres.</p>
-        <div class="excel-box">
-          <p>Arrastra tu archivo o selecciónalo</p>
-          <input type="file" id="input-excel" accept=".xlsx,.xls">
-          <br><br>
-          <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Generar links</button>
+        <h2>Fotos adicionales (opcional)</h2>
+        <p class="desc">Se muestran en el libro de firmas y en la sección de confirmación.</p>
+        <div class="campo">
+          <label>Foto en libro de firmas</label>
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-firmas-foto')">
+          <input type="hidden" id="p-firmas-foto">
         </div>
-        <div id="resultado-excel"></div>
+        <div class="campo">
+          <label>Foto en confirmación (RSVP)</label>
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-rsvp-foto')">
+          <input type="hidden" id="p-rsvp-foto">
+        </div>
+        <button class="btn btn-dorado" onclick="guardarFotosDecorativas()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-fotos-decorativas">Guardado ✓</p>
+      </div>
+
+      <!-- GENERADOR DE INVITACIONES / LINKS POR INVITADO -->
+      <div class="tarjeta">
+        <h2>Links personalizados por invitado</h2>
+        <p class="desc">Solo si activaste "RSVP Premium". Puedes agregar invitados uno por uno, o subir un Excel con una columna "Nombre" de una sola vez. No guardamos tu Excel, solo la lista de nombres.</p>
+
+        <div class="generador-tabs">
+          <button class="gen-tab activo" data-tab="manual" onclick="cambiarTabGenerador('manual')">Uno por uno</button>
+          <button class="gen-tab" data-tab="excel" onclick="cambiarTabGenerador('excel')">Subir Excel</button>
+        </div>
+
+        <div id="gen-tab-manual" class="gen-panel">
+          <div class="campo-inline">
+            <input type="text" id="invitado-nombre-nuevo" placeholder="Nombre del invitado o familia">
+            <button class="btn btn-dorado btn-chico" onclick="agregarInvitadoManual()">Agregar</button>
+          </div>
+        </div>
+
+        <div id="gen-tab-excel" class="gen-panel oculto">
+          <div class="excel-box">
+            <p>Tu Excel debe tener una columna llamada "Nombre"</p>
+            <input type="file" id="input-excel" accept=".xlsx,.xls">
+            <br><br>
+            <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Generar links</button>
+          </div>
+        </div>
+
+        <div id="lista-invitados-generados" class="lista-links"></div>
       </div>
 
       <!-- FINALIZAR -->

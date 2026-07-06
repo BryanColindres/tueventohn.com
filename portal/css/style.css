@@ -40,3 +40,12 @@ body{background:var(--crema);color:var(--texto);font-family:var(--font);margin:0
 .excel-box input[type="file"]{margin-top:.8rem}
 .lista-links{margin-top:1rem;text-align:left;font-size:.82rem}
 .lista-links div{padding:.4rem 0;border-bottom:1px dotted var(--borde)}
+
+/* ---- GENERADOR DE INVITACIONES ---- */
+.generador-tabs{display:flex;gap:.5rem;margin-bottom:1.2rem}
+.gen-tab{padding:.6rem 1.2rem;border:1px solid var(--borde);border-radius:8px;background:transparent;font-family:var(--font);font-size:.85rem;cursor:pointer}
+.gen-tab.activo{background:var(--dorado);color:#fff;border-color:var(--dorado)}
+.gen-panel.oculto{display:none}
+.campo-inline{display:flex;gap:.6rem}
+.campo-inline input{flex:1;padding:.7rem .9rem;border:1px solid var(--borde);border-radius:8px;font-family:var(--font);font-size:.9rem}
+.select-campo{width:100%;padding:.7rem .9rem;border:1px solid var(--borde);border-radius:8px;font-family:var(--font);font-size:.9rem;background:#fff}

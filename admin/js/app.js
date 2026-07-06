@@ -26,6 +26,11 @@ async function mostrarApp(){
   document.getElementById('app-shell').classList.remove('oculto');
   await cargarCatalogosBase();
   enrutar();
+  // Refresca notificaciones cada 20s mientras el panel está abierto en el dashboard
+  // (no es "tiempo real" con websockets, pero evita tener que recargar la página)
+  setInterval(() => {
+    if (location.hash.slice(1) === 'dashboard' || !location.hash) renderDashboard();
+  }, 20000);
 }
 
 async function onLogin(e){
@@ -69,6 +74,14 @@ function enrutar(){
     document.getElementById('vista-invitaciones').classList.remove('oculto');
     document.querySelector('[data-vista="invitaciones"]')?.classList.add('activo');
     renderInvitaciones();
+  } else if (ruta === 'clientes') {
+    document.getElementById('vista-clientes').classList.remove('oculto');
+    document.querySelector('[data-vista="clientes"]')?.classList.add('activo');
+    renderClientes();
+  } else if (ruta === 'reportes') {
+    document.getElementById('vista-reportes').classList.remove('oculto');
+    document.querySelector('[data-vista="reportes"]')?.classList.add('activo');
+    renderReportes();
   } else if (ruta === 'crear') {
     document.getElementById('vista-crear').classList.remove('oculto');
     document.querySelector('[data-vista="crear"]')?.classList.add('activo');
@@ -133,6 +146,7 @@ async function renderInvitaciones(){
       </div>
       <div class="acciones">
         <a href="#editar/${ev.id}" class="btn btn-fantasma">Editar</a>
+        <button class="btn btn-fantasma" onclick="duplicarEvento('${ev.id}')">Duplicar</button>
         ${ev.publicado ? `<a href="../templates/${ev.plantillas?.slug || ''}/index.html?evento=${ev.slug_publico}" target="_blank" class="btn btn-dorado">Ver</a>` : ''}
       </div>
     </div>`).join('');
@@ -326,6 +340,7 @@ async function renderEditar(id){
 
   document.getElementById('btn-guardar-evento').onclick = () => guardarEdicion(id, evento.cliente_id);
   document.getElementById('btn-publicar-evento').onclick = () => publicarEvento(id);
+  document.getElementById('btn-duplicar-evento').onclick = () => duplicarEvento(id);
 }
 
 async function guardarEdicion(eventoId, clienteId){
@@ -385,5 +400,150 @@ async function publicarEvento(eventoId){
   } catch (err) {
     console.error(err);
     mostrarToast('Error al publicar');
+  }
+}
+
+// ---------------- CLIENTES ---------------- 
+async function renderClientes(){
+  const grid = document.getElementById('clientes-grid');
+  grid.innerHTML = '<p style="color:var(--texto-mid)">Cargando...</p>';
+
+  const clientes = await apiGet('clientes', 'select=*&order=created_at.desc');
+  if (!clientes.length) { grid.innerHTML = '<p style="color:var(--texto-mid)">Todavía no tienes clientes.</p>'; return; }
+
+  grid.innerHTML = clientes.map(c => `
+    <div class="cliente-card">
+      <p class="nombre">${c.nombre}</p>
+      <p class="dato">${c.telefono || 'Sin teléfono'}</p>
+      <p class="dato">${c.correo || 'Sin correo'}</p>
+      <p class="dato">Pago: ${c.estado_pago}</p>
+      <div class="acciones">
+        <button class="btn btn-fantasma" onclick="editarClienteRapido('${c.id}')">Editar</button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('buscador-clientes').oninput = (e) => {
+    const q = e.target.value.toLowerCase();
+    grid.querySelectorAll('.cliente-card').forEach(card => {
+      card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  };
+}
+
+async function editarClienteRapido(clienteId){
+  const nombre = prompt('Nombre:');
+  if (nombre === null) return;
+  const telefono = prompt('Teléfono:');
+  const correo = prompt('Correo:');
+  await apiPatch('clientes', `id=eq.${clienteId}`, { nombre, telefono, correo });
+  renderClientes();
+}
+
+// ---------------- REPORTES ----------------
+async function renderReportes(){
+  const eventos = await apiGet('eventos', 'select=created_at,publicado,paquetes(nombre,precio),plantillas(nombre)');
+
+  document.getElementById('reportes-stats').innerHTML = `
+    <div class="stat-card"><p class="valor">${eventos.length}</p><p class="label">Invitaciones totales</p></div>
+    <div class="stat-card"><p class="valor">L. ${eventos.reduce((s,e)=>s+Number(e.paquetes?.precio||0),0).toLocaleString('es-HN')}</p><p class="label">Ingresos totales (paquetes)</p></div>
+    <div class="stat-card"><p class="valor">${eventos.filter(e=>e.publicado).length}</p><p class="label">Publicadas</p></div>
+  `;
+
+  // Ingresos por mes (últimos 6 meses)
+  const hoy = new Date();
+  const meses = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+    meses.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleDateString('es-HN', { month: 'short' }), total: 0 });
+  }
+  eventos.forEach(e => {
+    const d = new Date(e.created_at);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const mes = meses.find(m => m.key === key);
+    if (mes) mes.total += Number(e.paquetes?.precio || 0);
+  });
+  pintarGraficoBarras('grafico-ingresos', meses.map(m => ({ label: m.label, valor: m.total, texto: `L. ${m.total.toLocaleString('es-HN')}` })));
+
+  // Plantillas más vendidas
+  const conteoPlantillas = {};
+  eventos.forEach(e => { const n = e.plantillas?.nombre || 'Sin plantilla'; conteoPlantillas[n] = (conteoPlantillas[n]||0)+1; });
+  const datosPlantillas = Object.entries(conteoPlantillas).sort((a,b)=>b[1]-a[1]).slice(0,8)
+    .map(([label, valor]) => ({ label, valor, texto: String(valor) }));
+  pintarGraficoBarras('grafico-plantillas', datosPlantillas);
+
+  // Paquetes más vendidos
+  const conteoPaquetes = {};
+  eventos.forEach(e => { const n = e.paquetes?.nombre || 'Sin paquete'; conteoPaquetes[n] = (conteoPaquetes[n]||0)+1; });
+  const datosPaquetes = Object.entries(conteoPaquetes).sort((a,b)=>b[1]-a[1])
+    .map(([label, valor]) => ({ label, valor, texto: String(valor) }));
+  pintarGraficoBarras('grafico-paquetes', datosPaquetes);
+}
+
+function pintarGraficoBarras(idContenedor, datos){
+  const cont = document.getElementById(idContenedor);
+  if (!datos.length) { cont.innerHTML = '<p style="color:var(--texto-mid)">Sin datos todavía.</p>'; return; }
+  const max = Math.max(...datos.map(d => d.valor), 1);
+  cont.innerHTML = datos.map(d => `
+    <div class="barra-item">
+      <span class="valor">${d.texto}</span>
+      <div class="barra" style="height:${Math.max(4, (d.valor / max) * 140)}px"></div>
+      <span class="label">${d.label}</span>
+    </div>`).join('');
+}
+
+// ---------------- DUPLICAR INVITACIÓN ----------------
+async function duplicarEvento(eventoId){
+  if (!confirm('¿Duplicar esta invitación? Se creará una copia completa (historia, itinerario, mensajes y módulos incluidos) lista para editar.')) return;
+
+  try {
+    const [original] = await apiGet('eventos', `id=eq.${eventoId}&select=*`);
+    if (!original) return;
+
+    let slug = generarSlug(original.nombre_evento || 'copia') + '-copia';
+    const existentes = await apiGet('eventos', `slug_publico=eq.${slug}&select=id`);
+    if (existentes.length) slug = `${slug}-${Math.floor(Math.random()*90+10)}`;
+
+    const estadoInicial = estado.estados.find(e => e.nombre === 'Esperando Información');
+
+    const copia = { ...original };
+    delete copia.id;
+    delete copia.created_at;
+    delete copia.updated_at;
+    copia.slug_publico = slug;
+    copia.codigo_portal = generarCodigoPortal();
+    copia.publicado = false;
+    copia.estado_id = estadoInicial.id;
+    copia.nombre_evento = (original.nombre_evento || '') + ' (copia)';
+
+    const [nuevoEvento] = await apiPost('eventos', [copia]);
+
+    // copiar módulos activos
+    const modulosOriginales = await apiGet('evento_modulo', `evento_id=eq.${eventoId}&select=modulo_id,activo`);
+    if (modulosOriginales.length) {
+      await apiPost('evento_modulo', modulosOriginales.map(m => ({ evento_id: nuevoEvento.id, modulo_id: m.modulo_id, activo: m.activo })));
+    }
+
+    // copiar historia, timeline, mensajes
+    for (const [tabla, campos] of [
+      ['historia', ['titulo','descripcion','imagen_url','orden']],
+      ['timeline', ['hora','titulo','nivel','orden']],
+      ['mensajes', ['texto','referencia','orden']]
+    ]) {
+      const filas = await apiGet(tabla, `evento_id=eq.${eventoId}&select=*`);
+      if (filas.length) {
+        const filasNuevas = filas.map(f => {
+          const nueva = { evento_id: nuevoEvento.id };
+          campos.forEach(c => nueva[c] = f[c]);
+          return nueva;
+        });
+        await apiPost(tabla, filasNuevas);
+      }
+    }
+
+    mostrarToast('Invitación duplicada');
+    location.hash = `#editar/${nuevoEvento.id}`;
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Error al duplicar');
   }
 }

@@ -112,3 +112,18 @@ input,select,textarea{font-family:var(--font)}
 .portal-link-box code{color:var(--dorado);font-size:.85rem;word-break:break-all}
 
 .toast{position:fixed;bottom:1.6rem;right:1.6rem;background:var(--gris-mid);border:1px solid var(--gris-borde);padding:.9rem 1.3rem;border-radius:10px;font-size:.85rem;z-index:100}
+
+/* ---- REPORTES ---- */
+.reporte-bloque{background:var(--gris-osc);border:1px solid var(--gris-borde);border-radius:14px;padding:1.6rem;margin-bottom:1.6rem}
+.reporte-bloque h2{font-size:1rem;margin-bottom:1.2rem}
+.grafico-barras{display:flex;align-items:flex-end;gap:1rem;height:180px;padding-top:1rem}
+.barra-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.barra-item .valor{font-size:.72rem;color:var(--texto-mid);margin-bottom:.4rem}
+.barra-item .barra{width:100%;background:var(--dorado);border-radius:6px 6px 0 0;min-height:3px}
+.barra-item .label{font-size:.68rem;color:var(--texto-mid);margin-top:.5rem;text-align:center}
+
+/* ---- TARJETA DE CLIENTE ---- */
+.cliente-card{background:var(--gris-osc);border:1px solid var(--gris-borde);border-radius:14px;padding:1.3rem}
+.cliente-card .nombre{font-size:1.05rem;font-weight:600;margin-bottom:.3rem}
+.cliente-card .dato{color:var(--texto-mid);font-size:.82rem;margin-bottom:.2rem}
+.cliente-card .acciones{margin-top:.9rem;display:flex;gap:.5rem}

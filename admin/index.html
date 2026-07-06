@@ -35,6 +35,8 @@
       <nav class="sidebar-nav">
         <a href="#dashboard" data-vista="dashboard">Dashboard</a>
         <a href="#invitaciones" data-vista="invitaciones">Invitaciones</a>
+        <a href="#clientes" data-vista="clientes">Clientes</a>
+        <a href="#reportes" data-vista="reportes">Reportes</a>
         <a href="#crear" data-vista="crear">+ Nueva invitación</a>
       </nav>
       <div class="sidebar-footer">
@@ -62,6 +64,39 @@
           <a href="#crear" class="btn btn-dorado">+ Nueva invitación</a>
         </div>
         <div class="eventos-grid" id="eventos-grid"></div>
+      </section>
+
+      <!-- ---- CLIENTES ---- -->
+      <section id="vista-clientes" class="vista oculto">
+        <h1>Clientes</h1>
+        <p class="sub">Todas las personas que te han comprado, tengan o no un evento activo</p>
+        <div class="toolbar">
+          <div class="buscador"><input type="text" id="buscador-clientes" placeholder="Buscar por nombre, correo, teléfono..."></div>
+        </div>
+        <div class="eventos-grid" id="clientes-grid"></div>
+      </section>
+
+      <!-- ---- REPORTES ---- -->
+      <section id="vista-reportes" class="vista oculto">
+        <h1>Reportes</h1>
+        <p class="sub">Cómo va el negocio</p>
+
+        <div class="stats-grid" id="reportes-stats"></div>
+
+        <div class="reporte-bloque">
+          <h2>Ingresos por mes (últimos 6 meses)</h2>
+          <div id="grafico-ingresos" class="grafico-barras"></div>
+        </div>
+
+        <div class="reporte-bloque">
+          <h2>Plantillas más vendidas</h2>
+          <div id="grafico-plantillas" class="grafico-barras"></div>
+        </div>
+
+        <div class="reporte-bloque">
+          <h2>Paquetes más vendidos</h2>
+          <div id="grafico-paquetes" class="grafico-barras"></div>
+        </div>
       </section>
 
       <!-- ---- CREAR (WIZARD) ---- -->
@@ -160,6 +195,7 @@
         <div style="display:flex;gap:.8rem;margin-top:2rem">
           <button class="btn btn-dorado" id="btn-guardar-evento">Guardar</button>
           <button class="btn btn-fantasma" id="btn-publicar-evento">Publicar</button>
+          <button class="btn btn-fantasma" id="btn-duplicar-evento">Duplicar</button>
           <a href="#invitaciones" class="btn btn-fantasma">Volver</a>
         </div>
       </section>
