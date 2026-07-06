@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!C) return;
 
   generarEstrellas();
+  iniciarVideo();
   pintarHero();
   pintarBannerPersonal();
   iniciarCountdown();
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   iniciarMusica();
   iniciarReveal();
 
-  configurarMensajePersonalizado();
+  pintarMensajeVoz();
 });
 
 function generarEstrellas(){
@@ -57,7 +58,7 @@ function iniciarVideo(){
     overlay.classList.add('gone');
     screen.classList.add('closing');
     setTimeout(() => screen.classList.add('gone'), 800);
-    invitation.classList.add('visible');
+    mostrarPantallaNombre(invitation);
   }
 
   // Dentro de un iframe (vista previa del catálogo) se abre directo,
@@ -240,46 +241,6 @@ function iniciarCountdown(){
 }
 
 
-// ---------------- MENSAJE PERSONALIZADO (antes de la invitación) ----------------
-function configurarMensajePersonalizado(){
-  const activo = C.modules && C.modules.mensaje_personalizado;
-  const tieneInvitado = C.invitado && C.invitado.nombre;
-  const tieneArchivo = C.mensajePersonalizado && C.mensajePersonalizado.url;
-
-  if (!activo || !tieneInvitado || !tieneArchivo) {
-    iniciarVideo();
-    return;
-  }
-
-  const screen = document.getElementById('mp-screen');
-  screen.classList.remove('oculto');
-  document.getElementById('mp-nombre').textContent = C.invitado.nombre;
-  document.getElementById('mp-sub').textContent = `${C.pareja.nombreA} y ${C.pareja.nombreB} grabaron un mensaje especial para ti`;
-  if (C.fotos.hero) document.getElementById('mp-foto').innerHTML = `<img src="${C.fotos.hero}" alt="">`;
-
-  const audio = document.getElementById('mp-audio');
-  const video = document.getElementById('mp-video');
-  const btnPlay = document.getElementById('mp-btn-play');
-  const btnContinuar = document.getElementById('mp-btn-continuar');
-
-  const esVideo = C.mensajePersonalizado.tipo === 'video';
-  const reproductor = esVideo ? video : audio;
-  reproductor.src = C.mensajePersonalizado.url;
-  reproductor.classList.remove('oculto');
-  if (!esVideo) reproductor.setAttribute('controls', 'true');
-
-  btnPlay.addEventListener('click', () => {
-    btnPlay.classList.add('oculto');
-    reproductor.play();
-    btnContinuar.classList.remove('oculto');
-  });
-
-  btnContinuar.addEventListener('click', () => {
-    screen.classList.add('oculto');
-    reproductor.pause();
-    iniciarVideo();
-  });
-}
 
 // ---------------- BANNER PERSONALIZADO ----------------
 function pintarBannerPersonal(){
@@ -366,6 +327,101 @@ function iniciarMusica(){
     if (sonando) { audio.play(); btn.classList.add('sonando'); }
     else { audio.pause(); btn.classList.remove('sonando'); }
   });
+}
+
+
+// ---------------- PANTALLA DE NOMBRE (automática, después del video) ----------------
+function mostrarPantallaNombre(invitation){
+  const activo = C.modules && C.modules.rsvp_premium;
+  const tieneNombre = C.invitado && C.invitado.nombre;
+
+  if (!activo || !tieneNombre) {
+    invitation.classList.add('visible');
+    return;
+  }
+
+  const ns = document.getElementById('name-screen');
+  document.getElementById('name-screen-nombre').textContent = C.invitado.nombre;
+  document.getElementById('name-screen-sub').textContent = `${C.pareja.nombreA} & ${C.pareja.nombreB}`;
+
+  ns.classList.remove('oculto');
+  requestAnimationFrame(() => ns.classList.add('visible'));
+
+  setTimeout(() => {
+    ns.classList.remove('visible');
+    setTimeout(() => {
+      ns.classList.add('oculto');
+      invitation.classList.add('visible');
+    }, 800);
+  }, 2800);
+}
+
+// ---------------- MENSAJE DE VOZ (sección normal dentro del scroll) ----------------
+function pintarMensajeVoz(){
+  const seccion = document.getElementById('section-voice');
+  const activo = C.modules && C.modules.mensaje_personalizado;
+  const tieneArchivo = C.mensajePersonalizado && C.mensajePersonalizado.url;
+
+  if (!activo || !tieneArchivo) {
+    seccion.style.display = 'none';
+    return;
+  }
+  seccion.classList.remove('oculto');
+
+  document.getElementById('voice-desc').textContent = `${C.pareja.nombreA} y ${C.pareja.nombreB} grabaron un mensaje especial para ti`;
+  document.getElementById('voice-nombre').textContent = (C.invitado && C.invitado.nombre) ? C.invitado.nombre : 'Para ti';
+  if (C.fotos.hero) document.getElementById('voice-foto').innerHTML = `<img src="${C.fotos.hero}" alt="">`;
+
+  const esVideo = C.mensajePersonalizado.tipo === 'video';
+
+  if (esVideo) {
+    document.getElementById('voice-btn').style.display = 'none';
+    document.getElementById('voice-progress').style.display = 'none';
+    const video = document.getElementById('voice-video');
+    video.src = C.mensajePersonalizado.url;
+    video.classList.remove('oculto');
+    return;
+  }
+
+  const audio = new Audio(C.mensajePersonalizado.url);
+  const btn = document.getElementById('voice-btn');
+  const icon = document.getElementById('voice-icon');
+  const label = document.getElementById('voice-label');
+  const fill = document.getElementById('voice-progress-fill');
+  let reproduciendo = false;
+
+  btn.addEventListener('click', () => {
+    if (!reproduciendo) {
+      audio.play().then(() => {
+        reproduciendo = true;
+        icon.textContent = '⏸';
+        label.textContent = 'Pausar';
+        duckMusica(true);
+      }).catch(() => { label.textContent = 'Toca de nuevo para escuchar'; });
+    } else {
+      audio.pause();
+      reproduciendo = false;
+      icon.textContent = '▶';
+      label.textContent = 'Escuchar mensaje';
+      duckMusica(false);
+    }
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  });
+  audio.addEventListener('ended', () => {
+    reproduciendo = false;
+    icon.textContent = '▶';
+    label.textContent = 'Escuchar de nuevo';
+    duckMusica(false);
+  });
+}
+
+function duckMusica(bajar){
+  const musica = document.getElementById('musica-audio');
+  if (!musica || !musica.src) return;
+  musica.volume = bajar ? 0.08 : 0.5;
 }
 
 function iniciarReveal(){

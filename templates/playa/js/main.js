@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   C = await TuBodaBackend.cargarConfig();
   if (!C) return;
 
+  iniciarVideo();
   pintarHero();
   pintarBannerPersonal();
   iniciarCountdown();
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   iniciarMusica();
   iniciarCapitulos();
 
-  configurarMensajePersonalizado();
+  pintarMensajeVoz();
 });
 
 function iniciarVideo(){
@@ -40,7 +41,7 @@ function iniciarVideo(){
     overlay.classList.add('gone');
     screen.classList.add('closing');
     setTimeout(() => screen.classList.add('gone'), 800);
-    invitation.classList.add('visible');
+    mostrarPantallaNombre(invitation);
   }
 
   // Dentro de un iframe (vista previa del catálogo) se abre directo,
@@ -229,46 +230,6 @@ function iniciarCountdown(){
   setInterval(actualizar, 1000);
 }
 
-// ---------------- MENSAJE PERSONALIZADO (antes de la invitación) ----------------
-function configurarMensajePersonalizado(){
-  const activo = C.modules && C.modules.mensaje_personalizado;
-  const tieneInvitado = C.invitado && C.invitado.nombre;
-  const tieneArchivo = C.mensajePersonalizado && C.mensajePersonalizado.url;
-
-  if (!activo || !tieneInvitado || !tieneArchivo) {
-    iniciarVideo();
-    return;
-  }
-
-  const screen = document.getElementById('mp-screen');
-  screen.classList.remove('oculto');
-  document.getElementById('mp-nombre').textContent = C.invitado.nombre;
-  document.getElementById('mp-sub').textContent = `${C.pareja.nombreA} y ${C.pareja.nombreB} grabaron un mensaje especial para ti`;
-  if (C.fotos.hero) document.getElementById('mp-foto').innerHTML = `<img src="${C.fotos.hero}" alt="">`;
-
-  const audio = document.getElementById('mp-audio');
-  const video = document.getElementById('mp-video');
-  const btnPlay = document.getElementById('mp-btn-play');
-  const btnContinuar = document.getElementById('mp-btn-continuar');
-
-  const esVideo = C.mensajePersonalizado.tipo === 'video';
-  const reproductor = esVideo ? video : audio;
-  reproductor.src = C.mensajePersonalizado.url;
-  reproductor.classList.remove('oculto');
-  if (!esVideo) reproductor.setAttribute('controls', 'true');
-
-  btnPlay.addEventListener('click', () => {
-    btnPlay.classList.add('oculto');
-    reproductor.play();
-    btnContinuar.classList.remove('oculto');
-  });
-
-  btnContinuar.addEventListener('click', () => {
-    screen.classList.add('oculto');
-    reproductor.pause();
-    iniciarVideo();
-  });
-}
 
 // ---------------- BANNER PERSONALIZADO ----------------
 function pintarBannerPersonal(){

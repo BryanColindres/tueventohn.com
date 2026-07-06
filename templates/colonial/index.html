@@ -8,25 +8,6 @@
 </head>
 <body>
 
-  <!-- ============ MENSAJE PERSONALIZADO ============ -->
-  <div class="mp-screen oculto" id="mp-screen">
-    <div class="mp-tarjeta">
-      <div class="mp-foto" id="mp-foto"></div>
-      <div class="mp-texto">
-        <span class="eyebrow">Un mensaje para ti</span>
-        <h1 class="mp-nombre" id="mp-nombre"></h1>
-        <p class="mp-sub" id="mp-sub"></p>
-        <button class="btn btn-terracota mp-btn" id="mp-btn-play">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg>
-          Escuchar mensaje
-        </button>
-        <audio id="mp-audio" class="oculto"></audio>
-        <video id="mp-video" class="oculto mp-video" playsinline controls></video>
-        <button class="btn btn-outline mp-btn oculto" id="mp-btn-continuar">Continuar a la invitación</button>
-      </div>
-    </div>
-  </div>
-
   <svg class="catedral-fondo" viewBox="0 0 400 300" fill="none" stroke="#2B2420" stroke-width="1.5">
     <rect x="60" y="120" width="30" height="140"/>
     <path d="M60 120 L75 95 L90 120"/>
@@ -39,6 +20,16 @@
     <path d="M180 260 V190 A20 20 0 0 1 220 190 V260"/>
     <path d="M75 95 V80 M325 95 V80"/>
   </svg>
+
+  <!-- ============ PANTALLA DE NOMBRE (automática, sin clic) ============ -->
+  <div class="name-screen oculto" id="name-screen">
+    <div class="name-screen__content">
+      <p class="name-screen__pre">Esta invitación es para</p>
+      <h2 class="name-screen__nombre" id="name-screen-nombre"></h2>
+      <p class="name-screen__sub" id="name-screen-sub"></p>
+    </div>
+  </div>
+
 
   <div class="video-screen" id="video-screen">
     <video class="video-el" id="video-el" playsinline muted></video>
@@ -94,6 +85,24 @@
       <p class="banner-personal__nombre" id="banner-personal-nombre"></p>
       <p class="banner-personal__linea3">Por favor no compartas este enlace con otras personas</p>
     </div>
+
+    <!-- MENSAJE DE VOZ — sección normal dentro del scroll -->
+    <section class="section-voice oculto" id="section-voice">
+      <div class="voice-card">
+        <div class="voice-card__foto" id="voice-foto"></div>
+        <div class="voice-card__body">
+          <span class="eyebrow">Un mensaje para ti</span>
+          <h2 class="voice-card__nombre" id="voice-nombre">Para ti</h2>
+          <p class="voice-card__desc" id="voice-desc"></p>
+          <button class="voice-btn" id="voice-btn">
+            <span id="voice-icon">▶</span>
+            <span id="voice-label">Escuchar mensaje</span>
+          </button>
+          <div class="voice-progress" id="voice-progress"><div class="voice-progress__fill" id="voice-progress-fill"></div></div>
+          <video id="voice-video" class="oculto voice-video" playsinline controls></video>
+        </div>
+      </div>
+    </section>
 
     <div class="rosario">
       <span class="cuenta"></span><span class="cuenta"></span><span class="cuenta grande"></span>
