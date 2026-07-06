@@ -46,7 +46,8 @@ window.CONFIG_DEMO = {
   ],
 
 
-  videoInterno: { url: "img/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
+  videoInterno: { url: "img/interno.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
+
 
   detallesImportantes: [
     { icono: "reloj", titulo: "Hora de llegada", texto: "Te pedimos llegar 30 minutos antes de la ceremonia para ubicarte con comodidad." },
