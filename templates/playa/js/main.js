@@ -53,6 +53,7 @@ function iniciarVideo(){
     overlay.classList.add('hiding');
     screen.classList.add('playing');
     if (videoActivo && C.video) {
+      video.muted = false;
       video.play().catch(cerrarTodo);
       video.addEventListener('timeupdate', () => {
         if (video.duration) progress.style.width = (video.currentTime / video.duration * 100) + '%';
@@ -293,17 +294,133 @@ function iniciarMusica(){
   const audio = document.getElementById('musica-audio');
   const btn = document.getElementById('musica-btn');
   audio.src = C.musicaUrl;
+  audio.volume = 0.5;
   btn.classList.remove('oculto');
+  actualizarIconoMusica(false);
 
-  let sonando = false;
   btn.addEventListener('click', () => {
-    sonando = !sonando;
-    if (sonando) { audio.play(); btn.classList.add('sonando'); }
-    else { audio.pause(); btn.classList.remove('sonando'); }
+    if (audio.paused) {
+      audio.play().then(() => actualizarIconoMusica(true)).catch(() => {});
+    } else {
+      audio.pause();
+      actualizarIconoMusica(false);
+    }
   });
 }
 
+function actualizarIconoMusica(sonando){
+  const btn = document.getElementById('musica-btn');
+  if (!btn) return;
+  btn.classList.toggle('sonando', sonando);
+  btn.innerHTML = sonando ? '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16 8a5 5 0 010 8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M18.6 5.4a9 9 0 010 13.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/></svg>' : '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+}
+
+// Se intenta reproducir automáticamente justo cuando se revela la invitación
+// (dentro del mismo gesto de "tocar para comenzar", por eso el navegador lo permite).
+function intentarReproducirMusicaAutomatico(){
+  const audio = document.getElementById('musica-audio');
+  if (!audio || !audio.src) return;
+  audio.play().then(() => actualizarIconoMusica(true)).catch(() => actualizarIconoMusica(false));
+}
+
 // ---------------- NAVEGACIÓN POR CAPÍTULOS ----------------
+
+// ---------------- PANTALLA DE NOMBRE (automática, después del video) ----------------
+function mostrarPantallaNombre(invitation){
+  const activo = C.modules && C.modules.rsvp_premium;
+  const tieneNombre = C.invitado && C.invitado.nombre;
+
+  if (!activo || !tieneNombre) {
+    invitation.classList.add('visible');
+    intentarReproducirMusicaAutomatico();
+    return;
+  }
+
+  const ns = document.getElementById('name-screen');
+  document.getElementById('name-screen-nombre').textContent = C.invitado.nombre;
+  document.getElementById('name-screen-sub').textContent = `${C.pareja.nombreA} & ${C.pareja.nombreB}`;
+
+  ns.classList.remove('oculto');
+  requestAnimationFrame(() => ns.classList.add('visible'));
+
+  setTimeout(() => {
+    ns.classList.remove('visible');
+    setTimeout(() => {
+      ns.classList.add('oculto');
+      invitation.classList.add('visible');
+      intentarReproducirMusicaAutomatico();
+    }, 800);
+  }, 2800);
+}
+
+// ---------------- MENSAJE DE VOZ (sección normal dentro del scroll) ----------------
+function pintarMensajeVoz(){
+  const seccion = document.getElementById('section-voice');
+  const activo = C.modules && C.modules.mensaje_personalizado;
+  const tieneArchivo = C.mensajePersonalizado && C.mensajePersonalizado.url;
+
+  if (!activo || !tieneArchivo) {
+    seccion.remove();
+    return;
+  }
+  seccion.classList.remove('oculto');
+
+  document.getElementById('voice-desc').textContent = `${C.pareja.nombreA} y ${C.pareja.nombreB} grabaron un mensaje especial para ti`;
+  document.getElementById('voice-nombre').textContent = (C.invitado && C.invitado.nombre) ? C.invitado.nombre : 'Para ti';
+  if (C.fotos.hero) document.getElementById('voice-foto').innerHTML = `<img src="${C.fotos.hero}" alt="">`;
+
+  const esVideo = C.mensajePersonalizado.tipo === 'video';
+
+  if (esVideo) {
+    document.getElementById('voice-btn').style.display = 'none';
+    document.getElementById('voice-progress').style.display = 'none';
+    const video = document.getElementById('voice-video');
+    video.src = C.mensajePersonalizado.url;
+    video.classList.remove('oculto');
+    return;
+  }
+
+  const audio = new Audio(C.mensajePersonalizado.url);
+  const btn = document.getElementById('voice-btn');
+  const icon = document.getElementById('voice-icon');
+  const label = document.getElementById('voice-label');
+  const fill = document.getElementById('voice-progress-fill');
+  let reproduciendo = false;
+
+  btn.addEventListener('click', () => {
+    if (!reproduciendo) {
+      audio.play().then(() => {
+        reproduciendo = true;
+        icon.textContent = '⏸';
+        label.textContent = 'Pausar';
+        duckMusica(true);
+      }).catch(() => { label.textContent = 'Toca de nuevo para escuchar'; });
+    } else {
+      audio.pause();
+      reproduciendo = false;
+      icon.textContent = '▶';
+      label.textContent = 'Escuchar mensaje';
+      duckMusica(false);
+    }
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  });
+  audio.addEventListener('ended', () => {
+    reproduciendo = false;
+    icon.textContent = '▶';
+    label.textContent = 'Escuchar de nuevo';
+    duckMusica(false);
+  });
+}
+
+function duckMusica(bajar){
+  const musica = document.getElementById('musica-audio');
+  if (!musica || !musica.src) return;
+  musica.volume = bajar ? 0.08 : 0.5;
+}
+
 function iniciarCapitulos(){
   const capitulos = Array.from(document.querySelectorAll('.capitulo'));
   const dotsWrap = document.getElementById('cap-dots');

@@ -30,7 +30,7 @@ window.CONFIG_DEMO = {
   videoDelay: 1.5,
   musicaUrl: "audio/musica.mp3",
 
-  invitado: { nombre: "Familia Pérez" },
+  // invitado: { nombre: "Familia Pérez" }, // <-- descomenta para probar la pantalla de nombre y el mensaje personalizado con nombre real
   mensajePersonalizado: { tipo: "audio", url: "audio/musica.mp3" },
 
   // 0 a N — si el array queda vacío, la sección se oculta

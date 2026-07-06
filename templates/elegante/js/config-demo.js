@@ -32,7 +32,7 @@ window.CONFIG_DEMO = {
 
   // Invitado de muestra — así se ve el banner y la pantalla de mensaje
   // personalizado cuando alguien entra con su link único (RSVP Premium)
-  invitado: { nombre: "Familia Pérez" },
+  // invitado: { nombre: "Familia Pérez" }, // <-- descomenta para probar la pantalla de nombre y el mensaje personalizado con nombre real
   mensajePersonalizado: { tipo: "audio", url: "audio/musica.mp3" },
 
   mensajes: [

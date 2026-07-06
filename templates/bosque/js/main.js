@@ -67,6 +67,7 @@ function iniciarVideo(){
     overlay.classList.add('hiding');
     screen.classList.add('playing');
     if (videoActivo && C.video) {
+      video.muted = false;
       video.play().catch(cerrarTodo);
       video.addEventListener('timeupdate', () => {
         if (video.duration) progress.style.width = (video.currentTime / video.duration * 100) + '%';
@@ -324,14 +325,33 @@ function iniciarMusica(){
   const audio = document.getElementById('musica-audio');
   const btn = document.getElementById('musica-btn');
   audio.src = C.musicaUrl;
+  audio.volume = 0.5;
   btn.classList.remove('oculto');
+  actualizarIconoMusica(false);
 
-  let sonando = false;
   btn.addEventListener('click', () => {
-    sonando = !sonando;
-    if (sonando) { audio.play(); btn.classList.add('sonando'); }
-    else { audio.pause(); btn.classList.remove('sonando'); }
+    if (audio.paused) {
+      audio.play().then(() => actualizarIconoMusica(true)).catch(() => {});
+    } else {
+      audio.pause();
+      actualizarIconoMusica(false);
+    }
   });
+}
+
+function actualizarIconoMusica(sonando){
+  const btn = document.getElementById('musica-btn');
+  if (!btn) return;
+  btn.classList.toggle('sonando', sonando);
+  btn.innerHTML = sonando ? '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16 8a5 5 0 010 8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M18.6 5.4a9 9 0 010 13.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/></svg>' : '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+}
+
+// Se intenta reproducir automáticamente justo cuando se revela la invitación
+// (dentro del mismo gesto de "tocar para comenzar", por eso el navegador lo permite).
+function intentarReproducirMusicaAutomatico(){
+  const audio = document.getElementById('musica-audio');
+  if (!audio || !audio.src) return;
+  audio.play().then(() => actualizarIconoMusica(true)).catch(() => actualizarIconoMusica(false));
 }
 
 
@@ -342,6 +362,7 @@ function mostrarPantallaNombre(invitation){
 
   if (!activo || !tieneNombre) {
     invitation.classList.add('visible');
+    intentarReproducirMusicaAutomatico();
     return;
   }
 
@@ -357,6 +378,7 @@ function mostrarPantallaNombre(invitation){
     setTimeout(() => {
       ns.classList.add('oculto');
       invitation.classList.add('visible');
+      intentarReproducirMusicaAutomatico();
     }, 800);
   }, 2800);
 }

@@ -20,7 +20,7 @@ window.CONFIG_DEMO = {
   videoDelay: 1.5,
   musicaUrl: "audio/musica.mp3",
 
-  invitado: { nombre: "Familia Pérez" },
+  // invitado: { nombre: "Familia Pérez" }, // <-- descomenta para probar la pantalla de nombre y el mensaje personalizado con nombre real
   mensajePersonalizado: { tipo: "audio", url: "audio/musica.mp3" },
 
   coordenadas: "14°N 45' · 87°W 12' — Valle de Ángeles, bajo el mismo cielo",
