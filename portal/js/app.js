@@ -83,7 +83,54 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   actualizarProgreso();
   document.getElementById('progreso-wrap').classList.remove('oculto');
+
+  aplicarBloqueosPorModulo(datos.modulosActivos || {});
 });
+
+// ---------------- BLOQUEAR TARJETAS DE MÓDULOS NO COMPRADOS ----------------
+const NOMBRES_MODULOS = {
+  musica: 'Música de fondo',
+  mensaje_personalizado: 'Mensaje para tus invitados',
+  video_interno: 'Video dentro de la invitación',
+  historia: 'Nuestra historia',
+  timeline: 'Itinerario',
+  detalles: 'Detalles importantes',
+  vestimenta: 'Código de vestimenta',
+  regalos: 'Regalos',
+  firmas: 'Fotos adicionales'
+};
+
+function aplicarBloqueosPorModulo(modulosActivos){
+  const mapaTarjetas = {
+    'tarjeta-musica': 'musica',
+    'tarjeta-mensaje': 'mensaje_personalizado',
+    'tarjeta-video-interno': 'video_interno',
+    'tarjeta-historia': 'historia',
+    'tarjeta-timeline': 'timeline',
+    'tarjeta-detalles': 'detalles',
+    'tarjeta-vestimenta': 'vestimenta',
+    'tarjeta-regalos': 'regalos',
+    'tarjeta-fotos-decorativas': 'firmas'
+  };
+
+  Object.entries(mapaTarjetas).forEach(([idTarjeta, slugModulo]) => {
+    if (modulosActivos[slugModulo] === true) return; // sí lo compró, se queda normal
+
+    const tarjeta = document.getElementById(idTarjeta);
+    if (!tarjeta) return;
+    const titulo = tarjeta.querySelector('h2').outerHTML;
+    const nombreBonito = NOMBRES_MODULOS[slugModulo];
+
+    tarjeta.classList.add('tarjeta-bloqueada');
+    tarjeta.innerHTML = `
+      ${titulo}
+      <div class="bloqueo-mensaje">
+        <p>Este módulo no está incluido en tu paquete actual. Es una excelente forma de hacer tu invitación aún más especial — escríbenos y te decimos cómo agregarlo.</p>
+        <a href="https://wa.me/50431626792?text=${encodeURIComponent('Hola, quiero agregar el módulo de ' + nombreBonito + ' a mi invitación')}" target="_blank" class="btn btn-dorado btn-chico">Quiero agregarlo</a>
+      </div>
+    `;
+  });
+}
 
 // ---------------- BARRA DE PROGRESO (cuenta cuántas tarjetas ya tienen algo) ----------------
 function actualizarProgreso(){

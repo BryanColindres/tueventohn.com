@@ -54,7 +54,7 @@ function iniciarVideo(){
     overlay.classList.add('hiding');
     screen.classList.add('playing');
     if (videoActivo && C.video) {
-      video.muted = true;
+      video.muted = false;
       video.play().catch(cerrarTodo);
       video.addEventListener('timeupdate', () => {
         if (video.duration) progress.style.width = (video.currentTime / video.duration * 100) + '%';
@@ -191,7 +191,7 @@ function pintarAddons(){
 
   const seccionDeseo = document.getElementById('section-deseo');
   if (!C.modules || !C.modules.firmas) {
-    seccionDeseo.style.display = 'none';
+    TuBodaBackend.mostrarBloqueado(seccionDeseo, 'Suelta tu deseo al mar', 'Un espacio para que tus invitados te dejen un mensaje que quede guardado para siempre.');
   } else {
     if (C.firmasFotoUrl) {
       document.getElementById('firmas-foto').innerHTML = `<img src="${C.firmasFotoUrl}" alt="">`;

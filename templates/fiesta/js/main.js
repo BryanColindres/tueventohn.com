@@ -71,7 +71,7 @@ function iniciarVideo(){
     overlay.classList.add('hiding');
     screen.classList.add('playing');
     if (videoActivo && C.video) {
-      video.muted = true;
+      video.muted = false;
       video.play().catch(cerrarTodo);
       video.addEventListener('timeupdate', () => {
         if (video.duration) progress.style.width = (video.currentTime / video.duration * 100) + '%';
@@ -143,7 +143,7 @@ function pintarUbicacion(){
 function pintarAddons(){
   const seccionGaleria = document.getElementById('section-galeria');
   if (!C.modules || !C.modules.galeria) {
-    seccionGaleria.style.display = 'none';
+    TuBodaBackend.mostrarBloqueado(seccionGaleria, 'Galería de fotos', 'Tus invitados podrán subir y ver las fotos del evento directo en la invitación.');
   } else {
     const grid = document.getElementById('galeria-grid');
     (C.galeriaMuestra || []).forEach(src => {
@@ -158,7 +158,7 @@ function pintarAddons(){
 
   const seccionFirmas = document.getElementById('section-firmas');
   if (!C.modules || !C.modules.firmas) {
-    seccionFirmas.style.display = 'none';
+    TuBodaBackend.mostrarBloqueado(seccionFirmas, 'Libro de firmas', 'Un espacio para que tus invitados te dejen un mensaje que quede guardado para siempre.');
   } else {
     document.getElementById('form-firma').addEventListener('submit', enviarFirma);
     cargarFirmas();

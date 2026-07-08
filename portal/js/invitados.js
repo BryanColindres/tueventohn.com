@@ -36,6 +36,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('portal-contenido').classList.remove('oculto');
   document.getElementById('link-volver').href = `index.html?codigo=${CODIGO}`;
 
+  const modulosActivos = datos.modulosActivos || {};
+  if (modulosActivos.rsvp_premium !== true) {
+    document.getElementById('portal-contenido').innerHTML = `
+      <div class="tarjeta tarjeta-bloqueada" style="text-align:center">
+        <h2>Links personalizados por invitado</h2>
+        <div class="bloqueo-mensaje">
+          <p>Esta función (RSVP Premium) no está incluida en tu paquete actual. Con ella puedes saber exactamente quién confirmó y quién no, invitado por invitado.</p>
+          <a href="https://wa.me/50431626792?text=${encodeURIComponent('Hola, quiero agregar RSVP Premium a mi invitación')}" target="_blank" class="btn btn-dorado">Quiero agregarlo</a>
+        </div>
+        <br>
+        <a href="index.html?codigo=${CODIGO}" class="btn btn-outline">← Volver a llenar mis datos</a>
+      </div>`;
+    return;
+  }
+
   cargarInvitadosGenerados();
 });
 

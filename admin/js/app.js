@@ -314,7 +314,7 @@ async function renderEditar(id){
   document.getElementById('editar-estado-barra').innerHTML =
     `<span class="estado-pill" style="background:${evento.estados?.color || '#666'}">${evento.estados?.nombre || ''}</span>`;
 
-  const baseUrl = window.location.origin + window.location.pathname.replace('admin/index.html', '');
+  const baseUrl = window.location.origin + window.location.pathname.replace(/admin\/.*$/, '');
   const linkDatos = `${baseUrl}portal/index.html?codigo=${evento.codigo_portal}`;
   const linkInvitados = `${baseUrl}portal/invitados.html?codigo=${evento.codigo_portal}`;
 

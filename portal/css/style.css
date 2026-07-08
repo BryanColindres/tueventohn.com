@@ -72,3 +72,8 @@ body{background:linear-gradient(180deg,var(--celeste-nube),var(--blanco) 340px);
 .tarjeta-final h2{color:#fff}
 .tarjeta-final .desc{color:rgba(255,255,255,.8)}
 .tarjeta-final .btn-dorado{background:#fff;color:var(--celeste-oscuro)}
+
+/* ---- TARJETA BLOQUEADA (módulo no incluido en el paquete) ---- */
+.tarjeta-bloqueada{background:var(--celeste-nube);border:1px dashed var(--celeste)}
+.bloqueo-mensaje{text-align:center;padding:.6rem 0 .4rem}
+.bloqueo-mensaje p{color:var(--texto-mid);font-size:.86rem;margin-bottom:1.1rem;line-height:1.6}

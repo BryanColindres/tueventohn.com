@@ -45,8 +45,7 @@ window.CONFIG_DEMO = {
     { titulo: "La propuesta", texto: "El amor quedó inmortalizado con un sí que llenó de lágrimas y sonrisas nuestro camino hacia el altar.", foto: "img/propuesta.jpg" }
   ],
 
-  videoInterno: { url: "img/interno.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
-
+  videoInterno: { url: "img/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
 
   timeline: [
     { hora: "5:30 PM", titulo: "Llegada de invitados" },

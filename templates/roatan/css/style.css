@@ -223,3 +223,12 @@ a{text-decoration:none;color:inherit}
 .voice-progress__fill{height:100%;width:0%;background:var(--turquesa-osc);transition:width .1s linear}
 .voice-video{width:100%;max-width:300px;border-radius:10px;margin-top:1rem}
 @media(max-width:480px){.voice-card{flex-direction:column;text-align:center}}
+
+
+/* ---- MÓDULO NO COMPRADO — visible, bloqueado, invita a comprar ---- */
+.seccion-bloqueada{padding:3.6rem 2rem;text-align:center}
+.bloqueado-card{max-width:420px;margin:0 auto;padding:2.2rem 1.8rem;border-radius:16px;background:var(--pergamino-osc);border:1px dashed var(--turquesa-osc)}
+.bloqueado-icono{width:30px;height:30px;margin:0 auto 1rem;color:var(--turquesa-osc)}
+.bloqueado-card h3{font-family:var(--font-display);font-size:1.1rem;color:var(--tinta);margin-bottom:.6rem}
+.bloqueado-card p{font-size:.86rem;color:var(--tinta-mid);line-height:1.6;margin-bottom:1.3rem}
+.bloqueado-btn{display:inline-flex;align-items:center;padding:.65rem 1.4rem;border-radius:30px;background:var(--turquesa-osc);color:#fff;font-size:.8rem;font-weight:600}

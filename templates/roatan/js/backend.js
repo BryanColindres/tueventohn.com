@@ -179,6 +179,22 @@ async function obtenerInvitado(slug, identificador) {
   }
 }
 
+// ---------------- MÓDULOS NO COMPRADOS: bloqueados con invitación a comprar ----------------
+function mostrarBloqueado(seccion, nombreModulo, mensaje){
+  if (!seccion) return;
+  const whatsapp = (window.CONFIG_DEMO && window.CONFIG_DEMO.whatsapp && window.CONFIG_DEMO.whatsapp.novio) || "50431626792";
+  const texto = encodeURIComponent(`Hola, quiero agregar el módulo de ${nombreModulo} a mi invitación`);
+  seccion.style.display = '';
+  seccion.classList.add('seccion-bloqueada');
+  seccion.innerHTML = `
+    <div class="bloqueado-card">
+      <svg class="bloqueado-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+      <h3>${nombreModulo}</h3>
+      <p>${mensaje}</p>
+      <a href="https://wa.me/${whatsapp}?text=${texto}" target="_blank" class="bloqueado-btn">Quiero agregar esto</a>
+    </div>`;
+}
+
 window.TuBodaBackend = {
   cargarConfig,
   enviarFirma,
@@ -188,5 +204,6 @@ window.TuBodaBackend = {
   enviarCancion,
   cargarCanciones,
   validarInvitado,
-  obtenerInvitado
+  obtenerInvitado,
+  mostrarBloqueado
 };
