@@ -13,8 +13,8 @@ const SUPABASE_ANON_KEY = "sb_publishable_Ij3gofHHYKTHps92RKXKwQ_5Hya3_GW";
 
 // Cloudinary es compartido por toda la plataforma (una sola cuenta de TuBoda,
 // no una por cliente). Pega aquí los datos reales cuando los tengas.
-const CLOUDINARY_CLOUD_NAME = "PEGAR_CLOUD_NAME";
-const CLOUDINARY_UPLOAD_PRESET = "PEGAR_UPLOAD_PRESET";
+const CLOUDINARY_CLOUD_NAME = "di6hpumct";
+const CLOUDINARY_UPLOAD_PRESET = "boda_jissel_daniel";
 
 async function _rpc(nombreFuncion, parametros) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombreFuncion}`, {
