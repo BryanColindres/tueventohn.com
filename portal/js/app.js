@@ -23,7 +23,13 @@ async function rpc(nombre, parametros){
     headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     body: JSON.stringify(parametros)
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) {
+    console.error('Error en', nombre, data);
+    alert('No se pudo guardar. Intenta de nuevo — si sigue fallando, avísale a Bryan.');
+    return { error: 'error_supabase', detalle: data };
+  }
+  return data;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -75,8 +81,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   pintarMensajes();
   pintarDetalles();
 
-  cargarInvitadosGenerados();
+  actualizarProgreso();
+  document.getElementById('progreso-wrap').classList.remove('oculto');
 });
+
+// ---------------- BARRA DE PROGRESO (cuenta cuántas tarjetas ya tienen algo) ----------------
+function actualizarProgreso(){
+  const total = document.querySelectorAll('.tarjeta:not(.tarjeta-final)').length;
+  let completas = 0;
+  document.querySelectorAll('.tarjeta:not(.tarjeta-final)').forEach(tarjeta => {
+    const campos = tarjeta.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="hidden"], textarea');
+    const tieneAlgo = [...campos].some(c => c.value && c.value.trim());
+    if (tieneAlgo) completas++;
+  });
+  const porcentaje = Math.round((completas / total) * 100);
+  document.getElementById('progreso-fill').style.width = porcentaje + '%';
+  document.getElementById('progreso-texto').textContent = `${porcentaje}% completo`;
+}
 
 function mostrarError(){
   document.getElementById('portal-error').classList.remove('oculto');
@@ -87,6 +108,7 @@ function mostrarOk(idBoton){
   const el = document.getElementById(idBoton);
   el.classList.remove('oculto');
   setTimeout(() => el.classList.add('oculto'), 2500);
+  actualizarProgreso();
 }
 
 function valor(id){ return document.getElementById(id).value; }
@@ -286,62 +308,6 @@ function quitarMensaje(i){ mensajesItems.splice(i, 1); pintarMensajes(); }
 async function guardarMensajes(){
   await rpc('portal_guardar_mensajes', { p_codigo: CODIGO, p_items: mensajesItems });
   mostrarOk('ok-mensajes');
-}
-
-// ---------------- GENERADOR DE INVITACIONES ----------------
-function cambiarTabGenerador(tab){
-  document.querySelectorAll('.gen-tab').forEach(b => b.classList.toggle('activo', b.dataset.tab === tab));
-  document.getElementById('gen-tab-manual').classList.toggle('oculto', tab !== 'manual');
-  document.getElementById('gen-tab-excel').classList.toggle('oculto', tab !== 'excel');
-}
-
-async function agregarInvitadoManual(){
-  const input = document.getElementById('invitado-nombre-nuevo');
-  const nombre = input.value.trim();
-  if (!nombre) return;
-  const resultado = await rpc('portal_agregar_invitado_manual', { p_codigo: CODIGO, p_nombre: nombre });
-  if (resultado.error) { alert('No se pudo agregar. Intenta de nuevo.'); return; }
-  input.value = '';
-  cargarInvitadosGenerados();
-}
-
-async function cargarInvitadosGenerados(){
-  const resultado = await rpc('portal_listar_invitados', { p_codigo: CODIGO });
-  const cont = document.getElementById('lista-invitados-generados');
-  if (!resultado || !Array.isArray(resultado) || !resultado.length) { cont.innerHTML = ''; return; }
-  cont.innerHTML = resultado.map(i => `<div><b>${i.nombre}</b> — ${i.link} ${i.confirmado === true ? '✅' : i.confirmado === false ? '❌' : '⏳'}</div>`).join('');
-}
-
-function procesarExcel(){
-  const input = document.getElementById('input-excel');
-  const archivo = input.files[0];
-  if (!archivo) { alert('Selecciona un archivo primero.'); return; }
-
-  const lector = new FileReader();
-  lector.onload = async (e) => {
-    const datos = new Uint8Array(e.target.result);
-    const libro = XLSX.read(datos, { type: 'array' });
-    const hoja = libro.Sheets[libro.SheetNames[0]];
-    const filas = XLSX.utils.sheet_to_json(hoja);
-
-    const nombres = filas.map(f => f.Nombre || f.nombre).filter(Boolean);
-    if (!nombres.length) { alert('No se encontró la columna "Nombre" en el archivo.'); return; }
-
-    const resultado = await rpc('portal_generar_links_invitados', { p_codigo: CODIGO, p_nombres: nombres });
-    if (resultado.error) { alert('No se pudo procesar el archivo.'); return; }
-
-    cargarInvitadosGenerados();
-
-    const cont = document.getElementById('lista-invitados-generados');
-    cont.innerHTML += '<br><button class="btn btn-dorado btn-chico" id="btn-descargar-excel">Descargar Excel con links</button>';
-    document.getElementById('btn-descargar-excel').onclick = () => {
-      const hojaNueva = XLSX.utils.json_to_sheet(resultado.invitados.map(i => ({ Nombre: i.nombre, Link: i.link })));
-      const libroNuevo = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libroNuevo, hojaNueva, 'Invitados');
-      XLSX.writeFile(libroNuevo, 'invitados-con-links.xlsx');
-    };
-  };
-  lector.readAsArrayBuffer(archivo);
 }
 
 // ---------------- FINALIZAR ----------------

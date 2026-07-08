@@ -3,22 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal de tu invitación — TuBoda</title>
+<title>Portal de tu invitación — Nube Eventos</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <div class="wrap" id="wrap-portal">
     <div class="header">
+      <svg class="header-nube" style="top:-10px;left:-20px;width:90px" viewBox="0 0 200 110" fill="#DCF0FA"><ellipse cx="60" cy="70" rx="55" ry="34"/><ellipse cx="110" cy="55" rx="60" ry="42"/><ellipse cx="155" cy="72" rx="40" ry="28"/></svg>
+      <svg class="header-nube" style="top:0;right:-16px;width:70px" viewBox="0 0 200 110" fill="#DCF0FA"><ellipse cx="60" cy="70" rx="55" ry="34"/><ellipse cx="110" cy="55" rx="60" ry="42"/><ellipse cx="155" cy="72" rx="40" ry="28"/></svg>
       <p class="eyebrow">Portal de tu invitación</p>
       <h1 id="portal-nombre-evento">Cargando...</h1>
+      <p class="marca">Nube Eventos</p>
+    </div>
+
+    <div class="progreso-wrap oculto" id="progreso-wrap">
+      <div class="progreso-barra"><div class="progreso-fill" id="progreso-fill" style="width:0%"></div></div>
+      <p class="progreso-texto" id="progreso-texto">0% completo</p>
     </div>
 
     <div id="portal-contenido" class="oculto">
 
       <!-- DATOS PRINCIPALES -->
       <div class="tarjeta">
-        <h2>Datos principales</h2>
+        <h2><span class="num">1</span> Datos principales</h2>
         <p class="desc">Nombres, contacto y fecha del evento.</p>
         <div class="form-grid">
           <div class="campo"><label>Tu nombre</label><input type="text" id="p-novio-a-nombre"></div>
@@ -31,12 +39,12 @@
           <div class="campo"><label>Hora</label><input type="time" id="p-hora"></div>
         </div>
         <button class="btn btn-dorado" onclick="guardarDatosPrincipales()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-datos">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-datos">Guardado</p>
       </div>
 
       <!-- UBICACIÓN -->
       <div class="tarjeta">
-        <h2>Ubicación</h2>
+        <h2><span class="num">2</span> Ubicación</h2>
         <p class="desc">Nombre del lugar, dirección y links de mapa.</p>
         <div class="campo"><label>Lugar</label><input type="text" id="p-lugar-nombre"></div>
         <div class="campo"><label>Dirección</label><input type="text" id="p-lugar-direccion"></div>
@@ -48,12 +56,12 @@
           <input type="hidden" id="p-lugar-foto">
         </div>
         <button class="btn btn-dorado" onclick="guardarUbicacion()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-ubicacion">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-ubicacion">Guardado</p>
       </div>
 
       <!-- FOTOS PRINCIPALES -->
       <div class="tarjeta">
-        <h2>Fotos principales</h2>
+        <h2><span class="num">3</span> Fotos principales</h2>
         <p class="desc">La foto de portada y la del cierre de la invitación.</p>
         <div class="campo">
           <label>Foto de portada</label>
@@ -66,12 +74,12 @@
           <input type="hidden" id="p-foto-footer">
         </div>
         <button class="btn btn-dorado" onclick="guardarFotos()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-fotos">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-fotos">Guardado</p>
       </div>
 
       <!-- MÚSICA DE FONDO -->
       <div class="tarjeta">
-        <h2>Música de fondo</h2>
+        <h2><span class="num">4</span> Música de fondo</h2>
         <p class="desc">Suena automáticamente al abrir la invitación.</p>
         <div class="campo">
           <label>Archivo de audio (MP3)</label>
@@ -79,12 +87,12 @@
           <input type="hidden" id="p-musica-url">
         </div>
         <button class="btn btn-dorado" onclick="guardarMusica()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-musica">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-musica">Guardado</p>
       </div>
 
       <!-- MENSAJE PERSONALIZADO (VOZ O VIDEO) -->
       <div class="tarjeta">
-        <h2>Mensaje para tus invitados</h2>
+        <h2><span class="num">5</span> Mensaje para tus invitados</h2>
         <p class="desc">Una grabación de audio o video que aparece dentro de la invitación (requiere que tus invitados tengan link personalizado).</p>
         <div class="campo">
           <label>Tipo</label>
@@ -99,12 +107,12 @@
           <input type="hidden" id="p-mensaje-url">
         </div>
         <button class="btn btn-dorado" onclick="guardarMensajePersonalizado()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-mensaje">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-mensaje">Guardado</p>
       </div>
 
       <!-- VIDEO DENTRO DE LA INVITACIÓN -->
       <div class="tarjeta">
-        <h2>Video dentro de la invitación</h2>
+        <h2><span class="num">6</span> Video dentro de la invitación</h2>
         <p class="desc">Diferente al video de apertura — este aparece como una sección más, con una frase.</p>
         <div class="campo">
           <label>Video</label>
@@ -113,73 +121,73 @@
         </div>
         <div class="campo"><label>Frase que acompaña al video</label><input type="text" id="p-video-interno-frase"></div>
         <button class="btn btn-dorado" onclick="guardarVideoInterno()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-video-interno">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-video-interno">Guardado</p>
       </div>
 
       <!-- HISTORIA -->
       <div class="tarjeta">
-        <h2>Nuestra historia</h2>
+        <h2><span class="num">7</span> Nuestra historia</h2>
         <p class="desc">Agrega los momentos que quieres contar.</p>
         <div id="lista-historia"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarHistoria()">+ Agregar momento</button>
         <br><br>
         <button class="btn btn-dorado" onclick="guardarHistoria()">Guardar historia</button>
-        <p class="mensaje-ok oculto" id="ok-historia">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-historia">Guardado</p>
       </div>
 
       <!-- ITINERARIO -->
       <div class="tarjeta">
-        <h2>Itinerario</h2>
+        <h2><span class="num">8</span> Itinerario</h2>
         <p class="desc">Los momentos del día, en orden.</p>
         <div id="lista-timeline"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarTimeline()">+ Agregar momento</button>
         <br><br>
         <button class="btn btn-dorado" onclick="guardarTimeline()">Guardar itinerario</button>
-        <p class="mensaje-ok oculto" id="ok-timeline">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-timeline">Guardado</p>
       </div>
 
       <!-- DETALLES IMPORTANTES -->
       <div class="tarjeta">
-        <h2>Detalles importantes</h2>
-        <p class="desc">Hora de llegada, código de vestimenta general, restricciones, etc.</p>
+        <h2><span class="num">9</span> Detalles importantes</h2>
+        <p class="desc">Hora de llegada, restricciones, etc.</p>
         <div id="lista-detalles"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarDetalle()">+ Agregar detalle</button>
         <br><br>
         <button class="btn btn-dorado" onclick="guardarDetalles()">Guardar detalles</button>
-        <p class="mensaje-ok oculto" id="ok-detalles">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-detalles">Guardado</p>
       </div>
 
       <!-- VESTIMENTA -->
       <div class="tarjeta">
-        <h2>Código de vestimenta</h2>
+        <h2><span class="num">10</span> Código de vestimenta</h2>
         <div class="campo"><label>Descripción</label><textarea id="p-vestimenta-texto" placeholder="Etiqueta formal, colores..."></textarea></div>
         <div class="campo"><label>Link de referencias (Pinterest, etc. — opcional)</label><input type="text" id="p-vestimenta-boton"></div>
         <button class="btn btn-dorado" onclick="guardarVestimenta()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-vestimenta">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-vestimenta">Guardado</p>
       </div>
 
       <!-- REGALOS -->
       <div class="tarjeta">
-        <h2>Regalos</h2>
+        <h2><span class="num">11</span> Regalos</h2>
         <div class="campo"><label>Texto principal</label><textarea id="p-regalos-texto" placeholder="Tu presencia es nuestro regalo..."></textarea></div>
         <div class="campo"><label>Datos de cuenta (opcional — aparece en un botón "más detalles")</label><textarea id="p-regalos-cuenta" placeholder="Banco, número de cuenta, a nombre de..."></textarea></div>
         <button class="btn btn-dorado" onclick="guardarRegalos()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-regalos">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-regalos">Guardado</p>
       </div>
 
       <!-- MENSAJES -->
       <div class="tarjeta">
-        <h2>Versículo o mensaje especial</h2>
+        <h2><span class="num">12</span> Versículo o mensaje especial</h2>
         <div id="lista-mensajes"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarMensaje()">+ Agregar mensaje</button>
         <br><br>
         <button class="btn btn-dorado" onclick="guardarMensajes()">Guardar mensajes</button>
-        <p class="mensaje-ok oculto" id="ok-mensajes">Guardado ✓</p>
+        <p class="mensaje-ok oculto" id="ok-mensajes">Guardado</p>
       </div>
 
       <!-- FOTOS DECORATIVAS -->
       <div class="tarjeta">
-        <h2>Fotos adicionales (opcional)</h2>
+        <h2><span class="num">13</span> Fotos adicionales (opcional)</h2>
         <p class="desc">Se muestran en el libro de firmas y en la sección de confirmación.</p>
         <div class="campo">
           <label>Foto en libro de firmas</label>
@@ -192,44 +200,15 @@
           <input type="hidden" id="p-rsvp-foto">
         </div>
         <button class="btn btn-dorado" onclick="guardarFotosDecorativas()">Guardar</button>
-        <p class="mensaje-ok oculto" id="ok-fotos-decorativas">Guardado ✓</p>
-      </div>
-
-      <!-- GENERADOR DE INVITACIONES / LINKS POR INVITADO -->
-      <div class="tarjeta">
-        <h2>Links personalizados por invitado</h2>
-        <p class="desc">Solo si activaste "RSVP Premium". Puedes agregar invitados uno por uno, o subir un Excel con una columna "Nombre" de una sola vez. No guardamos tu Excel, solo la lista de nombres.</p>
-
-        <div class="generador-tabs">
-          <button class="gen-tab activo" data-tab="manual" onclick="cambiarTabGenerador('manual')">Uno por uno</button>
-          <button class="gen-tab" data-tab="excel" onclick="cambiarTabGenerador('excel')">Subir Excel</button>
-        </div>
-
-        <div id="gen-tab-manual" class="gen-panel">
-          <div class="campo-inline">
-            <input type="text" id="invitado-nombre-nuevo" placeholder="Nombre del invitado o familia">
-            <button class="btn btn-dorado btn-chico" onclick="agregarInvitadoManual()">Agregar</button>
-          </div>
-        </div>
-
-        <div id="gen-tab-excel" class="gen-panel oculto">
-          <div class="excel-box">
-            <p>Tu Excel debe tener una columna llamada "Nombre"</p>
-            <input type="file" id="input-excel" accept=".xlsx,.xls">
-            <br><br>
-            <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Generar links</button>
-          </div>
-        </div>
-
-        <div id="lista-invitados-generados" class="lista-links"></div>
+        <p class="mensaje-ok oculto" id="ok-fotos-decorativas">Guardado</p>
       </div>
 
       <!-- FINALIZAR -->
-      <div class="tarjeta" style="text-align:center">
-        <h2>¿Ya terminaste?</h2>
-        <p class="desc">Avísanos para que revisemos tu invitación.</p>
+      <div class="tarjeta tarjeta-final">
+        <h2 style="justify-content:center">¿Ya terminaste?</h2>
+        <p class="desc">Avísanos para que revisemos tu invitación. Cuando termines aquí, también puedes generar los links personalizados de tus invitados en la otra página que te compartimos.</p>
         <button class="btn btn-dorado" onclick="marcarCompleto()">Marcar como completo</button>
-        <p class="mensaje-ok oculto" id="ok-completo">¡Listo! Te avisaremos cuando esté publicada.</p>
+        <p class="mensaje-ok oculto" id="ok-completo" style="justify-content:center;color:#fff">¡Listo! Te avisaremos cuando esté publicada.</p>
       </div>
 
     </div>
@@ -240,7 +219,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

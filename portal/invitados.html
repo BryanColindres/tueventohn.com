@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invitados — Nube Eventos</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="wrap" id="wrap-portal">
+    <div class="header">
+      <svg class="header-nube" style="top:-10px;left:-20px;width:90px" viewBox="0 0 200 110" fill="#DCF0FA"><ellipse cx="60" cy="70" rx="55" ry="34"/><ellipse cx="110" cy="55" rx="60" ry="42"/><ellipse cx="155" cy="72" rx="40" ry="28"/></svg>
+      <svg class="header-nube" style="top:0;right:-16px;width:70px" viewBox="0 0 200 110" fill="#DCF0FA"><ellipse cx="60" cy="70" rx="55" ry="34"/><ellipse cx="110" cy="55" rx="60" ry="42"/><ellipse cx="155" cy="72" rx="40" ry="28"/></svg>
+      <p class="eyebrow">Links personalizados por invitado</p>
+      <h1 id="portal-nombre-evento">Cargando...</h1>
+      <p class="marca">Nube Eventos</p>
+    </div>
+
+    <div id="portal-contenido" class="oculto">
+
+      <div class="tarjeta">
+        <h2>¿Cómo funciona?</h2>
+        <p class="desc">Cada invitado (o familia) recibe un link único para su invitación. Así puedes saber exactamente quién confirmó y quién no. Agrega los nombres uno por uno, o sube un Excel con una columna llamada "Nombre" de una sola vez. No guardamos tu archivo, solo la lista de nombres.</p>
+
+        <div class="generador-tabs">
+          <button class="gen-tab activo" data-tab="manual" onclick="cambiarTabGenerador('manual')">Uno por uno</button>
+          <button class="gen-tab" data-tab="excel" onclick="cambiarTabGenerador('excel')">Subir Excel</button>
+        </div>
+
+        <div id="gen-tab-manual" class="gen-panel">
+          <div class="campo-inline">
+            <input type="text" id="invitado-nombre-nuevo" placeholder="Nombre del invitado o familia">
+            <button class="btn btn-dorado btn-chico" onclick="agregarInvitadoManual()">Agregar</button>
+          </div>
+        </div>
+
+        <div id="gen-tab-excel" class="gen-panel oculto">
+          <div class="excel-box">
+            <p>Tu Excel debe tener una columna llamada "Nombre"</p>
+            <input type="file" id="input-excel" accept=".xlsx,.xls">
+            <br><br>
+            <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Generar links</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Invitados generados</h2>
+        <p class="desc">✅ confirmó · ❌ no viene · ⏳ sin responder</p>
+        <div id="lista-invitados-generados" class="lista-links"></div>
+        <p id="sin-invitados" class="desc">Todavía no has agregado a nadie.</p>
+      </div>
+
+      <div class="tarjeta" style="text-align:center">
+        <a href="index.html" id="link-volver" class="btn btn-outline">← Volver a llenar mis datos</a>
+      </div>
+
+    </div>
+
+    <div id="portal-error" class="estado-error oculto">
+      <p>Este link no es válido o ya expiró.</p>
+      <p style="font-size:.85rem">Contacta a quien te lo compartió para obtener uno nuevo.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/invitados.js"></script>
+</body>
+</html>

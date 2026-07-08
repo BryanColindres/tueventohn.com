@@ -131,7 +131,7 @@ async function renderInvitaciones(){
   grid.innerHTML = '<p style="color:var(--texto-mid)">Cargando...</p>';
 
   const eventos = await apiGet('eventos',
-    'select=id,nombre_evento,publicado,slug_publico,clientes(nombre),plantillas(nombre),paquetes(nombre),estados(nombre,color)&order=created_at.desc');
+    'select=id,nombre_evento,publicado,slug_publico,clientes(nombre),plantillas(nombre,slug),paquetes(nombre),estados(nombre,color)&order=created_at.desc');
 
   if (!eventos.length) { grid.innerHTML = '<p style="color:var(--texto-mid)">Todavía no hay invitaciones. Crea la primera.</p>'; return; }
 
@@ -203,9 +203,34 @@ function mostrarPasoWizard(n){
   if (n === 4) pintarWizardAddons();
 }
 
-function pintarWizardAddons(){
-  const incluidos = estado.modulos; // simplificación: se muestran todos, el admin decide cuáles activar de una vez
-  document.getElementById('wizard-addons').innerHTML = incluidos.map(m => `
+async function pintarWizardAddons(){
+  const cont = document.getElementById('wizard-addons');
+  cont.innerHTML = '<p style="color:var(--texto-mid)">Cargando...</p>';
+
+  const paqueteElegido = estado.paquetes.find(p => p.id === estado.wizard.paqueteId);
+  const esPremium = paqueteElegido && paqueteElegido.nombre === 'Premium';
+
+  const incluidosEnPaquete = await apiGet('paquete_modulo', `paquete_id=eq.${estado.wizard.paqueteId}&select=modulo_id`);
+  const idsIncluidos = new Set(incluidosEnPaquete.map(i => i.modulo_id));
+
+  let modulosAMostrar;
+  if (esPremium) {
+    // Premium: se muestra TODO, ya pre-marcado (puede desmarcar si quiere quitar algo)
+    modulosAMostrar = estado.modulos;
+    modulosAMostrar.forEach(m => {
+      if (!estado.wizard.addonsExtra.includes(m.id)) estado.wizard.addonsExtra.push(m.id);
+    });
+  } else {
+    // Básico / Estándar: solo se muestra lo que NO viene ya incluido en el paquete
+    modulosAMostrar = estado.modulos.filter(m => !idsIncluidos.has(m.id));
+  }
+
+  if (!modulosAMostrar.length) {
+    cont.innerHTML = '<p style="color:var(--texto-mid)">Este paquete ya incluye todos los módulos disponibles.</p>';
+    return;
+  }
+
+  cont.innerHTML = modulosAMostrar.map(m => `
     <div class="opcion-card ${estado.wizard.addonsExtra.includes(m.id) ? 'seleccionada' : ''}" data-id="${m.id}" onclick="toggleWizardAddon('${m.id}', this)">
       <p class="titulo">${m.nombre}</p>
       <p class="desc">L. ${Number(m.precio).toLocaleString('es-HN')}</p>
@@ -262,8 +287,11 @@ async function onWizardSiguiente(){
     }]);
 
     // activar módulos del paquete elegido
+    const paqueteElegido = estado.paquetes.find(p => p.id === w.paqueteId);
     const modulosPaquete = await apiGet('paquete_modulo', `paquete_id=eq.${w.paqueteId}&select=modulo_id`);
-    const idsActivar = new Set([...modulosPaquete.map(m => m.modulo_id), ...w.addonsExtra]);
+    const idsActivar = (paqueteElegido && paqueteElegido.nombre === 'Premium')
+      ? new Set(w.addonsExtra) // en Premium, lo que quede marcado en el paso 4 es la lista final (si desmarcan algo, se respeta)
+      : new Set([...modulosPaquete.map(m => m.modulo_id), ...w.addonsExtra]);
     const filasEventoModulo = [...idsActivar].map(modulo_id => ({ evento_id: evento.id, modulo_id, activo: true }));
     if (filasEventoModulo.length) await apiPost('evento_modulo', filasEventoModulo);
 
@@ -286,12 +314,23 @@ async function renderEditar(id){
   document.getElementById('editar-estado-barra').innerHTML =
     `<span class="estado-pill" style="background:${evento.estados?.color || '#666'}">${evento.estados?.nombre || ''}</span>`;
 
+  const baseUrl = window.location.origin + window.location.pathname.replace('admin/index.html', '');
+  const linkDatos = `${baseUrl}portal/index.html?codigo=${evento.codigo_portal}`;
+  const linkInvitados = `${baseUrl}portal/invitados.html?codigo=${evento.codigo_portal}`;
+
   document.getElementById('editar-portal-box').innerHTML = `
-    <div>
-      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link del portal del cliente</p>
-      <code>portal/index.html?codigo=${evento.codigo_portal}</code>
+    <div style="width:100%">
+      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link para que llenen sus datos</p>
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+        <input type="text" readonly value="${linkDatos}" id="input-link-datos" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
+        <button class="btn btn-fantasma" onclick="copiarLink('input-link-datos')">Copiar</button>
+      </div>
+      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link para el generador de invitados (RSVP Premium)</p>
+      <div style="display:flex;gap:.5rem">
+        <input type="text" readonly value="${linkInvitados}" id="input-link-invitados" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
+        <button class="btn btn-fantasma" onclick="copiarLink('input-link-invitados')">Copiar</button>
+      </div>
     </div>
-    <button class="btn btn-fantasma" onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname.replace('admin/index.html','') + 'portal/index.html?codigo=${evento.codigo_portal}'); mostrarToast('Link copiado')">Copiar</button>
   `;
 
   // pestaña cliente
@@ -545,5 +584,26 @@ async function duplicarEvento(eventoId){
   } catch (err) {
     console.error(err);
     mostrarToast('Error al duplicar');
+  }
+}
+
+// ---------------- COPIAR AL PORTAPAPELES (con respaldo) ----------------
+function copiarLink(idInput){
+  const input = document.getElementById(idInput);
+  input.select();
+  input.setSelectionRange(0, 99999); // por si es móvil
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(input.value)
+      .then(() => mostrarToast('Link copiado'))
+      .catch(() => mostrarToast('No se pudo copiar automático — el texto ya está seleccionado, usa Ctrl+C'));
+  } else {
+    // Sitio sin HTTPS o navegador viejo: usamos el método de respaldo
+    try {
+      document.execCommand('copy');
+      mostrarToast('Link copiado');
+    } catch (err) {
+      mostrarToast('No se pudo copiar automático — el texto ya está seleccionado, usa Ctrl+C');
+    }
   }
 }
