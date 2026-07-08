@@ -6,8 +6,10 @@
 
 const SUPABASE_URL = "https://npfgugnoycokhtljbwkw.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_Ij3gofHHYKTHps92RKXKwQ_5Hya3_GW";
-const CLOUDINARY_CLOUD_NAME = "PEGAR_CLOUD_NAME";
-const CLOUDINARY_UPLOAD_PRESET = "PEGAR_UPLOAD_PRESET";
+const CLOUDINARY_CLOUD_NAME = "di6hpumct";
+const CLOUDINARY_UPLOAD_PRESET = "boda_jissel_daniel";
+
+let EVENTO_ID = null;
 
 let CODIGO = null;
 let historiaItems = [];
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('portal-nombre-evento').textContent = datos.nombreEvento || 'Tu invitación';
   document.getElementById('portal-contenido').classList.remove('oculto');
+  EVENTO_ID = datos.eventoId;
 
   document.getElementById('p-novio-a-nombre').value = datos.novioANombre || '';
   document.getElementById('p-novio-a-apellido').value = datos.novioAApellido || '';
@@ -94,6 +97,7 @@ async function subirArchivoCloudinary(archivo, tipoRecurso){
   const formData = new FormData();
   formData.append('file', archivo);
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  if (EVENTO_ID) formData.append('folder', `tuboda/${EVENTO_ID}`);
   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${tipoRecurso}/upload`, { method: 'POST', body: formData });
   const data = await res.json();
   return data.secure_url || null;
