@@ -127,7 +127,7 @@ function pintarTimeline(){
     <div class="prog-item reveal">
       <span class="prog-icono">${ICONOS_BOSQUE[i % ICONOS_BOSQUE.length]}</span>
       <span class="prog-hora">${t.hora}</span>
-      <span class="prog-titulo">${t.titulo}</span>
+      <span class="prog-titulo">${TuBodaBackend.iconoTimelineHtml(t.icono)}${t.titulo}</span>
     </div>`).join('');
 }
 
@@ -150,7 +150,7 @@ function pintarUbicacion(){
 function pintarAddons(){
   const seccionGaleria = document.getElementById('section-galeria');
   if (!C.modules || !C.modules.galeria) {
-    TuBodaBackend.mostrarBloqueado(seccionGaleria, 'Galería de fotos', 'Tus invitados podrán subir y ver las fotos del evento directo en la invitación.');
+    seccionGaleria.style.display = 'none';
   } else {
     const grid = document.getElementById('galeria-grid');
     (C.galeriaMuestra || []).forEach(src => {
@@ -165,7 +165,7 @@ function pintarAddons(){
 
   const seccionFirmas = document.getElementById('section-firmas');
   if (!C.modules || !C.modules.firmas) {
-    TuBodaBackend.mostrarBloqueado(seccionFirmas, 'Libro de firmas', 'Un espacio para que tus invitados te dejen un mensaje que quede guardado para siempre.');
+    seccionFirmas.style.display = 'none';
   } else {
     if (C.firmasFotoUrl) {
       document.getElementById('firmas-foto').innerHTML = `<img src="${C.firmasFotoUrl}" alt="">`;
@@ -213,6 +213,8 @@ async function cargarFirmas(){
 }
 
 function pintarRSVP(){
+  const spanFechaLimite = document.getElementById('rsvp-fecha-limite');
+  if (spanFechaLimite) spanFechaLimite.textContent = C.rsvpFechaLimite || 'la fecha indicada';
   if (C.rsvpFotoUrl) {
     document.getElementById('rsvp-foto').innerHTML = `<img src="${C.rsvpFotoUrl}" alt="">`;
     document.getElementById('rsvp-foto').classList.remove('oculto');

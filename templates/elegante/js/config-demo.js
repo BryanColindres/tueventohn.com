@@ -15,37 +15,38 @@ window.CONFIG_DEMO = {
 
   fecha: "2026-10-03T18:00:00",
   fechaTexto: "Sábado, 03 de Octubre de 2026",
+  rsvpFechaLimite: "15 de septiembre de 2026",
 
   lugar: {
     nombre: "Valletal Eventos",
     direccion: "Cerro Grande, Valle de Ángeles, Honduras",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Valletal+Eventos+Valle+de+Angeles+Honduras",
     wazeUrl: "https://waze.com/ul?q=Valletal%20Eventos%20Valle%20de%20Angeles%20Honduras&navigate=yes",
-    foto: "img/preboda9.jpg"
+    foto: "../../assets/demo/img/preboda10.jpg"
   },
 
-  fotos: { hero: "img/hero.jpg", footer: "img/preboda6.jpg" },
+  fotos: { hero: "../../assets/demo/img/hero.jpg", footer: "../../assets/demo/img/novios.jpg" },
 
-  video: "img/video-intro.mp4",
+  video: "../../assets/demo/video-intro.mp4",
   videoDelay: 1.5,
-  musicaUrl: "audio/musica.mp3",
+  musicaUrl: "../../assets/demo/musica.mp3",
 
   // Invitado de muestra — así se ve el banner y la pantalla de mensaje
   // personalizado cuando alguien entra con su link único (RSVP Premium)
   // invitado: { nombre: "Familia Pérez" }, // <-- descomenta para probar la pantalla de nombre y el mensaje personalizado con nombre real
-  mensajePersonalizado: { tipo: "audio", url: "audio/musica.mp3" },
+  mensajePersonalizado: { tipo: "audio", url: "../../assets/demo/musica.mp3" },
 
   mensajes: [
     { texto: "El amor es paciente, el amor es bondadoso. No es envidioso, no se jacta, no se envanece.", referencia: "1 Corintios 13:4" }
   ],
 
   historia: [
-    { titulo: "Nos conocimos", texto: "Un día aparecimos en la vida del otro, sin planearlo ni esperarlo.", foto: "img/nos_conocimos.jpg" },
-    { titulo: "Primera cita", texto: "Una cita inolvidable donde finalmente confesamos lo que ya llevábamos dentro.", foto: "img/primera_cita.jpg" },
-    { titulo: "La propuesta", texto: "El amor quedó inmortalizado con un sí que llenó de lágrimas y sonrisas nuestro camino hacia el altar.", foto: "img/propuesta.jpg" }
+    { titulo: "Nos conocimos", texto: "Un día aparecimos en la vida del otro, sin planearlo ni esperarlo.", foto: "../../assets/demo/img/nos_conocimos.jpg" },
+    { titulo: "Primera cita", texto: "Una cita inolvidable donde finalmente confesamos lo que ya llevábamos dentro.", foto: "../../assets/demo/img/primera_cita.jpg" },
+    { titulo: "La propuesta", texto: "El amor quedó inmortalizado con un sí que llenó de lágrimas y sonrisas nuestro camino hacia el altar.", foto: "../../assets/demo/img/propuesta.jpg" }
   ],
 
-  videoInterno: { url: "img/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
+  videoInterno: { url: "../../assets/demo/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
 
   timeline: [
     { hora: "5:30 PM", titulo: "Llegada de invitados" },
@@ -73,8 +74,8 @@ window.CONFIG_DEMO = {
     cuentaTexto: "Banco Atlántida\nCuenta de ahorros: 1234567890\nA nombre de: Bryan Colindres"
   },
 
-  rsvpFotoUrl: "img/preboda12.jpg",
-  firmasFotoUrl: "img/preboda13.jpg",
+  rsvpFotoUrl: "../../assets/demo/img/preboda8.jpg",
+  firmasFotoUrl: "../../assets/demo/img/preboda9.jpg",
 
   modules: {
     countdown: true, musica: true, mapa: true, historia: true, mensajes: true,
@@ -83,7 +84,7 @@ window.CONFIG_DEMO = {
     mensaje_personalizado: true, video_interno: true
   },
 
-  galeriaMuestra: ["img/preboda8.jpg","img/preboda9.jpg","img/preboda10.jpg","img/preboda11.jpg","img/preboda12.jpg","img/preboda13.jpg"],
+  galeriaMuestra: ["../../assets/demo/img/preboda2.jpg", "../../assets/demo/img/preboda3.jpg", "../../assets/demo/img/preboda4.jpg", "../../assets/demo/img/preboda5.jpg", "../../assets/demo/img/preboda6.jpg", "../../assets/demo/img/preboda7.jpg"],
 
   whatsapp: { novio: "50431626792", novia: "50499223790" }
 };

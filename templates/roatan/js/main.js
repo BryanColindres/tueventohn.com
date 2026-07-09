@@ -122,7 +122,7 @@ function pintarTimeline(){
   cont.innerHTML = C.timeline.map(t => `
     <div class="prog-item reveal">
       ${icono}
-      <span class="prog-titulo">${t.titulo}</span>
+      <span class="prog-titulo">${TuBodaBackend.iconoTimelineHtml(t.icono)}${t.titulo}</span>
       <span class="prog-hora">${t.hora}</span>
     </div>`).join('');
 }
@@ -191,7 +191,7 @@ function pintarAddons(){
 
   const seccionDeseo = document.getElementById('section-deseo');
   if (!C.modules || !C.modules.firmas) {
-    TuBodaBackend.mostrarBloqueado(seccionDeseo, 'Suelta tu deseo al mar', 'Un espacio para que tus invitados te dejen un mensaje que quede guardado para siempre.');
+    seccionDeseo.style.display = 'none';
   } else {
     if (C.firmasFotoUrl) {
       document.getElementById('firmas-foto').innerHTML = `<img src="${C.firmasFotoUrl}" alt="">`;
@@ -269,6 +269,8 @@ async function cargarDeseos(){
 }
 
 function pintarRSVP(){
+  const spanFechaLimite = document.getElementById('rsvp-fecha-limite');
+  if (spanFechaLimite) spanFechaLimite.textContent = C.rsvpFechaLimite || 'la fecha indicada';
   if (C.rsvpFotoUrl) {
     document.getElementById('rsvp-foto').innerHTML = `<img src="${C.rsvpFotoUrl}" alt="">`;
     document.getElementById('rsvp-foto').classList.remove('oculto');

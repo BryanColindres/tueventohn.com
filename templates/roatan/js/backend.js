@@ -195,6 +195,48 @@ function mostrarBloqueado(seccion, nombreModulo, mensaje){
     </div>`;
 }
 
+// ---------------- LIMPIAR DIVISORES HUÉRFANOS ----------------
+// Si una sección vecina de un divisor decorativo (el "+" de Elegante, los
+// azulejos/rosario de Colonial, etc.) queda oculta porque ese módulo no fue
+// comprado, el divisor se queda solo, flotando sin nada que separar.
+// Esto oculta cualquier elemento con class="divisor" que tenga un vecino
+// oculto — se llama al final, después de que todos los pintarX() ya
+// decidieron qué mostrar y qué ocultar.
+function limpiarDivisoresHuerfanos(){
+  document.querySelectorAll('.divisor').forEach(div => {
+    const anterior = div.previousElementSibling;
+    const siguiente = div.nextElementSibling;
+    const anteriorOculto = !anterior || getComputedStyle(anterior).display === 'none';
+    const siguienteOculto = !siguiente || getComputedStyle(siguiente).display === 'none';
+    div.style.display = (anteriorOculto || siguienteOculto) ? 'none' : '';
+  });
+}
+
+// ---------------- ICONOS DEL ITINERARIO (los 10 más comunes) ----------------
+const ICONOS_ITINERARIO = {
+  ceremonia: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><path d="M12 6l-2 5M12 6l2 5"/></svg>',
+  recepcion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3v6a5 5 0 0010 0V3M12 13v8M8 21h8"/></svg>',
+  coctel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4h14l-7 8v8M9 20h6"/><circle cx="17" cy="4" r="1" fill="currentColor" stroke="none"/></svg>',
+  cena: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3v7a2 2 0 002 2v9M6 3v9M9 3v7M18 3c-2 0-3 2-3 5v2h3v9"/></svg>',
+  baile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="5" r="2"/><path d="M9 7v6l-3 7M9 13l4 2 3 6M9 13l5-2 2-5"/></svg>',
+  fiesta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20L15 9M17 3l1 3 3 1-3 1-1 3-1-3-3-1 3-1zM5 13l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>',
+  brindis: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3l1 8a3 3 0 003 3 3 3 0 003-3l1-8M10 14v7M7 21h6M4 5l3-1M20 5l-3-1"/></svg>',
+  pastel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21v-7a2 2 0 012-2h12a2 2 0 012 2v7M4 21h16M11 12V8M11 4v1M8 12c0-2 1-3 3-4 2 1 3 2 3 4"/></svg>',
+  ramo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="7" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="10" cy="11" r="2"/><path d="M11 12l-4 9"/></svg>',
+  salida: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h13M11 6l6 6-6 6M16 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3"/></svg>'
+};
+
+const NOMBRES_ICONOS_ITINERARIO = {
+  ceremonia: 'Ceremonia', recepcion: 'Recepción', coctel: 'Cóctel', cena: 'Cena',
+  baile: 'Primer baile', fiesta: 'Fiesta', brindis: 'Brindis', pastel: 'Pastel',
+  ramo: 'Lanzamiento del ramo', salida: 'Salida de los novios'
+};
+
+function iconoTimelineHtml(slugIcono){
+  if (!slugIcono || !ICONOS_ITINERARIO[slugIcono]) return '';
+  return `<span class="icono-itinerario">${ICONOS_ITINERARIO[slugIcono]}</span>`;
+}
+
 window.TuBodaBackend = {
   cargarConfig,
   enviarFirma,
@@ -205,5 +247,9 @@ window.TuBodaBackend = {
   cargarCanciones,
   validarInvitado,
   obtenerInvitado,
-  mostrarBloqueado
+  mostrarBloqueado,
+  limpiarDivisoresHuerfanos,
+  ICONOS_ITINERARIO,
+  NOMBRES_ICONOS_ITINERARIO,
+  iconoTimelineHtml
 };
