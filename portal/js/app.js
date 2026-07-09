@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('p-whatsapp-b').value = datos.whatsappB || '';
   document.getElementById('p-fecha').value = datos.fecha || '';
   document.getElementById('p-hora').value = datos.hora || '';
+  document.getElementById('p-fecha-limite').value = datos.fechaLimiteConfirmacion || '';
   document.getElementById('p-lugar-nombre').value = datos.lugarNombre || '';
   document.getElementById('p-lugar-direccion').value = datos.lugarDireccion || '';
   document.getElementById('p-lugar-maps').value = datos.lugarMapsUrl || '';
@@ -154,7 +155,6 @@ function mostrarError(){
 function mostrarOk(idBoton){
   const el = document.getElementById(idBoton);
   el.classList.remove('oculto');
-  setTimeout(() => el.classList.add('oculto'), 2500);
   actualizarProgreso();
 }
 
@@ -201,7 +201,8 @@ async function guardarDatosPrincipales(){
     p_novio_a_nombre: valor('p-novio-a-nombre'), p_novio_a_apellido: valor('p-novio-a-apellido'),
     p_novio_b_nombre: valor('p-novio-b-nombre'), p_novio_b_apellido: valor('p-novio-b-apellido'),
     p_whatsapp_a: valor('p-whatsapp-a'), p_whatsapp_b: valor('p-whatsapp-b'),
-    p_fecha: valor('p-fecha') || null, p_hora: valor('p-hora') || null
+    p_fecha: valor('p-fecha') || null, p_hora: valor('p-hora') || null,
+    p_fecha_limite_confirmacion: valor('p-fecha-limite') || null
   });
   mostrarOk('ok-datos');
 }
@@ -297,6 +298,12 @@ async function guardarHistoria(){
   mostrarOk('ok-historia');
 }
 
+const ICONOS_ITINERARIO_NOMBRES = {
+  '': 'Sin ícono', ceremonia: 'Ceremonia', recepcion: 'Recepción', coctel: 'Cóctel', cena: 'Cena',
+  baile: 'Primer baile', fiesta: 'Fiesta', brindis: 'Brindis', pastel: 'Pastel',
+  ramo: 'Lanzamiento del ramo', salida: 'Salida de los novios'
+};
+
 // ---------------- TIMELINE (repetidor) ----------------
 function pintarTimeline(){
   document.getElementById('lista-timeline').innerHTML = timelineItems.map((t, i) => `
@@ -306,9 +313,15 @@ function pintarTimeline(){
         <div class="campo"><label>Hora</label><input type="text" value="${t.hora || ''}" oninput="timelineItems[${i}].hora=this.value" placeholder="6:00 PM"></div>
         <div class="campo"><label>Momento</label><input type="text" value="${t.titulo || ''}" oninput="timelineItems[${i}].titulo=this.value"></div>
       </div>
+      <div class="campo">
+        <label>Ícono (opcional)</label>
+        <select class="select-campo" onchange="timelineItems[${i}].icono=this.value">
+          ${Object.entries(ICONOS_ITINERARIO_NOMBRES).map(([valor, nombre]) => `<option value="${valor}" ${t.icono === valor ? 'selected' : ''}>${nombre}</option>`).join('')}
+        </select>
+      </div>
     </div>`).join('');
 }
-function agregarTimeline(){ timelineItems.push({ hora: '', titulo: '' }); pintarTimeline(); }
+function agregarTimeline(){ timelineItems.push({ hora: '', titulo: '', icono: '' }); pintarTimeline(); }
 function quitarTimeline(i){ timelineItems.splice(i, 1); pintarTimeline(); }
 async function guardarTimeline(){
   await rpc('portal_guardar_timeline', { p_codigo: CODIGO, p_items: timelineItems });
