@@ -23,7 +23,7 @@
       <div class="panel-tabs">
         <button class="panel-tab activo" data-tab="resumen" onclick="cambiarTabPanel('resumen')">Resumen</button>
         <button class="panel-tab" data-tab="invitados" onclick="cambiarTabPanel('invitados')">Invitados</button>
-        <button class="panel-tab" disabled title="Próximamente">Mesas</button>
+        <button class="panel-tab" data-tab="mesas" onclick="cambiarTabPanel('mesas')">Mesas</button>
         <button class="panel-tab" disabled title="Próximamente">Recordatorios</button>
       </div>
 
@@ -110,10 +110,79 @@
         <p id="sin-invitados" class="desc oculto" style="text-align:center;margin-top:1rem">No se encontraron invitados con ese filtro.</p>
       </div>
 
+      <!-- ================= MESAS ================= -->
+      <div id="tab-mesas" class="panel-vista oculto">
+
+        <div class="mesas-toolbar no-print">
+          <p class="desc" style="margin:0 0 .6rem;flex-basis:100%">Arrastra las mesas y zonas donde quieras. Acércalas para que se "peguen" solas. Arrastra la esquina dorada de cualquier mesa o zona para cambiar su tamaño.</p>
+          <button class="btn btn-outline btn-chico" onclick="abrirModalMesa()">+ Nueva mesa</button>
+          <div style="position:relative">
+            <button class="btn btn-outline btn-chico" onclick="toggleMenuZona()">+ Zona ▾</button>
+            <div id="menu-zona" class="menu-flotante oculto">
+              <button onclick="agregarZona('pista')">🎵 Pista de baile</button>
+              <button onclick="agregarZona('barra')">🍸 Barra</button>
+              <button onclick="agregarZona('entrada')">🚪 Entrada</button>
+              <button onclick="agregarZona('escenario')">🎤 Escenario / DJ</button>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-chico" onclick="window.print()">🖨 Imprimir</button>
+          <button class="btn btn-outline btn-chico" onclick="exportarExcelMesas()">⬇ Excel</button>
+        </div>
+
+        <div class="mesas-layout no-print">
+          <div class="canvas-scroll">
+            <div id="canvas-salon" class="canvas-salon">
+              <div id="canvas-resize-handle" class="resize-handle canvas-resize" title="Arrastra para agrandar el salón"></div>
+            </div>
+          </div>
+
+          <div class="mesas-sidebar">
+            <div class="tarjeta" style="margin-bottom:1rem">
+              <h2 style="font-size:1rem">Pendientes de asignar</h2>
+              <input type="text" id="buscar-pendiente" placeholder="Buscar invitado..." oninput="renderSidebarPendientes()" style="width:100%;padding:.55rem .8rem;border:1px solid var(--borde);border-radius:8px;font-family:var(--font);font-size:.82rem;background:var(--celeste-nube);margin:.6rem 0">
+              <div id="lista-pendientes" class="lista-chips"></div>
+            </div>
+            <div class="tarjeta">
+              <h2 style="font-size:1rem">Detalle de mesas</h2>
+              <p class="desc" style="font-size:.72rem">Arrastra una fila para reordenar o mover a otra mesa.</p>
+              <div id="detalle-mesas"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Solo se muestra al imprimir -->
+        <div id="print-mesas" class="print-only"></div>
+      </div>
+
     </div>
 
     <div id="portal-error" class="estado-error oculto">
       <p>No se pudo cargar este panel. Verifica el link o contacta a quien te lo compartió.</p>
+    </div>
+  </div>
+
+  <div id="modal-mesa" class="modal-fondo oculto">
+    <div class="modal-caja">
+      <button class="modal-cerrar" onclick="cerrarModalMesa()">✕</button>
+      <h3>Nueva mesa</h3>
+      <input type="hidden" id="mesa-id">
+      <div class="campo"><label>Nombre</label><input type="text" id="mesa-nombre"></div>
+      <div class="campo">
+        <label>Forma</label>
+        <div class="selector-forma">
+          <button type="button" class="forma-op activo" data-forma="round" onclick="elegirForma('round')">◯ Redonda</button>
+          <button type="button" class="forma-op" data-forma="square" onclick="elegirForma('square')">▢ Cuadrada</button>
+          <button type="button" class="forma-op" data-forma="rect" onclick="elegirForma('rect')">▭ Rectangular</button>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Capacidad: <span id="mesa-capacidad-valor">8</span></label>
+        <input type="range" min="2" max="20" value="8" id="mesa-capacidad" oninput="document.getElementById('mesa-capacidad-valor').textContent=this.value">
+      </div>
+      <label style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;margin-bottom:1.2rem">
+        <input type="checkbox" id="mesa-es-novios"> Es la mesa de honor / novios
+      </label>
+      <button class="btn btn-dorado" style="width:100%;justify-content:center" onclick="guardarMesaNueva()">Crear mesa</button>
     </div>
   </div>
 
@@ -142,5 +211,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="js/invitados.js"></script>
+  <script src="js/mesas.js"></script>
 </body>
 </html>

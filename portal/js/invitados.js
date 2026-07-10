@@ -57,6 +57,7 @@ function cambiarTabPanel(tab) {
   document.querySelectorAll('.panel-tab[data-tab]').forEach(b => b.classList.toggle('activo', b.dataset.tab === tab));
   document.querySelectorAll('.panel-vista').forEach(v => v.classList.add('oculto'));
   document.getElementById(`tab-${tab}`).classList.remove('oculto');
+  if (tab === 'mesas' && window.cargarMesasSiNecesario) window.cargarMesasSiNecesario();
 }
 
 function cambiarTabGenerador(tab) {

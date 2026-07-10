@@ -5,6 +5,8 @@
    parte del mismo sitio, no como una pieza pegada.
    ============================================================================ */
 
+:root{ --rosa:#C98B86; --rosa-suave:#F6E4E2; }
+
 .wrap-organizador{max-width:1080px;margin:0 auto;padding:2.2rem 1.4rem 5rem}
 
 /* ---- navegación de pestañas del panel ---- */
@@ -68,6 +70,83 @@
 
 .proximamente{background:#fff;border:1px dashed var(--celeste);border-radius:18px;padding:3.5rem 2rem;text-align:center;color:var(--texto-mid)}
 .proximamente h3{font-family:var(--font-display);font-style:italic;color:var(--azul-profundo);margin:0 0 .5rem}
+
+/* ============================================================ MESAS ==== */
+.mesas-toolbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.menu-flotante{position:absolute;top:110%;left:0;background:#fff;border:1px solid var(--borde);border-radius:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.14);z-index:40;overflow:hidden;min-width:170px}
+.menu-flotante button{display:block;width:100%;text-align:left;padding:.6rem .9rem;border:none;background:none;
+  cursor:pointer;font-family:var(--font);font-size:.82rem;color:var(--texto)}
+.menu-flotante button:hover{background:var(--celeste-nube)}
+
+.mesas-layout{display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap}
+.canvas-scroll{overflow:auto;border:1px solid var(--borde);border-radius:16px;background:#fff;padding:1rem;flex:1 1 600px}
+.canvas-salon{position:relative;background:#F7FBFD;border:1px solid var(--borde);border-radius:10px;
+  background-image:linear-gradient(var(--borde) 1px,transparent 1px),linear-gradient(90deg,var(--borde) 1px,transparent 1px);
+  background-size:24px 24px;min-width:600px;min-height:400px}
+.canvas-resize{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;
+  border-right:3px solid var(--azul-profundo);border-bottom:3px solid var(--azul-profundo);opacity:.35}
+
+.mesas-sidebar{flex:1 1 280px;max-width:320px}
+.lista-chips{display:flex;flex-direction:column;gap:.4rem;max-height:220px;overflow-y:auto}
+.chip-invitado{display:flex;align-items:center;gap:.5rem;background:var(--celeste-nube);border:1px solid var(--borde);
+  border-radius:9px;padding:.5rem .7rem;font-size:.82rem;cursor:grab}
+.chip-invitado .genero-dot{width:14px;height:14px;border-radius:999px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:8px;font-weight:700}
+.genero-f{background:var(--rosa-suave);color:#9C5F5A}
+.genero-m{background:var(--celeste-claro);color:var(--celeste-oscuro)}
+
+.mesa-en-canvas{position:absolute}
+.mesa-header{display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;cursor:grab;user-select:none;font-size:.78rem}
+.mesa-header .nombre{font-family:var(--font-display);font-style:italic;color:var(--azul-profundo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mesa-header .badge-ocupacion{font-size:.65rem;background:var(--celeste-nube);color:var(--texto-mid);border-radius:999px;padding:1px 6px}
+.mesa-header .badge-ocupacion.llena{background:#DCF3E4;color:#2B7A4B}
+.mesa-header button{border:none;background:none;color:var(--texto-mid);cursor:pointer;font-size:.75rem;padding:0 2px}
+.mesa-shape{position:relative;background:#fff;border:2px solid var(--borde);box-shadow:0 2px 8px rgba(30,110,156,.08);cursor:grab}
+.mesa-shape.forma-round{border-radius:50%}
+.mesa-shape.forma-square{border-radius:14px}
+.mesa-shape.forma-rect{border-radius:14px}
+.mesa-shape.sobre-drop{background:var(--celeste-claro);border-color:var(--celeste-oscuro);border-style:dashed}
+.mesa-shape.pegada{border-color:var(--verde)}
+.mesa-centro{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;
+  border:1px solid var(--celeste-claro);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);
+  font-style:italic;font-size:11px;color:var(--celeste-oscuro);pointer-events:none;text-align:center}
+.asiento{position:absolute;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:var(--font)}
+.asiento.vacio{background:#fff;border:1px dashed var(--borde);color:var(--texto-mid)}
+.asiento.ocupado{cursor:pointer;border:none}
+.resize-handle{position:absolute;right:-3px;bottom:-3px;width:13px;height:13px;cursor:nwse-resize;
+  border-right:2.5px solid var(--celeste-oscuro);border-bottom:2.5px solid var(--celeste-oscuro);opacity:.7}
+
+.zona-en-canvas{position:absolute;border-radius:12px;border:1.5px dashed var(--celeste-oscuro);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:grab;
+  color:var(--texto-mid);font-size:.72rem;font-family:var(--font);text-align:center;user-select:none}
+.zona-tipo-pista{background:repeating-linear-gradient(45deg,#EAF6FC,#EAF6FC 10px,#DCEFF9 10px,#DCEFF9 20px)}
+.zona-tipo-barra{background:var(--rosa-suave)}
+.zona-tipo-entrada{background:var(--celeste-nube)}
+.zona-tipo-escenario{background:var(--celeste-claro)}
+.zona-borrar{position:absolute;top:3px;right:3px;background:rgba(255,255,255,.8);border:none;border-radius:999px;
+  width:17px;height:17px;font-size:10px;cursor:pointer;color:var(--texto-mid)}
+
+.selector-forma{display:flex;gap:.4rem;margin:.4rem 0 1rem}
+.forma-op{flex:1;padding:.6rem .3rem;border-radius:9px;border:1px solid var(--borde);background:var(--celeste-nube);
+  font-family:var(--font);font-size:.75rem;cursor:pointer;color:var(--texto)}
+.forma-op.activo{background:var(--celeste-oscuro);color:#fff;border-color:var(--celeste-oscuro)}
+
+.mesa-detalle-grupo{margin-bottom:1rem}
+.mesa-detalle-titulo{font-family:var(--font-display);font-style:italic;font-size:.85rem;color:var(--azul-profundo);margin-bottom:.4rem}
+.fila-asiento{display:flex;align-items:center;gap:.4rem;padding:.4rem .5rem;border-radius:7px;font-size:.78rem;margin-bottom:.25rem}
+.fila-asiento.con-invitado{background:var(--celeste-nube);cursor:grab}
+.fila-asiento.vacia{border:1px dashed var(--borde);color:var(--texto-mid);font-style:italic}
+.fila-asiento .num{font-size:.68rem;color:var(--texto-mid);width:14px;flex-shrink:0}
+.fila-asiento .quitar-asiento{margin-left:auto;border:none;background:none;color:var(--texto-mid);cursor:pointer}
+
+/* ---- Impresión ---- */
+.print-only{display:none}
+@media print{
+  .no-print{display:none !important}
+  .print-only{display:block !important}
+}
 
 @media(max-width:640px){
   .ti-fila{grid-template-columns:1fr;gap:.3rem}
