@@ -325,7 +325,7 @@ async function renderEditar(id){
         <input type="text" readonly value="${linkDatos}" id="input-link-datos" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
         <button class="btn btn-fantasma" onclick="copiarLink('input-link-datos')">Copiar</button>
       </div>
-      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link para el generador de invitados (RSVP Premium)</p>
+      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link del Panel del Organizador (invitados, dashboard, mesas)</p>
       <div style="display:flex;gap:.5rem">
         <input type="text" readonly value="${linkInvitados}" id="input-link-invitados" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
         <button class="btn btn-fantasma" onclick="copiarLink('input-link-invitados')">Copiar</button>

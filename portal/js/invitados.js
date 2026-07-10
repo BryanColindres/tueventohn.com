@@ -1,122 +1,276 @@
 // ============================================================================
-// PORTAL — GENERADOR DE INVITADOS (página aparte de "llenar mis datos")
-// Mismo código de acceso (?codigo=XXXX), pantalla distinta.
+// PANEL DEL ORGANIZADOR — portal/invitados.html
+// Acceso por código único (?codigo=XXXX), sin login — mismo patrón que el
+// resto del portal. Todas las escrituras pasan por funciones RPC.
 // ============================================================================
 
 const SUPABASE_URL = "https://npfgugnoycokhtljbwkw.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_Ij3gofHHYKTHps92RKXKwQ_5Hya3_GW";
 
 let CODIGO = null;
+let INVITADOS = [];      // caché local de la última carga
+let DUPLICADO_PENDIENTE = null; // datos en espera de confirmación de familia duplicada
 
-async function rpc(nombre, parametros){
+async function rpc(nombre, parametros) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombre}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     body: JSON.stringify(parametros)
   });
   const data = await res.json();
-  if (!res.ok) {
+  if (!res.ok || data?.error) {
     console.error('Error en', nombre, data);
-    alert('Algo falló. Intenta de nuevo — si sigue fallando, avísale a Bryan.');
-    return { error: 'error_supabase', detalle: data };
+    mostrarToast('No se pudo completar la acción. Intenta de nuevo.');
+    return { ok: false, error: data?.error || 'error_desconocido' };
   }
   return data;
 }
 
+/* ============================================================ INICIO ==== */
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   CODIGO = params.get('codigo');
+  if (!CODIGO) { mostrarErrorCarga(); return; }
 
-  if (!CODIGO) { mostrarError(); return; }
-
-  const datos = await rpc('portal_obtener_evento', { p_codigo: CODIGO });
-  if (!datos || datos.error) { mostrarError(); return; }
-
-  document.getElementById('portal-nombre-evento').textContent = datos.nombreEvento || 'Tu invitación';
-  document.getElementById('portal-contenido').classList.remove('oculto');
-  document.getElementById('link-volver').href = `index.html?codigo=${CODIGO}`;
-
-  const modulosActivos = datos.modulosActivos || {};
-  if (modulosActivos.rsvp_premium !== true) {
-    document.getElementById('portal-contenido').innerHTML = `
-      <div class="tarjeta tarjeta-bloqueada" style="text-align:center">
-        <h2>Links personalizados por invitado</h2>
-        <div class="bloqueo-mensaje">
-          <p>Esta función (RSVP Premium) no está incluida en tu paquete actual. Con ella puedes saber exactamente quién confirmó y quién no, invitado por invitado.</p>
-          <a href="https://wa.me/50431626792?text=${encodeURIComponent('Hola, quiero agregar RSVP Premium a mi invitación')}" target="_blank" class="btn btn-dorado">Quiero agregarlo</a>
-        </div>
-        <br>
-        <a href="index.html?codigo=${CODIGO}" class="btn btn-outline">← Volver a llenar mis datos</a>
-      </div>`;
-    return;
-  }
-
-  cargarInvitadosGenerados();
+  await cargarTodo();
 });
 
-function mostrarError(){
+function mostrarErrorCarga() {
+  document.getElementById('portal-contenido').classList.add('oculto');
   document.getElementById('portal-error').classList.remove('oculto');
-  document.getElementById('portal-nombre-evento').textContent = 'Link no válido';
 }
 
-// ---------------- GENERADOR ----------------
-function cambiarTabGenerador(tab){
+async function cargarTodo() {
+  const data = await rpc('portal_listar_invitados', { p_codigo: CODIGO });
+  if (data.error === 'codigo_invalido') { mostrarErrorCarga(); return; }
+
+  INVITADOS = data.invitados || [];
+  document.getElementById('portal-contenido').classList.remove('oculto');
+  document.getElementById('portal-nombre-evento').textContent = 'Panel del Organizador';
+
+  renderResumen();
+  renderTablaInvitados();
+}
+
+/* ============================================================ TABS ====== */
+function cambiarTabPanel(tab) {
+  document.querySelectorAll('.panel-tab[data-tab]').forEach(b => b.classList.toggle('activo', b.dataset.tab === tab));
+  document.querySelectorAll('.panel-vista').forEach(v => v.classList.add('oculto'));
+  document.getElementById(`tab-${tab}`).classList.remove('oculto');
+}
+
+function cambiarTabGenerador(tab) {
   document.querySelectorAll('.gen-tab').forEach(b => b.classList.toggle('activo', b.dataset.tab === tab));
   document.getElementById('gen-tab-manual').classList.toggle('oculto', tab !== 'manual');
   document.getElementById('gen-tab-excel').classList.toggle('oculto', tab !== 'excel');
 }
 
-async function agregarInvitadoManual(){
-  const input = document.getElementById('invitado-nombre-nuevo');
-  const nombre = input.value.trim();
-  if (!nombre) return;
-  const resultado = await rpc('portal_agregar_invitado_manual', { p_codigo: CODIGO, p_nombre: nombre });
-  if (resultado.error) return;
-  input.value = '';
-  cargarInvitadosGenerados();
+/* ============================================================ RESUMEN === */
+function renderResumen() {
+  const total = INVITADOS.length;
+  const confirmados = INVITADOS.filter(i => i.estado === 'confirmado');
+  const pendientes = INVITADOS.filter(i => i.estado === 'pendiente');
+  const rechazados = INVITADOS.filter(i => i.estado === 'rechazado');
+
+  const adultos = confirmados.reduce((s, i) => s + (i.adultos || 0), 0);
+  const ninos = confirmados.reduce((s, i) => s + (i.ninos || 0), 0);
+
+  const hoyStr = new Date().toISOString().slice(0, 10);
+  const haceSieteDias = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+  const hoy = INVITADOS.filter(i => i.fecha_confirmacion && i.fecha_confirmacion.slice(0, 10) === hoyStr).length;
+  const semana = INVITADOS.filter(i => i.fecha_confirmacion && i.fecha_confirmacion.slice(0, 10) >= haceSieteDias).length;
+
+  set('st-total', total);
+  set('st-confirmados', confirmados.length);
+  set('st-pendientes', pendientes.length);
+  set('st-rechazados', rechazados.length);
+  set('st-adultos', adultos);
+  set('st-ninos', ninos);
+  set('st-hoy', hoy);
+  set('st-semana', semana);
+
+  const pct = total ? Math.round((confirmados.length / total) * 100) : 0;
+  set('rsvp-pct', `${pct}%`);
+  document.getElementById('barra-confirmado').style.width = total ? `${(confirmados.length / total) * 100}%` : '0%';
+  document.getElementById('barra-pendiente').style.width = total ? `${(pendientes.length / total) * 100}%` : '0%';
+  document.getElementById('barra-rechazado').style.width = total ? `${(rechazados.length / total) * 100}%` : '0%';
+}
+function set(id, val) { document.getElementById(id).textContent = val; }
+
+/* ============================================================ TABLA ===== */
+function renderTablaInvitados() {
+  const busqueda = (document.getElementById('buscar-invitado').value || '').toLowerCase();
+  const filtro = document.getElementById('filtro-estado').value;
+
+  const filtrados = INVITADOS.filter(i => {
+    const coincideBusqueda = i.nombre.toLowerCase().includes(busqueda) || (i.familia || '').toLowerCase().includes(busqueda);
+    const coincideEstado = filtro === 'todos' || i.estado === filtro;
+    return coincideBusqueda && coincideEstado;
+  });
+
+  const cuerpo = document.getElementById('cuerpo-tabla-invitados');
+  cuerpo.innerHTML = filtrados.map(i => `
+    <div class="ti-fila">
+      <div>
+        <div class="ti-nombre">${escapar(i.nombre)}</div>
+        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}</div>
+      </div>
+      <div class="ti-sub">${i.telefono ? escapar(i.telefono) : '—'}</div>
+      <div>${badgeEstado(i)}</div>
+      <div class="ti-sub">${(i.adultos || 0) + (i.ninos || 0)}</div>
+      <div class="ti-acciones">
+        <button class="ti-icon-btn" title="Copiar link" onclick="copiarLinkInvitado('${i.link}')">🔗</button>
+        <button class="ti-icon-btn" title="WhatsApp" onclick="compartirWhatsapp('${i.id}')">💬</button>
+        <button class="ti-icon-btn" title="Editar" onclick="abrirModalEditar('${i.id}')">✎</button>
+        <button class="ti-icon-btn" title="Eliminar" onclick="eliminarInvitado('${i.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('sin-invitados').classList.toggle('oculto', filtrados.length > 0);
 }
 
-async function cargarInvitadosGenerados(){
-  const resultado = await rpc('portal_listar_invitados', { p_codigo: CODIGO });
-  const cont = document.getElementById('lista-invitados-generados');
-  const sinInvitados = document.getElementById('sin-invitados');
-  if (!resultado || !Array.isArray(resultado) || !resultado.length) {
-    cont.innerHTML = '';
-    sinInvitados.classList.remove('oculto');
+function badgeEstado(i) {
+  const etiquetas = { pendiente: 'Pendiente', confirmado: 'Confirmado', rechazado: 'No viene' };
+  return `<button class="badge-estado badge-${i.estado}" onclick="cicloEstado('${i.id}')">${etiquetas[i.estado]}</button>`;
+}
+
+async function cicloEstado(id) {
+  const inv = INVITADOS.find(i => i.id === id);
+  const orden = ['pendiente', 'confirmado', 'rechazado'];
+  const siguiente = orden[(orden.indexOf(inv.estado) + 1) % orden.length];
+  const res = await rpc('panel_cambiar_estado_invitado', { p_codigo: CODIGO, p_invitado_id: id, p_estado: siguiente });
+  if (res.ok) { await cargarTodo(); mostrarToast('Estado actualizado'); }
+}
+
+/* ============================================================ AGREGAR === */
+async function agregarInvitadoManual(forzar = false) {
+  const nombre = document.getElementById('nuevo-nombre').value.trim();
+  const familia = document.getElementById('nuevo-familia').value.trim();
+  const telefono = document.getElementById('nuevo-telefono').value.trim();
+  if (!nombre) { mostrarToast('Escribe un nombre'); return; }
+
+  const res = await rpc('portal_agregar_invitado_manual', {
+    p_codigo: CODIGO, p_nombre: nombre, p_familia: familia || null,
+    p_telefono: telefono || null, p_forzar: forzar
+  });
+
+  if (res.familia_duplicada) {
+    DUPLICADO_PENDIENTE = { nombre, familia, telefono };
+    document.getElementById('modal-duplicado').classList.remove('oculto');
     return;
   }
-  sinInvitados.classList.add('oculto');
-  cont.innerHTML = resultado.map(i => `<div><b>${i.nombre}</b> — ${i.link} ${i.confirmado === true ? '✅' : i.confirmado === false ? '❌' : '⏳'}</div>`).join('');
+  if (res.ok) {
+    document.getElementById('nuevo-nombre').value = '';
+    document.getElementById('nuevo-familia').value = '';
+    document.getElementById('nuevo-telefono').value = '';
+    await cargarTodo();
+    mostrarToast('Invitado agregado');
+  }
 }
 
-function procesarExcel(){
-  const input = document.getElementById('input-excel');
-  const archivo = input.files[0];
-  if (!archivo) { alert('Selecciona un archivo primero.'); return; }
+function cerrarModalDuplicado() {
+  DUPLICADO_PENDIENTE = null;
+  document.getElementById('modal-duplicado').classList.add('oculto');
+}
+async function confirmarCrearDuplicado() {
+  document.getElementById('modal-duplicado').classList.add('oculto');
+  if (!DUPLICADO_PENDIENTE) return;
+  document.getElementById('nuevo-nombre').value = DUPLICADO_PENDIENTE.nombre;
+  document.getElementById('nuevo-familia').value = DUPLICADO_PENDIENTE.familia;
+  document.getElementById('nuevo-telefono').value = DUPLICADO_PENDIENTE.telefono;
+  DUPLICADO_PENDIENTE = null;
+  await agregarInvitadoManual(true);
+}
 
-  const lector = new FileReader();
-  lector.onload = async (e) => {
-    const datos = new Uint8Array(e.target.result);
-    const libro = XLSX.read(datos, { type: 'array' });
-    const hoja = libro.Sheets[libro.SheetNames[0]];
-    const filas = XLSX.utils.sheet_to_json(hoja);
+async function procesarExcel() {
+  const archivo = document.getElementById('input-excel').files[0];
+  if (!archivo) { mostrarToast('Selecciona un archivo primero'); return; }
 
-    const nombres = filas.map(f => f.Nombre || f.nombre).filter(Boolean);
-    if (!nombres.length) { alert('No se encontró la columna "Nombre" en el archivo.'); return; }
+  const buffer = await archivo.arrayBuffer();
+  const wb = XLSX.read(buffer, { type: 'array' });
+  const hoja = wb.Sheets[wb.SheetNames[0]];
+  const filas = XLSX.utils.sheet_to_json(hoja);
+  const nombres = filas.map(f => f.Nombre || f.nombre).filter(Boolean);
 
-    const resultado = await rpc('portal_generar_links_invitados', { p_codigo: CODIGO, p_nombres: nombres });
-    if (resultado.error) return;
+  if (!nombres.length) { mostrarToast('No se encontró la columna "Nombre" en el Excel'); return; }
 
-    cargarInvitadosGenerados();
+  const res = await rpc('portal_generar_links_invitados', { p_codigo: CODIGO, p_nombres: nombres });
+  if (res.ok) {
+    document.getElementById('input-excel').value = '';
+    await cargarTodo();
+    mostrarToast(`${nombres.length} invitados agregados`);
+  }
+}
 
-    const cont = document.getElementById('lista-invitados-generados');
-    cont.innerHTML += '<br><button class="btn btn-dorado btn-chico" id="btn-descargar-excel">Descargar Excel con links</button>';
-    document.getElementById('btn-descargar-excel').onclick = () => {
-      const hojaNueva = XLSX.utils.json_to_sheet(resultado.invitados.map(i => ({ Nombre: i.nombre, Link: i.link })));
-      const libroNuevo = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libroNuevo, hojaNueva, 'Invitados');
-      XLSX.writeFile(libroNuevo, 'invitados-con-links.xlsx');
-    };
-  };
-  lector.readAsArrayBuffer(archivo);
+/* ============================================================ EDITAR ==== */
+function abrirModalEditar(id) {
+  const inv = INVITADOS.find(i => i.id === id);
+  document.getElementById('editar-id').value = id;
+  document.getElementById('editar-nombre').value = inv.nombre || '';
+  document.getElementById('editar-familia').value = inv.familia || '';
+  document.getElementById('editar-telefono').value = inv.telefono || '';
+  document.getElementById('modal-editar').classList.remove('oculto');
+}
+function cerrarModalEditar() { document.getElementById('modal-editar').classList.add('oculto'); }
+
+async function guardarEdicion() {
+  const id = document.getElementById('editar-id').value;
+  const nombre = document.getElementById('editar-nombre').value.trim();
+  const familia = document.getElementById('editar-familia').value.trim();
+  const telefono = document.getElementById('editar-telefono').value.trim();
+  if (!nombre) { mostrarToast('El nombre no puede estar vacío'); return; }
+
+  const res = await rpc('panel_editar_invitado', {
+    p_codigo: CODIGO, p_invitado_id: id, p_nombre: nombre,
+    p_familia: familia || null, p_telefono: telefono || null
+  });
+  if (res.ok) {
+    cerrarModalEditar();
+    await cargarTodo();
+    mostrarToast('Cambios guardados');
+  }
+}
+
+async function eliminarInvitado(id) {
+  if (!confirm('¿Eliminar a este invitado? Esta acción no se puede deshacer.')) return;
+  const res = await rpc('panel_eliminar_invitado', { p_codigo: CODIGO, p_invitado_id: id });
+  if (res.ok) { await cargarTodo(); mostrarToast('Invitado eliminado'); }
+}
+
+/* ============================================================ COMPARTIR = */
+function copiarLinkInvitado(link) {
+  navigator.clipboard?.writeText(link).then(
+    () => mostrarToast('Link copiado'),
+    () => mostrarToast(link)
+  );
+}
+function compartirWhatsapp(id) {
+  const inv = INVITADOS.find(i => i.id === id);
+  const primerNombre = inv.nombre.split(' ')[0];
+  const telefono = (inv.telefono || '').replace(/\D/g, '');
+  const mensaje = encodeURIComponent(`¡Hola ${primerNombre}! Este es tu link personal para confirmar tu asistencia: ${inv.link}`);
+  const numero = telefono ? `504${telefono}` : '';
+  window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+}
+
+/* ============================================================ UTILS ===== */
+function escapar(texto) {
+  const div = document.createElement('div');
+  div.textContent = texto || '';
+  return div.innerHTML;
+}
+let toastTimer = null;
+function mostrarToast(msg) {
+  let el = document.getElementById('toast-panel');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast-panel';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.remove('oculto');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.add('oculto'), 2200);
 }

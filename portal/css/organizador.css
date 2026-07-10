@@ -1,0 +1,76 @@
+/* ============================================================================
+   organizador.css — estilos del Panel del Organizador.
+   Se apoya en las variables de color/tipografía ya definidas en style.css
+   (--celeste-oscuro, --azul-profundo, --texto-mid, etc.) para verse como
+   parte del mismo sitio, no como una pieza pegada.
+   ============================================================================ */
+
+.wrap-organizador{max-width:1080px;margin:0 auto;padding:2.2rem 1.4rem 5rem}
+
+/* ---- navegación de pestañas del panel ---- */
+.panel-tabs{display:flex;gap:.4rem;margin-bottom:1.6rem;flex-wrap:wrap;justify-content:center}
+.panel-tab{padding:.65rem 1.3rem;border-radius:999px;border:1px solid var(--borde);background:#fff;
+  color:var(--texto-mid);font-family:var(--font);font-size:.85rem;font-weight:500;cursor:pointer}
+.panel-tab.activo{background:var(--celeste-oscuro);color:#fff;border-color:var(--celeste-oscuro)}
+.panel-tab[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---- tarjetas de estadística ---- */
+.stat-grid{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:1rem}
+.stat-card{flex:1 1 140px;background:#fff;border:1px solid var(--borde);border-radius:14px;padding:1rem 1.1rem}
+.stat-card .stat-label{font-size:.72rem;color:var(--texto-mid);margin-bottom:.35rem}
+.stat-card .stat-value{font-family:var(--font-display);font-style:italic;font-size:1.7rem;color:var(--azul-profundo)}
+.stat-card.acento .stat-value{color:var(--verde)}
+.stat-card.alerta .stat-value{color:#C9645C}
+
+/* ---- barra de progreso RSVP ---- */
+.rsvp-progreso{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:1.3rem 1.5rem;margin-bottom:1rem}
+.rsvp-progreso .fila-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.6rem}
+.rsvp-progreso h3{font-family:var(--font-display);font-style:italic;font-size:1.05rem;color:var(--azul-profundo);margin:0}
+.rsvp-progreso .pct{font-family:var(--font-display);font-style:italic;font-size:1.3rem;color:var(--celeste-oscuro)}
+.barra-estados{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--celeste-nube)}
+.barra-estados span{height:100%}
+.leyenda-estados{display:flex;gap:1.1rem;margin-top:.7rem;font-size:.75rem;color:var(--texto-mid);flex-wrap:wrap}
+.leyenda-estados i{display:inline-block;width:9px;height:9px;border-radius:999px;margin-right:.35rem;vertical-align:middle}
+
+/* ---- toolbar de invitados ---- */
+.inv-toolbar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.inv-toolbar input[type=text]{flex:1 1 220px;padding:.65rem .9rem;border:1px solid var(--borde);border-radius:10px;
+  font-family:var(--font);font-size:.85rem;background:var(--celeste-nube)}
+.inv-toolbar select{padding:.65rem .8rem;border:1px solid var(--borde);border-radius:10px;background:#fff;font-family:var(--font);font-size:.85rem}
+
+/* ---- tabla de invitados ---- */
+.tabla-invitados{background:#fff;border:1px solid var(--borde);border-radius:16px;overflow:hidden}
+.ti-fila{display:grid;grid-template-columns:2fr 1fr 1fr .7fr auto;gap:.6rem;align-items:center;
+  padding:.8rem 1.1rem;border-bottom:1px solid var(--borde);font-size:.85rem}
+.ti-fila.encabezado{background:var(--celeste-nube);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--texto-mid)}
+.ti-fila:last-child{border-bottom:none}
+.ti-nombre{font-weight:600;color:var(--texto)}
+.ti-sub{font-size:.72rem;color:var(--texto-mid)}
+.ti-acciones{display:flex;gap:.35rem}
+.ti-icon-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--borde);background:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;color:var(--texto-mid)}
+.ti-icon-btn:hover{background:var(--celeste-nube)}
+
+.badge-estado{border:none;border-radius:999px;padding:.28rem .7rem;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.badge-pendiente{background:#F4E9D8;color:#93712F}
+.badge-confirmado{background:#DCF3E4;color:#2B7A4B}
+.badge-rechazado{background:#FBE2E0;color:#B0473F}
+
+/* ---- modal ---- */
+.modal-fondo{position:fixed;inset:0;background:rgba(18,58,84,.45);display:flex;align-items:center;justify-content:center;z-index:80;padding:1rem}
+.modal-caja{background:#fff;border-radius:18px;padding:1.7rem;width:380px;max-width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal-caja h3{font-family:var(--font-display);font-style:italic;color:var(--azul-profundo);margin:0 0 1rem}
+.modal-cerrar{position:absolute;top:1.2rem;right:1.4rem;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--texto-mid)}
+.modal-caja{position:relative}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--azul-profundo);
+  color:#fff;padding:.7rem 1.3rem;border-radius:999px;font-size:.82rem;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+.proximamente{background:#fff;border:1px dashed var(--celeste);border-radius:18px;padding:3.5rem 2rem;text-align:center;color:var(--texto-mid)}
+.proximamente h3{font-family:var(--font-display);font-style:italic;color:var(--azul-profundo);margin:0 0 .5rem}
+
+@media(max-width:640px){
+  .ti-fila{grid-template-columns:1fr;gap:.3rem}
+  .ti-fila.encabezado{display:none}
+  .ti-acciones{margin-top:.4rem}
+}

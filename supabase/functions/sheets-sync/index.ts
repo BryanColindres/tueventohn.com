@@ -35,6 +35,15 @@ const HEADERS_SHEET = [
 
 Deno.serve(async (req) => {
   try {
+    // Como esta función se despliega con --no-verify-jwt (para no depender
+    // del formato de token de Supabase Auth), la protegemos con un secreto
+    // propio: cualquiera que la llame debe mandar este header.
+    const secretoEsperado = Deno.env.get("SYNC_WEBHOOK_SECRET");
+    const secretoRecibido = req.headers.get("x-sync-secret");
+    if (secretoEsperado && secretoRecibido !== secretoEsperado) {
+      return json({ ok: false, mensaje: "No autorizado." }, 401);
+    }
+
     const body = await req.json().catch(() => ({}));
 
     // Acepta tanto el payload de un Database Webhook (record/old_record)

@@ -3,64 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invitados — Nube Eventos</title>
+<title>Panel del Organizador — Nube Eventos</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/organizador.css">
 </head>
 <body>
 
-  <div class="wrap" id="wrap-portal">
+  <div class="wrap wrap-organizador" id="wrap-portal">
     <div class="header">
       <svg class="header-nube" style="top:-10px;left:-20px;width:90px" viewBox="0 0 200 110" fill="#DCF0FA"><ellipse cx="60" cy="70" rx="55" ry="34"/><ellipse cx="110" cy="55" rx="60" ry="42"/><ellipse cx="155" cy="72" rx="40" ry="28"/></svg>
       <svg class="header-nube" style="top:0;right:-16px;width:70px" viewBox="0 0 200 110" fill="#DCF0FA"><ellipse cx="60" cy="70" rx="55" ry="34"/><ellipse cx="110" cy="55" rx="60" ry="42"/><ellipse cx="155" cy="72" rx="40" ry="28"/></svg>
-      <p class="eyebrow">Links personalizados por invitado</p>
+      <p class="eyebrow">Panel del organizador</p>
       <h1 id="portal-nombre-evento">Cargando...</h1>
       <p class="marca">Nube Eventos</p>
     </div>
 
     <div id="portal-contenido" class="oculto">
 
-      <div class="tarjeta">
-        <h2>¿Cómo funciona?</h2>
-        <p class="desc">Cada invitado (o familia) recibe un link único para su invitación. Así puedes saber exactamente quién confirmó y quién no. Agrega los nombres uno por uno, o sube un Excel con una columna llamada "Nombre" de una sola vez. No guardamos tu archivo, solo la lista de nombres.</p>
+      <div class="panel-tabs">
+        <button class="panel-tab activo" data-tab="resumen" onclick="cambiarTabPanel('resumen')">Resumen</button>
+        <button class="panel-tab" data-tab="invitados" onclick="cambiarTabPanel('invitados')">Invitados</button>
+        <button class="panel-tab" disabled title="Próximamente">Mesas</button>
+        <button class="panel-tab" disabled title="Próximamente">Recordatorios</button>
+      </div>
 
-        <div class="generador-tabs">
-          <button class="gen-tab activo" data-tab="manual" onclick="cambiarTabGenerador('manual')">Uno por uno</button>
-          <button class="gen-tab" data-tab="excel" onclick="cambiarTabGenerador('excel')">Subir Excel</button>
+      <!-- ================= RESUMEN ================= -->
+      <div id="tab-resumen" class="panel-vista">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">Total invitados</div><div class="stat-value" id="st-total">0</div></div>
+          <div class="stat-card acento"><div class="stat-label">Confirmados</div><div class="stat-value" id="st-confirmados">0</div></div>
+          <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-value" id="st-pendientes">0</div></div>
+          <div class="stat-card alerta"><div class="stat-label">No vienen</div><div class="stat-value" id="st-rechazados">0</div></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">Adultos confirmados</div><div class="stat-value" id="st-adultos">0</div></div>
+          <div class="stat-card"><div class="stat-label">Niños confirmados</div><div class="stat-value" id="st-ninos">0</div></div>
+          <div class="stat-card"><div class="stat-label">Confirmaciones hoy</div><div class="stat-value" id="st-hoy">0</div></div>
+          <div class="stat-card"><div class="stat-label">Confirmaciones (7 días)</div><div class="stat-value" id="st-semana">0</div></div>
         </div>
 
-        <div id="gen-tab-manual" class="gen-panel">
-          <div class="campo-inline">
-            <input type="text" id="invitado-nombre-nuevo" placeholder="Nombre del invitado o familia">
-            <button class="btn btn-dorado btn-chico" onclick="agregarInvitadoManual()">Agregar</button>
+        <div class="rsvp-progreso">
+          <div class="fila-top">
+            <h3>Progreso general de RSVP</h3>
+            <span class="pct" id="rsvp-pct">0%</span>
           </div>
-        </div>
-
-        <div id="gen-tab-excel" class="gen-panel oculto">
-          <div class="excel-box">
-            <p>Tu Excel debe tener una columna llamada "Nombre"</p>
-            <input type="file" id="input-excel" accept=".xlsx,.xls">
-            <br><br>
-            <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Generar links</button>
+          <div class="barra-estados">
+            <span id="barra-confirmado" style="background:#2FAE6B;width:0%"></span>
+            <span id="barra-pendiente" style="background:#D8A94A;width:0%"></span>
+            <span id="barra-rechazado" style="background:#C9645C;width:0%"></span>
+          </div>
+          <div class="leyenda-estados">
+            <span><i style="background:#2FAE6B"></i>Confirmado</span>
+            <span><i style="background:#D8A94A"></i>Pendiente</span>
+            <span><i style="background:#C9645C"></i>No viene</span>
           </div>
         </div>
       </div>
 
-      <div class="tarjeta">
-        <h2>Invitados generados</h2>
-        <p class="desc">✅ confirmó · ❌ no viene · ⏳ sin responder</p>
-        <div id="lista-invitados-generados" class="lista-links"></div>
-        <p id="sin-invitados" class="desc">Todavía no has agregado a nadie.</p>
-      </div>
+      <!-- ================= INVITADOS ================= -->
+      <div id="tab-invitados" class="panel-vista oculto">
 
-      <div class="tarjeta" style="text-align:center">
-        <a href="index.html" id="link-volver" class="btn btn-outline">← Volver a llenar mis datos</a>
+        <div class="tarjeta">
+          <h2>Agregar invitados</h2>
+          <p class="desc">Agrega los nombres uno por uno, o sube un Excel con una columna llamada "Nombre" de una sola vez. No guardamos tu archivo, solo la lista de nombres.</p>
+
+          <div class="generador-tabs">
+            <button class="gen-tab activo" data-tab="manual" onclick="cambiarTabGenerador('manual')">Uno por uno</button>
+            <button class="gen-tab" data-tab="excel" onclick="cambiarTabGenerador('excel')">Subir Excel</button>
+          </div>
+
+          <div id="gen-tab-manual" class="gen-panel">
+            <div class="form-grid">
+              <div class="campo"><label>Nombre completo</label><input type="text" id="nuevo-nombre" placeholder="Ej. María José Flores"></div>
+              <div class="campo"><label>Familia</label><input type="text" id="nuevo-familia" placeholder="Ej. Flores"></div>
+              <div class="campo"><label>Teléfono (opcional)</label><input type="text" id="nuevo-telefono" placeholder="9999-9999"></div>
+            </div>
+            <button class="btn btn-dorado btn-chico" onclick="agregarInvitadoManual()">Agregar invitado</button>
+          </div>
+
+          <div id="gen-tab-excel" class="gen-panel oculto">
+            <div class="excel-box">
+              <p>Tu Excel debe tener una columna llamada "Nombre"</p>
+              <input type="file" id="input-excel" accept=".xlsx,.xls">
+              <br><br>
+              <button class="btn btn-dorado btn-chico" onclick="procesarExcel()">Agregar desde Excel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="inv-toolbar">
+          <input type="text" id="buscar-invitado" placeholder="Buscar por nombre o familia..." oninput="renderTablaInvitados()">
+          <select id="filtro-estado" onchange="renderTablaInvitados()">
+            <option value="todos">Todos los estados</option>
+            <option value="confirmado">Confirmados</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="rechazado">No vienen</option>
+          </select>
+        </div>
+
+        <div class="tabla-invitados">
+          <div class="ti-fila encabezado">
+            <span>Invitado</span><span>Teléfono</span><span>Estado</span><span>Asist.</span><span>Acciones</span>
+          </div>
+          <div id="cuerpo-tabla-invitados"></div>
+        </div>
+        <p id="sin-invitados" class="desc oculto" style="text-align:center;margin-top:1rem">No se encontraron invitados con ese filtro.</p>
       </div>
 
     </div>
 
     <div id="portal-error" class="estado-error oculto">
-      <p>Este link no es válido o ya expiró.</p>
-      <p style="font-size:.85rem">Contacta a quien te lo compartió para obtener uno nuevo.</p>
+      <p>No se pudo cargar este panel. Verifica el link o contacta a quien te lo compartió.</p>
+    </div>
+  </div>
+
+  <div id="modal-editar" class="modal-fondo oculto">
+    <div class="modal-caja">
+      <button class="modal-cerrar" onclick="cerrarModalEditar()">✕</button>
+      <h3>Editar invitado</h3>
+      <input type="hidden" id="editar-id">
+      <div class="campo"><label>Nombre</label><input type="text" id="editar-nombre"></div>
+      <div class="campo"><label>Familia</label><input type="text" id="editar-familia"></div>
+      <div class="campo"><label>Teléfono</label><input type="text" id="editar-telefono"></div>
+      <button class="btn btn-dorado" style="width:100%;justify-content:center" onclick="guardarEdicion()">Guardar cambios</button>
+    </div>
+  </div>
+
+  <div id="modal-duplicado" class="modal-fondo oculto">
+    <div class="modal-caja">
+      <h3>Familia ya existe</h3>
+      <p class="desc" style="margin-bottom:1.3rem">Ya existe una familia con ese nombre. ¿Deseas crearla de todas formas?</p>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="cerrarModalDuplicado()">Cancelar</button>
+        <button class="btn btn-dorado" style="flex:1;justify-content:center" onclick="confirmarCrearDuplicado()">Crear de todas formas</button>
+      </div>
     </div>
   </div>
 
