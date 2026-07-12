@@ -24,6 +24,7 @@ window.CONFIG_DEMO = {
 
   fecha: "2026-10-03T18:00:00",
   fechaTexto: "Sábado, 03 de Octubre de 2026",
+  coordenadas: "14°N 45' · 87°W 12' — Valle de Ángeles, bajo el mismo cielo",
   rsvpFechaLimite: "15 de septiembre de 2026",
 
   lugar: {
@@ -34,7 +35,7 @@ window.CONFIG_DEMO = {
     foto: "../../assets/demo/img/preboda10.jpg"
   },
 
-  fotos: { hero: "../../assets/demo/img/hero.jpg", footer: "../../assets/demo/img/novios.jpg" },
+  fotos: { hero: "../../assets/demo/img/hero.jpg", heroA: "../../assets/demo/img/hero.jpg", heroB: "../../assets/demo/img/preboda6.jpg", footer: "../../assets/demo/img/novios.jpg" },
 
   video: "../../assets/demo/video-intro.mp4",
   videoDelay: 1.5,
@@ -120,6 +121,12 @@ window.CONFIG_DEMO = {
   cancionEmbedUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcfZ6moR6J0G",
 
   galeriaMuestra: ["../../assets/demo/img/preboda2.jpg", "../../assets/demo/img/preboda3.jpg", "../../assets/demo/img/preboda4.jpg", "../../assets/demo/img/preboda5.jpg", "../../assets/demo/img/preboda6.jpg", "../../assets/demo/img/preboda7.jpg"],
+
+  // Placas tipo museo (las usa "opuestos"; el resto de plantillas la ignoran).
+  placas: [
+    { numero: "I", titulo: "Dos naturalezas", texto: "Uno encuentra orden en los números; ella encuentra poesía en el desorden. Él planea cada minuto; ella deja que el tiempo la sorprenda. Son, en casi todo, ejercicios de contraste." },
+    { numero: "II", titulo: "Lo que los une", texto: "Y sin embargo, en lo esencial, avanzan siempre en la misma dirección." }
+  ],
 
   whatsapp: { novio: "50431626792", novia: "50499223790" },
 
