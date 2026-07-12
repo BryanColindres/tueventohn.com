@@ -133,14 +133,13 @@ function renderTablaInvitados() {
 
 function badgeEstado(i) {
   const etiquetas = { pendiente: 'Pendiente', confirmado: 'Confirmado', rechazado: 'No viene' };
-  return `<button class="badge-estado badge-${i.estado}" onclick="cicloEstado('${i.id}')">${etiquetas[i.estado]}</button>`;
+  return `<select class="badge-estado badge-${i.estado}" onchange="cambiarEstadoSelect('${i.id}', this.value)">
+    ${Object.entries(etiquetas).map(([v, l]) => `<option value="${v}" ${v === i.estado ? 'selected' : ''}>${l}</option>`).join('')}
+  </select>`;
 }
 
-async function cicloEstado(id) {
-  const inv = INVITADOS.find(i => i.id === id);
-  const orden = ['pendiente', 'confirmado', 'rechazado'];
-  const siguiente = orden[(orden.indexOf(inv.estado) + 1) % orden.length];
-  const res = await rpc('panel_cambiar_estado_invitado', { p_codigo: CODIGO, p_invitado_id: id, p_estado: siguiente });
+async function cambiarEstadoSelect(id, estado) {
+  const res = await rpc('panel_cambiar_estado_invitado', { p_codigo: CODIGO, p_invitado_id: id, p_estado: estado });
   if (res.ok) { await cargarTodo(); mostrarToast('Estado actualizado'); }
 }
 
@@ -185,23 +184,63 @@ async function confirmarCrearDuplicado() {
 }
 
 async function procesarExcel() {
+  const mensajeEl = document.getElementById('excel-mensaje');
+  mensajeEl.classList.add('oculto');
+
   const archivo = document.getElementById('input-excel').files[0];
-  if (!archivo) { mostrarToast('Selecciona un archivo primero'); return; }
+  if (!archivo) { mostrarErrorExcel('Selecciona un archivo primero.'); return; }
 
-  const buffer = await archivo.arrayBuffer();
-  const wb = XLSX.read(buffer, { type: 'array' });
-  const hoja = wb.Sheets[wb.SheetNames[0]];
-  const filas = XLSX.utils.sheet_to_json(hoja);
-  const nombres = filas.map(f => f.Nombre || f.nombre).filter(Boolean);
+  let filas;
+  try {
+    const buffer = await archivo.arrayBuffer();
+    const wb = XLSX.read(buffer, { type: 'array' });
+    const hoja = wb.Sheets[wb.SheetNames[0]];
+    filas = XLSX.utils.sheet_to_json(hoja, { defval: '' });
+  } catch {
+    mostrarErrorExcel('No se pudo leer el archivo. Asegúrate de subir un .xlsx o .xls sin dañar, idealmente descargando la plantilla de arriba.');
+    return;
+  }
 
-  if (!nombres.length) { mostrarToast('No se encontró la columna "Nombre" en el Excel'); return; }
+  if (!filas.length) {
+    mostrarErrorExcel('El archivo está vacío. Descarga la plantilla, agrega tus invitados desde la fila 5, y súbela de nuevo.');
+    return;
+  }
 
-  const res = await rpc('portal_generar_links_invitados', { p_codigo: CODIGO, p_nombres: nombres });
+  const primeraFila = filas[0];
+  const tieneColumnaNombre = Object.keys(primeraFila).some(k => k.trim().toLowerCase() === 'nombre');
+  if (!tieneColumnaNombre) {
+    mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
+    return;
+  }
+
+  const clave = (fila, nombre) => {
+    const k = Object.keys(fila).find(k => k.trim().toLowerCase() === nombre);
+    return k ? String(fila[k]).trim() : '';
+  };
+
+  const invitados = filas
+    .map(f => ({ nombre: clave(f, 'nombre'), familia: clave(f, 'familia'), telefono: clave(f, 'teléfono') || clave(f, 'telefono') }))
+    .filter(i => i.nombre);
+
+  if (!invitados.length) {
+    mostrarErrorExcel('La columna "Nombre" está vacía en todas las filas. Completa al menos un invitado y súbelo de nuevo.');
+    return;
+  }
+
+  const res = await rpc('portal_generar_links_invitados', { p_codigo: CODIGO, p_invitados: invitados });
   if (res.ok) {
     document.getElementById('input-excel').value = '';
     await cargarTodo();
-    mostrarToast(`${nombres.length} invitados agregados`);
+    mostrarToast(`${res.agregados} invitados agregados`);
+  } else {
+    mostrarErrorExcel('No se pudo guardar la lista. Intenta de nuevo en un momento.');
   }
+}
+
+function mostrarErrorExcel(msg) {
+  const el = document.getElementById('excel-mensaje');
+  el.textContent = msg;
+  el.classList.remove('oculto');
 }
 
 /* ============================================================ EDITAR ==== */

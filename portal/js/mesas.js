@@ -1,15 +1,16 @@
 // ============================================================================
 // PANEL DEL ORGANIZADOR — módulo de Mesas (portal/invitados.html)
 // Reutiliza CODIGO y rpc() ya definidos en js/invitados.js (mismo documento).
-// Reutiliza INVITADOS (lista completa) y cargarTodo() de invitados.js para
-// saber quién ya tiene mesa asignada.
+// Reutiliza INVITADOS (lista completa) y cargarTodo() de invitados.js.
 // ============================================================================
 
 let MESAS = [];
 let ZONAS = [];
-let SALON = { ancho: 980, alto: 520 };
+let SALON = { ancho: 700, alto: 420 };
 let MESAS_CARGADAS = false;
-let ARRASTRE = null; // { tipo, id, ... } — estado del drag en curso
+let ARRASTRE = null;          // estado del drag/touch en curso (mover o redimensionar)
+let SELECCIONADO = null;      // invitado_id elegido con un toque, esperando asiento destino
+let MESAS_COLAPSADAS = {};    // { mesaId: true/false } — recuerda qué acordeones están abiertos
 
 const TAMANO_DEFECTO = { round: { ancho: 150, alto: 150 }, square: { ancho: 150, alto: 150 }, rect: { ancho: 210, alto: 120 } };
 const ETIQUETA_ZONA = { pista: '🎵 Pista de baile', barra: '🍸 Barra', entrada: '🚪 Entrada', escenario: '🎤 Escenario / DJ' };
@@ -26,7 +27,7 @@ async function cargarMesasDatos() {
   if (data.error) return;
   MESAS = data.mesas || [];
   ZONAS = data.zonas || [];
-  SALON = data.salon || { ancho: 980, alto: 520 };
+  SALON = data.salon || { ancho: 700, alto: 420 };
   renderTodoMesas();
 }
 
@@ -76,7 +77,6 @@ function renderTodoMesas() {
   MESAS.forEach(m => canvas.appendChild(crearElementoMesa(m)));
   renderSidebarPendientes();
   renderDetalleMesas();
-  renderPrintMesas();
 }
 
 function crearElementoZona(z) {
@@ -85,9 +85,14 @@ function crearElementoZona(z) {
   div.style.left = z.pos_x + 'px'; div.style.top = z.pos_y + 'px';
   div.style.width = z.ancho + 'px'; div.style.height = z.alto + 'px';
   div.innerHTML = `<span>${ETIQUETA_ZONA[z.tipo]}</span>
-    <button class="zona-borrar no-print" onclick="event.stopPropagation();eliminarZona('${z.id}')">✕</button>
-    <div class="resize-handle no-print" onmousedown="event.stopPropagation();iniciarRedimensionZona(event,'${z.id}')"></div>`;
-  div.onmousedown = (e) => { if (e.target.closest('button,.resize-handle')) return; iniciarArrastreZona(e, z); };
+    <button class="zona-borrar no-print" type="button">✕</button>
+    <div class="resize-handle no-print"></div>`;
+
+  div.querySelector('.zona-borrar').addEventListener('click', (e) => { e.stopPropagation(); eliminarZona(z.id); });
+  const resizeHandle = div.querySelector('.resize-handle');
+  agregarArrastre(resizeHandle, (e, punto) => { e.stopPropagation(); iniciarRedimensionZona(punto, z.id); });
+  agregarArrastre(div, (e, punto) => { if (e.target.closest('button,.resize-handle')) return; iniciarArrastreZona(punto, z); });
+
   return div;
 }
 
@@ -107,11 +112,13 @@ function crearElementoMesa(m) {
     <span class="nombre" title="${escaparTexto(m.nombre)}">${escaparTexto(m.nombre)}</span>
     <span class="badge-ocupacion ${llena ? 'llena' : ''}">${ocupadas}/${m.capacidad}</span>
     <span class="no-print" style="margin-left:auto;display:flex;gap:4px">
-      <button onclick="event.stopPropagation();togglePopoverForma('${m.id}')" title="Cambiar forma">⬡</button>
-      ${!m.es_novios ? `<button onclick="event.stopPropagation();eliminarMesa('${m.id}')" title="Eliminar">🗑</button>` : ''}
+      <button type="button" class="btn-forma" title="Cambiar forma">⬡</button>
+      ${!m.es_novios ? `<button type="button" class="btn-eliminar" title="Eliminar">🗑</button>` : ''}
     </span>
   `;
-  header.onmousedown = (e) => { if (e.target.closest('button')) return; iniciarArrastreMesa(e, m); };
+  header.querySelector('.btn-forma').addEventListener('click', (e) => { e.stopPropagation(); togglePopoverForma(m.id); });
+  if (!m.es_novios) header.querySelector('.btn-eliminar').addEventListener('click', (e) => { e.stopPropagation(); eliminarMesa(m.id); });
+  agregarArrastre(header, (e, punto) => { if (e.target.closest('button')) return; iniciarArrastreMesa(punto, m); });
   wrap.appendChild(header);
 
   const popover = document.createElement('div');
@@ -119,18 +126,20 @@ function crearElementoMesa(m) {
   popover.className = 'menu-flotante oculto no-print';
   popover.style.top = '28px'; popover.style.right = '0'; popover.style.left = 'auto';
   popover.innerHTML = `
-    <button onclick="cambiarFormaMesa('${m.id}','round')">◯ Redonda</button>
-    <button onclick="cambiarFormaMesa('${m.id}','square')">▢ Cuadrada</button>
-    <button onclick="cambiarFormaMesa('${m.id}','rect')">▭ Rectangular</button>`;
+    <button type="button" data-forma="round">◯ Redonda</button>
+    <button type="button" data-forma="square">▢ Cuadrada</button>
+    <button type="button" data-forma="rect">▭ Rectangular</button>`;
+  popover.querySelectorAll('button').forEach(b => b.addEventListener('click', () => cambiarFormaMesa(m.id, b.dataset.forma)));
   wrap.appendChild(popover);
 
   const shape = document.createElement('div');
+  shape.id = `mesa-shape-${m.id}`;
   shape.className = `mesa-shape forma-${m.forma}`;
   shape.style.width = m.ancho + 'px'; shape.style.height = m.alto + 'px';
-  shape.onmousedown = (e) => { if (e.target.closest('.asiento,.resize-handle')) return; iniciarArrastreMesa(e, m); };
-  shape.ondragover = (e) => { e.preventDefault(); shape.classList.add('sobre-drop'); };
-  shape.ondragleave = () => shape.classList.remove('sobre-drop');
-  shape.ondrop = (e) => { e.preventDefault(); shape.classList.remove('sobre-drop'); soltarEnMesa(e, m.id); };
+  agregarArrastre(shape, (e, punto) => { if (e.target.closest('.asiento,.resize-handle')) return; iniciarArrastreMesa(punto, m); });
+  shape.addEventListener('dragover', (e) => { e.preventDefault(); shape.classList.add('sobre-drop'); });
+  shape.addEventListener('dragleave', () => shape.classList.remove('sobre-drop'));
+  shape.addEventListener('drop', (e) => { e.preventDefault(); shape.classList.remove('sobre-drop'); soltarEnMesa(e, m.id); });
 
   if (m.forma === 'round') {
     const centro = document.createElement('div');
@@ -144,42 +153,60 @@ function crearElementoMesa(m) {
     const dot = document.createElement('div');
     dot.className = `asiento ${ocupante ? 'ocupado' : 'vacio'}`;
     dot.style.left = pos.left + '%'; dot.style.top = pos.top + '%';
-    dot.dataset.asiento = i;
     if (ocupante) {
       const genero = detectarGenero(ocupante.nombre);
       dot.style.background = genero === 'F' ? 'var(--rosa-suave)' : 'var(--celeste-claro)';
       dot.style.color = genero === 'F' ? '#9C5F5A' : 'var(--celeste-oscuro)';
       dot.textContent = iniciales(ocupante.nombre);
-      dot.title = `${ocupante.nombre} (clic para quitar)`;
-      dot.onclick = () => quitarAsiento(ocupante.invitado_id);
+      dot.title = SELECCIONADO ? 'Tocar para sentar aquí al invitado seleccionado' : `${ocupante.nombre} — toca para quitar`;
+      dot.addEventListener('click', () => alTocarAsiento(m.id, i, ocupante.invitado_id));
     } else {
-      dot.title = `Asiento ${i + 1} — vacío`;
+      dot.title = SELECCIONADO ? 'Tocar para sentar aquí' : `Asiento ${i + 1} — vacío`;
+      dot.addEventListener('click', () => alTocarAsiento(m.id, i, null));
     }
-    dot.ondragover = (e) => { e.preventDefault(); e.stopPropagation(); };
-    dot.ondrop = (e) => { e.preventDefault(); e.stopPropagation(); soltarEnAsiento(e, m.id, i); };
+    dot.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
+    dot.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); soltarEnAsiento(e, m.id, i); });
     shape.appendChild(dot);
   });
 
   const resize = document.createElement('div');
   resize.className = 'resize-handle no-print';
   resize.title = 'Arrastra para cambiar el tamaño';
-  resize.onmousedown = (e) => { e.preventDefault(); e.stopPropagation(); iniciarRedimensionMesa(e, m); };
+  agregarArrastre(resize, (e, punto) => { e.stopPropagation(); iniciarRedimensionMesa(punto, m); });
   shape.appendChild(resize);
 
   wrap.appendChild(shape);
   return wrap;
 }
 
-/* ============================================================ DRAG ====== */
-document.addEventListener('mousemove', (e) => {
+/* ============================================================ DRAG (mouse + touch) === */
+// agregarArrastre: registra tanto mousedown como touchstart sobre un elemento,
+// normalizando ambos a un mismo "punto" {clientX, clientY} para el callback.
+function agregarArrastre(el, onStart) {
+  el.addEventListener('mousedown', (e) => onStart(e, { clientX: e.clientX, clientY: e.clientY }));
+  el.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    onStart(e, { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+  }, { passive: true });
+}
+
+function puntoDeEvento(e) {
+  if (e.touches && e.touches.length) return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+  if (e.changedTouches && e.changedTouches.length) return { clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY };
+  return { clientX: e.clientX, clientY: e.clientY };
+}
+
+function moverArrastre(e) {
   if (!ARRASTRE) return;
+  if (e.cancelable) e.preventDefault(); // evita que la página haga scroll mientras se arrastra
+  const punto = puntoDeEvento(e);
   const canvas = document.getElementById('canvas-salon');
   const rect = canvas.getBoundingClientRect();
 
   if (ARRASTRE.tipo === 'mesa') {
     const m = MESAS.find(x => x.id === ARRASTRE.id);
-    let nx = clamp(e.clientX - rect.left - ARRASTRE.offsetX, 0, SALON.ancho - m.ancho);
-    let ny = clamp(e.clientY - rect.top - ARRASTRE.offsetY, 0, SALON.alto - m.alto - 24);
+    let nx = clamp(punto.clientX - rect.left - ARRASTRE.offsetX, 0, SALON.ancho - m.ancho);
+    let ny = clamp(punto.clientY - rect.top - ARRASTRE.offsetY, 0, SALON.alto - m.alto - 24);
     let pegada = false;
     MESAS.forEach(o => {
       if (o.id === m.id) return;
@@ -201,34 +228,34 @@ document.addEventListener('mousemove', (e) => {
   } else if (ARRASTRE.tipo === 'resize-mesa') {
     const m = MESAS.find(x => x.id === ARRASTRE.id);
     if (m.forma === 'rect') {
-      m.ancho = clamp(ARRASTRE.startAncho + (e.clientX - ARRASTRE.startX), 110, 420);
-      m.alto = clamp(ARRASTRE.startAlto + (e.clientY - ARRASTRE.startY), 70, 260);
+      m.ancho = clamp(ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX), 110, 420);
+      m.alto = clamp(ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY), 70, 260);
     } else {
-      const delta = Math.max(e.clientX - ARRASTRE.startX, e.clientY - ARRASTRE.startY);
+      const delta = Math.max(punto.clientX - ARRASTRE.startX, punto.clientY - ARRASTRE.startY);
       const ns = clamp(ARRASTRE.startAncho + delta, 90, 320);
       m.ancho = ns; m.alto = ns;
     }
     renderTodoMesas();
   } else if (ARRASTRE.tipo === 'zona') {
     const z = ZONAS.find(x => x.id === ARRASTRE.id);
-    z.pos_x = clamp(e.clientX - rect.left - ARRASTRE.offsetX, 0, SALON.ancho - z.ancho);
-    z.pos_y = clamp(e.clientY - rect.top - ARRASTRE.offsetY, 0, SALON.alto - z.alto - 24);
+    z.pos_x = clamp(punto.clientX - rect.left - ARRASTRE.offsetX, 0, SALON.ancho - z.ancho);
+    z.pos_y = clamp(punto.clientY - rect.top - ARRASTRE.offsetY, 0, SALON.alto - z.alto - 24);
     const el = document.querySelectorAll('.zona-en-canvas')[ZONAS.indexOf(z)];
     if (el) { el.style.left = z.pos_x + 'px'; el.style.top = z.pos_y + 'px'; }
   } else if (ARRASTRE.tipo === 'resize-zona') {
     const z = ZONAS.find(x => x.id === ARRASTRE.id);
-    z.ancho = Math.max(70, ARRASTRE.startAncho + (e.clientX - ARRASTRE.startX));
-    z.alto = Math.max(50, ARRASTRE.startAlto + (e.clientY - ARRASTRE.startY));
+    z.ancho = Math.max(70, ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX));
+    z.alto = Math.max(50, ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY));
     renderTodoMesas();
   } else if (ARRASTRE.tipo === 'resize-canvas') {
-    SALON.ancho = Math.max(680, ARRASTRE.startAncho + (e.clientX - ARRASTRE.startX));
-    SALON.alto = Math.max(380, ARRASTRE.startAlto + (e.clientY - ARRASTRE.startY));
+    SALON.ancho = Math.max(680, ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX));
+    SALON.alto = Math.max(380, ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY));
     const canvasEl = document.getElementById('canvas-salon');
     canvasEl.style.width = SALON.ancho + 'px'; canvasEl.style.height = SALON.alto + 'px';
   }
-});
+}
 
-document.addEventListener('mouseup', async () => {
+async function soltarArrastre() {
   if (!ARRASTRE) return;
   const tipo = ARRASTRE.tipo, id = ARRASTRE.id;
   ARRASTRE = null;
@@ -237,28 +264,31 @@ document.addEventListener('mouseup', async () => {
   else if (tipo === 'zona' || tipo === 'resize-zona') { await persistirZona(ZONAS.find(z => z.id === id)); }
   else if (tipo === 'resize-canvas') { await rpc('panel_guardar_salon', { p_codigo: CODIGO, p_ancho: SALON.ancho, p_alto: SALON.alto }); }
   renderTodoMesas();
-});
+}
 
-function iniciarArrastreMesa(e, m) {
-  e.preventDefault();
+document.addEventListener('mousemove', moverArrastre);
+document.addEventListener('touchmove', moverArrastre, { passive: false });
+document.addEventListener('mouseup', soltarArrastre);
+document.addEventListener('touchend', soltarArrastre);
+
+function iniciarArrastreMesa(punto, m) {
   const rect = document.getElementById('canvas-salon').getBoundingClientRect();
-  ARRASTRE = { tipo: 'mesa', id: m.id, offsetX: e.clientX - rect.left - m.pos_x, offsetY: e.clientY - rect.top - m.pos_y };
+  ARRASTRE = { tipo: 'mesa', id: m.id, offsetX: punto.clientX - rect.left - m.pos_x, offsetY: punto.clientY - rect.top - m.pos_y };
 }
-function iniciarRedimensionMesa(e, m) {
-  ARRASTRE = { tipo: 'resize-mesa', id: m.id, startAncho: m.ancho, startAlto: m.alto, startX: e.clientX, startY: e.clientY };
+function iniciarRedimensionMesa(punto, m) {
+  ARRASTRE = { tipo: 'resize-mesa', id: m.id, startAncho: m.ancho, startAlto: m.alto, startX: punto.clientX, startY: punto.clientY };
 }
-function iniciarArrastreZona(e, z) {
+function iniciarArrastreZona(punto, z) {
   const rect = document.getElementById('canvas-salon').getBoundingClientRect();
-  ARRASTRE = { tipo: 'zona', id: z.id, offsetX: e.clientX - rect.left - z.pos_x, offsetY: e.clientY - rect.top - z.pos_y };
+  ARRASTRE = { tipo: 'zona', id: z.id, offsetX: punto.clientX - rect.left - z.pos_x, offsetY: punto.clientY - rect.top - z.pos_y };
 }
-function iniciarRedimensionZona(e, id) {
+function iniciarRedimensionZona(punto, id) {
   const z = ZONAS.find(x => x.id === id);
-  ARRASTRE = { tipo: 'resize-zona', id, startAncho: z.ancho, startAlto: z.alto, startX: e.clientX, startY: e.clientY };
+  ARRASTRE = { tipo: 'resize-zona', id, startAncho: z.ancho, startAlto: z.alto, startX: punto.clientX, startY: punto.clientY };
 }
-document.getElementById('canvas-resize-handle').onmousedown = (e) => {
-  e.preventDefault();
-  ARRASTRE = { tipo: 'resize-canvas', startAncho: SALON.ancho, startAlto: SALON.alto, startX: e.clientX, startY: e.clientY };
-};
+agregarArrastre(document.getElementById('canvas-resize-handle'), (e, punto) => {
+  ARRASTRE = { tipo: 'resize-canvas', startAncho: SALON.ancho, startAlto: SALON.alto, startX: punto.clientX, startY: punto.clientY };
+});
 
 async function persistirMesa(m) {
   await rpc('panel_guardar_mesa', {
@@ -281,12 +311,12 @@ function togglePopoverForma(id) {
 async function cambiarFormaMesa(id, forma) {
   const m = MESAS.find(x => x.id === id);
   m.forma = forma;
-  document.getElementById(`popover-forma-${id}`).classList.add('oculto');
+  document.getElementById(`popover-forma-${id}`)?.classList.add('oculto');
   await persistirMesa(m);
   renderTodoMesas();
 }
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('[onclick*="togglePopoverForma"]')) {
+  if (!e.target.closest('.menu-flotante') && !e.target.closest('.btn-forma')) {
     document.querySelectorAll('.menu-flotante').forEach(el => el.classList.add('oculto'));
   }
 });
@@ -295,6 +325,7 @@ document.addEventListener('click', (e) => {
 function abrirModalMesa() {
   document.getElementById('mesa-id').value = '';
   document.getElementById('mesa-nombre').value = `Mesa ${MESAS.filter(m => !m.es_novios).length + 1}`;
+  document.getElementById('mesa-nombre').dataset.auto = '1';
   document.getElementById('mesa-capacidad').value = 8;
   document.getElementById('mesa-capacidad-valor').textContent = 8;
   document.getElementById('mesa-es-novios').checked = false;
@@ -305,6 +336,15 @@ function cerrarModalMesa() { document.getElementById('modal-mesa').classList.add
 function elegirForma(forma) {
   document.querySelectorAll('.forma-op').forEach(b => b.classList.toggle('activo', b.dataset.forma === forma));
 }
+// Si el nombre sigue en su valor automático ("Mesa N"), lo cambia a un
+// nombre más apropiado al marcar/desmarcar "mesa de honor".
+function alTogglearNovios(marcado) {
+  const campo = document.getElementById('mesa-nombre');
+  if (campo.dataset.auto !== '1') return; // el usuario ya escribió su propio nombre, no lo tocamos
+  campo.value = marcado ? 'Mesa de los Novios' : `Mesa ${MESAS.filter(m => !m.es_novios).length + 1}`;
+}
+document.getElementById('mesa-nombre').addEventListener('input', function () { this.dataset.auto = '0'; });
+
 async function guardarMesaNueva() {
   const nombre = document.getElementById('mesa-nombre').value.trim();
   if (!nombre) { mostrarToast('Ponle un nombre a la mesa'); return; }
@@ -316,7 +356,7 @@ async function guardarMesaNueva() {
 
   const res = await rpc('panel_guardar_mesa', {
     p_codigo: CODIGO, p_mesa_id: null, p_nombre: nombre, p_forma: forma, p_capacidad: capacidad,
-    p_es_novios: esNovios, p_pos_x: 40 + (n % 4) * 60, p_pos_y: 40 + Math.floor(n / 4) * 60,
+    p_es_novios: esNovios, p_pos_x: 40 + (n % 3) * 60, p_pos_y: 40 + Math.floor(n / 3) * 60,
     p_ancho: tam.ancho, p_alto: tam.alto
   });
   if (res.ok) { cerrarModalMesa(); await cargarMesasDatos(); mostrarToast('Mesa creada'); }
@@ -324,11 +364,14 @@ async function guardarMesaNueva() {
 async function eliminarMesa(id) {
   if (!confirm('¿Eliminar esta mesa? Los invitados sentados quedarán sin mesa.')) return;
   const res = await rpc('panel_eliminar_mesa', { p_codigo: CODIGO, p_mesa_id: id });
-  if (res.ok) { await cargarMesasDatos(); await window.cargarTodo(); mostrarToast('Mesa eliminada'); }
+  if (res.ok) { await cargarMesasDatos(); await cargarTodo(); mostrarToast('Mesa eliminada'); }
 }
 
 /* ============================================================ CRUD ZONA = */
-function toggleMenuZona() { document.getElementById('menu-zona').classList.toggle('oculto'); }
+function toggleMenuZona(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('menu-zona').classList.toggle('oculto');
+}
 async function agregarZona(tipo) {
   document.getElementById('menu-zona').classList.add('oculto');
   const res = await rpc('panel_guardar_zona', {
@@ -342,8 +385,36 @@ async function eliminarZona(id) {
   const res = await rpc('panel_eliminar_zona', { p_codigo: CODIGO, p_zona_id: id });
   if (res.ok) await cargarMesasDatos();
 }
+// Cierra el menú de zona si el clic fue fuera de él (y no fue el propio botón +Zona)
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#menu-zona') && !e.target.closest('[onclick*="toggleMenuZona"]')) {
+    document.getElementById('menu-zona')?.classList.add('oculto');
+  }
+});
 
 /* ============================================================ ASIENTOS == */
+// Interacción principal (funciona igual en computadora y celular):
+// 1) tocas/clic un invitado pendiente o ya sentado -> queda "seleccionado"
+// 2) tocas/clic un asiento (vacío u ocupado) -> lo sienta ahí (intercambia si había alguien)
+// El arrastrar-y-soltar sigue funcionando en computadora como atajo adicional.
+
+function alTocarAsiento(mesaId, asientoIndex, invitadoActualId) {
+  if (SELECCIONADO) {
+    if (SELECCIONADO === invitadoActualId) { SELECCIONADO = null; renderTodoMesas(); return; }
+    asignarAsiento(SELECCIONADO, mesaId, asientoIndex);
+    SELECCIONADO = null;
+  } else if (invitadoActualId) {
+    quitarAsiento(invitadoActualId);
+  }
+}
+
+function alTocarChip(invitadoId) {
+  SELECCIONADO = SELECCIONADO === invitadoId ? null : invitadoId;
+  renderSidebarPendientes();
+  renderDetalleMesas();
+  MESAS.forEach(m => { const el = document.getElementById(`mesa-shape-${m.id}`); if (el) el.classList.toggle('sobre-drop', false); });
+}
+
 function soltarEnMesa(e, mesaId) {
   const payload = leerPayloadDrag(e);
   if (!payload) return;
@@ -367,11 +438,11 @@ async function asignarAsientoAuto(invitadoId, mesaId) {
 }
 async function asignarAsiento(invitadoId, mesaId, asientoIndex) {
   const res = await rpc('panel_asignar_asiento', { p_codigo: CODIGO, p_invitado_id: invitadoId, p_mesa_id: mesaId, p_asiento_index: asientoIndex });
-  if (res.ok) { await cargarMesasDatos(); await window.cargarTodo(); }
+  if (res.ok) { await cargarMesasDatos(); await cargarTodo(); }
 }
 async function quitarAsiento(invitadoId) {
   const res = await rpc('panel_quitar_asiento', { p_codigo: CODIGO, p_invitado_id: invitadoId });
-  if (res.ok) { await cargarMesasDatos(); await window.cargarTodo(); }
+  if (res.ok) { await cargarMesasDatos(); await cargarTodo(); }
 }
 
 /* ============================================================ SIDEBAR === */
@@ -386,59 +457,117 @@ function renderSidebarPendientes() {
 
   if (!pendientes.length) { cont.innerHTML = `<p class="desc" style="font-size:.75rem">Todos los confirmados tienen mesa.</p>`; return; }
 
-  cont.innerHTML = pendientes.map(g => {
+  cont.innerHTML = '';
+  pendientes.forEach(g => {
     const genero = detectarGenero(g.nombre);
-    return `<div class="chip-invitado" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', JSON.stringify({invitado_id:'${g.id}'}))">
-      <span class="genero-dot ${genero === 'F' ? 'genero-f' : 'genero-m'}">${genero === 'F' ? '♀' : '♂'}</span>
-      <span>${escaparTexto(g.nombre)}</span>
-    </div>`;
-  }).join('');
+    const chip = document.createElement('div');
+    chip.className = 'chip-invitado' + (SELECCIONADO === g.id ? ' seleccionado' : '');
+    chip.draggable = true;
+    chip.innerHTML = `<span class="genero-dot ${genero === 'F' ? 'genero-f' : 'genero-m'}">${genero === 'F' ? '♀' : '♂'}</span><span>${escaparTexto(g.nombre)}</span>`;
+    chip.addEventListener('click', () => alTocarChip(g.id));
+    chip.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', JSON.stringify({ invitado_id: g.id })));
+    cont.appendChild(chip);
+  });
+
+  if (SELECCIONADO && pendientes.some(g => g.id === SELECCIONADO)) {
+    mostrarToast('Ahora toca el asiento donde quieres sentarlo');
+  }
 }
 
 function renderDetalleMesas() {
   const cont = document.getElementById('detalle-mesas');
   if (!cont) return;
-  cont.innerHTML = MESAS.map(m => {
-    const filas = [];
+  cont.innerHTML = '';
+
+  MESAS.forEach(m => {
+    const grupo = document.createElement('div');
+    grupo.className = 'mesa-detalle-grupo';
+    const colapsado = MESAS_COLAPSADAS[m.id] !== false; // colapsado por defecto
+
+    const titulo = document.createElement('div');
+    titulo.className = 'mesa-detalle-titulo';
+    titulo.innerHTML = `${m.es_novios ? '♛ ' : ''}${escaparTexto(m.nombre)}
+      <span class="ir-mesa">Ver en el plano</span><span class="chevron">${colapsado ? '▸' : '▾'}</span>`;
+    titulo.querySelector('.ir-mesa').addEventListener('click', (e) => { e.stopPropagation(); irAMesa(m.id); });
+    titulo.addEventListener('click', () => { MESAS_COLAPSADAS[m.id] = !colapsado; renderDetalleMesas(); });
+    grupo.appendChild(titulo);
+
+    const cuerpo = document.createElement('div');
+    cuerpo.className = 'mesa-detalle-cuerpo' + (colapsado ? ' colapsado' : '');
     for (let i = 0; i < m.capacidad; i++) {
       const oc = m.asientos.find(a => a.asiento_index === i);
+      const fila = document.createElement('div');
       if (oc) {
-        filas.push(`<div class="fila-asiento con-invitado" draggable="true"
-            ondragstart="event.dataTransfer.setData('text/plain', JSON.stringify({invitado_id:'${oc.invitado_id}'}))">
-          <span class="num">${i + 1}</span><span>${escaparTexto(oc.nombre)}</span>
-          <button class="quitar-asiento" onclick="quitarAsiento('${oc.invitado_id}')">✕</button>
-        </div>`);
+        fila.className = 'fila-asiento con-invitado' + (SELECCIONADO === oc.invitado_id ? ' seleccionada' : '');
+        fila.draggable = true;
+        fila.innerHTML = `<span class="num">${i + 1}</span><span>${escaparTexto(oc.nombre)}</span><button class="quitar-asiento" type="button">✕</button>`;
+        fila.querySelector('.quitar-asiento').addEventListener('click', (e) => { e.stopPropagation(); quitarAsiento(oc.invitado_id); });
+        fila.addEventListener('click', () => alTocarChip(oc.invitado_id));
+        fila.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', JSON.stringify({ invitado_id: oc.invitado_id })));
       } else {
-        filas.push(`<div class="fila-asiento vacia" ondragover="event.preventDefault()"
-            ondrop="event.preventDefault();soltarEnAsiento(event,'${m.id}',${i})">
-          <span class="num">${i + 1}</span><span>vacío — arrastra aquí</span>
-        </div>`);
+        fila.className = 'fila-asiento vacia';
+        fila.innerHTML = `<span class="num">${i + 1}</span><span>vacío — toca aquí para sentar</span>`;
+        fila.addEventListener('click', () => alTocarAsiento(m.id, i, null));
       }
+      fila.addEventListener('dragover', (e) => e.preventDefault());
+      fila.addEventListener('drop', (e) => { e.preventDefault(); soltarEnAsiento(e, m.id, i); });
+      cuerpo.appendChild(fila);
     }
-    return `<div class="mesa-detalle-grupo"><div class="mesa-detalle-titulo">${m.es_novios ? '♛ ' : ''}${escaparTexto(m.nombre)}</div>${filas.join('')}</div>`;
-  }).join('');
+    grupo.appendChild(cuerpo);
+    cont.appendChild(grupo);
+  });
+}
+
+function irAMesa(mesaId) {
+  const idx = MESAS.findIndex(m => m.id === mesaId);
+  const wrap = document.querySelectorAll('.mesa-en-canvas')[idx];
+  const scroll = document.querySelector('.canvas-scroll');
+  if (!wrap || !scroll) return;
+  scroll.scrollTo({ left: Math.max(0, wrap.offsetLeft - 60), top: Math.max(0, wrap.offsetTop - 60), behavior: 'smooth' });
+  const shape = wrap.querySelector('.mesa-shape');
+  shape.classList.add('destello');
+  setTimeout(() => shape.classList.remove('destello'), 1000);
 }
 
 /* ============================================================ IMPRIMIR == */
-function renderPrintMesas() {
+function prepararImpresion() {
   const cont = document.getElementById('print-mesas');
-  if (!cont) return;
   const sentadosIds = new Set(MESAS.flatMap(m => m.asientos.map(a => a.invitado_id)));
   const pendientes = (INVITADOS || []).filter(g => g.estado === 'confirmado' && !sentadosIds.has(g.id));
 
-  let html = `<h2 style="font-family:var(--font-display);font-style:italic">Distribución de Mesas</h2>`;
+  // ---- Página 1: plano visual ----
+  let plano = `<div class="print-plano" style="width:${SALON.ancho}px;height:${SALON.alto}px">`;
+  ZONAS.forEach(z => {
+    plano += `<div class="print-zona" style="left:${z.pos_x}px;top:${z.pos_y}px;width:${z.ancho}px;height:${z.alto}px">${escaparTexto(z.etiqueta)}</div>`;
+  });
   MESAS.forEach(m => {
-    html += `<div style="margin-bottom:16px"><div style="border-bottom:1.5px solid var(--celeste-oscuro);padding-bottom:4px;margin-bottom:6px">
+    plano += `<div style="position:absolute;left:${m.pos_x}px;top:${m.pos_y}px;width:${m.ancho}px">
+      <div class="print-mesa-nombre">${m.es_novios ? '♛ ' : ''}${escaparTexto(m.nombre)}</div>
+      <div class="print-mesa-shape" style="width:${m.ancho}px;height:${m.alto}px;border-radius:${m.forma === 'round' ? '50%' : '10px'}">`;
+    posicionesAsiento(m.forma, m.capacidad).forEach((pos, i) => {
+      const oc = m.asientos.find(a => a.asiento_index === i);
+      plano += `<div class="print-asiento" style="left:${pos.left}%;top:${pos.top}%">${oc ? iniciales(oc.nombre) : ''}</div>`;
+    });
+    plano += `</div></div>`;
+  });
+  plano += `</div>`;
+
+  // ---- Página 2: lista clásica ----
+  let lista = `<h2 style="font-family:var(--font-display);font-style:italic">Distribución de Mesas</h2>`;
+  MESAS.forEach(m => {
+    lista += `<div style="margin-bottom:16px"><div style="border-bottom:1.5px solid #123A54;padding-bottom:4px;margin-bottom:6px">
       <strong>${escaparTexto(m.nombre)}</strong> — ${m.asientos.length}/${m.capacidad}</div>`;
-    if (!m.asientos.length) html += `<p style="font-style:italic;color:#888">Sin invitados asignados</p>`;
-    else html += `<ol>${m.asientos.sort((a,b)=>a.asiento_index-b.asiento_index).map(a => `<li>${escaparTexto(a.nombre)}</li>`).join('')}</ol>`;
-    html += `</div>`;
+    if (!m.asientos.length) lista += `<p style="font-style:italic;color:#888">Sin invitados asignados</p>`;
+    else lista += `<ol>${[...m.asientos].sort((a, b) => a.asiento_index - b.asiento_index).map(a => `<li>${escaparTexto(a.nombre)}</li>`).join('')}</ol>`;
+    lista += `</div>`;
   });
   if (pendientes.length) {
-    html += `<div><div style="border-bottom:1.5px solid var(--rosa);padding-bottom:4px;margin-bottom:6px"><strong>Pendientes de asignar</strong></div>
+    lista += `<div><div style="border-bottom:1.5px solid #C98B86;padding-bottom:4px;margin-bottom:6px"><strong>Pendientes de asignar</strong></div>
       <ol>${pendientes.map(g => `<li>${escaparTexto(g.nombre)}</li>`).join('')}</ol></div>`;
   }
-  cont.innerHTML = html;
+
+  cont.innerHTML = plano + lista;
+  setTimeout(() => window.print(), 50); // deja que el DOM pinte antes de abrir el diálogo
 }
 
 /* ============================================================ EXCEL ===== */
@@ -447,7 +576,7 @@ function exportarExcelMesas() {
   MESAS.forEach(m => {
     filas.push([`${m.nombre}${m.es_novios ? ' (Mesa de honor)' : ''}`, `Capacidad ${m.asientos.length}/${m.capacidad}`]);
     filas.push(['Nombre']);
-    m.asientos.sort((a, b) => a.asiento_index - b.asiento_index).forEach(a => filas.push([a.nombre]));
+    [...m.asientos].sort((a, b) => a.asiento_index - b.asiento_index).forEach(a => filas.push([a.nombre]));
     filas.push([]);
   });
   const sentadosIds = new Set(MESAS.flatMap(m => m.asientos.map(a => a.invitado_id)));

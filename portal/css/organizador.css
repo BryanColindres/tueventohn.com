@@ -53,10 +53,12 @@
   display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;color:var(--texto-mid)}
 .ti-icon-btn:hover{background:var(--celeste-nube)}
 
-.badge-estado{border:none;border-radius:999px;padding:.28rem .7rem;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.badge-estado{border:none;border-radius:999px;padding:.28rem .6rem;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);appearance:none;-webkit-appearance:none}
 .badge-pendiente{background:#F4E9D8;color:#93712F}
 .badge-confirmado{background:#DCF3E4;color:#2B7A4B}
 .badge-rechazado{background:#FBE2E0;color:#B0473F}
+
+.excel-error{background:#FBE2E0;color:#B0473F;border-radius:9px;padding:.6rem .8rem;font-size:.78rem;margin:.6rem 0}
 
 /* ---- modal ---- */
 .modal-fondo{position:fixed;inset:0;background:rgba(18,58,84,.45);display:flex;align-items:center;justify-content:center;z-index:80;padding:1rem}
@@ -133,20 +135,43 @@
   font-family:var(--font);font-size:.75rem;cursor:pointer;color:var(--texto)}
 .forma-op.activo{background:var(--celeste-oscuro);color:#fff;border-color:var(--celeste-oscuro)}
 
-.mesa-detalle-grupo{margin-bottom:1rem}
-.mesa-detalle-titulo{font-family:var(--font-display);font-style:italic;font-size:.85rem;color:var(--azul-profundo);margin-bottom:.4rem}
-.fila-asiento{display:flex;align-items:center;gap:.4rem;padding:.4rem .5rem;border-radius:7px;font-size:.78rem;margin-bottom:.25rem}
+.mesa-detalle-grupo{margin-bottom:.4rem;border:1px solid var(--borde);border-radius:10px;overflow:hidden}
+.mesa-detalle-titulo{font-family:var(--font-display);font-style:italic;font-size:.85rem;color:var(--azul-profundo);
+  padding:.55rem .7rem;display:flex;align-items:center;gap:.4rem;cursor:pointer;background:var(--celeste-nube)}
+.mesa-detalle-titulo .chevron{margin-left:auto;font-size:.65rem;transition:transform .15s}
+.mesa-detalle-titulo .ir-mesa{font-size:.68rem;font-family:var(--font);color:var(--celeste-oscuro);border:1px solid var(--celeste-oscuro);
+  border-radius:999px;padding:1px 8px;background:#fff}
+.mesa-detalle-cuerpo{padding:.5rem .6rem}
+.mesa-detalle-cuerpo.colapsado{display:none}
+.fila-asiento{display:flex;align-items:center;gap:.4rem;padding:.45rem .5rem;border-radius:7px;font-size:.78rem;margin-bottom:.25rem}
 .fila-asiento.con-invitado{background:var(--celeste-nube);cursor:grab}
-.fila-asiento.vacia{border:1px dashed var(--borde);color:var(--texto-mid);font-style:italic}
+.fila-asiento.con-invitado.seleccionada{outline:2px solid var(--celeste-oscuro)}
+.fila-asiento.vacia{border:1px dashed var(--borde);color:var(--texto-mid);font-style:italic;cursor:pointer}
 .fila-asiento .num{font-size:.68rem;color:var(--texto-mid);width:14px;flex-shrink:0}
-.fila-asiento .quitar-asiento{margin-left:auto;border:none;background:none;color:var(--texto-mid);cursor:pointer}
+.fila-asiento .quitar-asiento{margin-left:auto;border:none;background:none;color:var(--texto-mid);cursor:pointer;padding:2px 4px}
+
+#detalle-mesas{max-height:440px;overflow-y:auto;padding-right:2px}
+
+@keyframes destelloMesa{0%,100%{box-shadow:0 2px 8px rgba(30,110,156,.08)}50%{box-shadow:0 0 0 6px rgba(30,110,156,.25)}}
+.mesa-shape.destello{animation:destelloMesa .5s ease-in-out 2}
+
+.chip-invitado.seleccionado{outline:2px solid var(--celeste-oscuro);background:var(--celeste-claro)}
+.asiento{touch-action:none}
+.mesa-shape,.zona-en-canvas{touch-action:none}
 
 /* ---- Impresión ---- */
 .print-only{display:none}
 @media print{
   .no-print{display:none !important}
   .print-only{display:block !important}
+  .print-plano{page-break-after:always}
 }
+.print-plano{position:relative;border:1px solid #333;margin-bottom:20px}
+.print-mesa-nombre{font-family:var(--font-display);font-style:italic;font-size:11px;text-align:center;margin-bottom:2px}
+.print-mesa-shape{position:relative;border:1.5px solid #222}
+.print-asiento{position:absolute;width:22px;height:22px;border-radius:50%;border:1px solid #222;
+  font-size:7.5px;display:flex;align-items:center;justify-content:center;background:#fff;transform:translate(-50%,-50%)}
+.print-zona{position:absolute;border:1.2px dashed #555;display:flex;align-items:center;justify-content:center;font-size:10px;color:#555}
 
 @media(max-width:640px){
   .ti-fila{grid-template-columns:1fr;gap:.3rem}
