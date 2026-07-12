@@ -57,6 +57,7 @@
           <label>Foto del lugar (opcional)</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-lugar-foto')">
           <input type="hidden" id="p-lugar-foto">
+          <div class="archivo-actual oculto" id="preview-p-lugar-foto"></div>
         </div>
         <button class="btn btn-dorado" onclick="guardarUbicacion()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-ubicacion">Guardado</p>
@@ -70,43 +71,51 @@
           <label>Foto de portada</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-hero')">
           <input type="hidden" id="p-foto-hero">
+          <div class="archivo-actual oculto" id="preview-p-foto-hero"></div>
         </div>
         <div class="campo">
           <label>Foto de cierre</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-footer')">
           <input type="hidden" id="p-foto-footer">
+          <div class="archivo-actual oculto" id="preview-p-foto-footer"></div>
         </div>
         <button class="btn btn-dorado" onclick="guardarFotos()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-fotos">Guardado</p>
 
         <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
         <div class="campo">
-          <label>Video de apertura (opcional)</label>
-          <p class="desc" style="margin:.2rem 0 .6rem">Se reproduce solo al abrir la invitación, antes de que aparezca el resto. Si no subes uno, se salta directo al contenido.</p>
-          <input type="file" accept="video/*" onchange="subirVideoApertura(event)">
-          <input type="hidden" id="p-video-apertura-url">
-        </div>
-        <button class="btn btn-outline btn-chico" onclick="guardarVideoApertura()">Guardar video de apertura</button>
-        <p class="mensaje-ok oculto" id="ok-video-apertura">Guardado</p>
-
-        <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
-        <div class="campo">
           <label>Foto de portada B (opcional — solo la usa la plantilla "Opuestos", que muestra dos fotos)</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-hero-b')">
           <input type="hidden" id="p-foto-hero-b">
+          <div class="archivo-actual oculto" id="preview-p-foto-hero-b"></div>
         </div>
         <button class="btn btn-outline btn-chico" onclick="guardarFotoHeroB()">Guardar foto B</button>
         <p class="mensaje-ok oculto" id="ok-foto-hero-b">Guardado</p>
       </div>
 
+      <!-- VIDEO DE APERTURA -->
+      <div class="tarjeta" id="tarjeta-video-apertura">
+        <h2><span class="num">4</span> Video de apertura</h2>
+        <p class="desc">Se reproduce solo al abrir la invitación, antes de que aparezca el resto. Si no subes uno, se salta directo al contenido.</p>
+        <div class="campo">
+          <label>Video</label>
+          <input type="file" accept="video/*" onchange="subirVideoApertura(event)">
+          <input type="hidden" id="p-video-apertura-url">
+          <div class="archivo-actual oculto" id="preview-p-video-apertura-url"></div>
+        </div>
+        <button class="btn btn-dorado" onclick="guardarVideoApertura()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-video-apertura">Guardado</p>
+      </div>
+
       <!-- MÚSICA DE FONDO -->
       <div class="tarjeta" id="tarjeta-musica">
-        <h2><span class="num">4</span> Música de fondo</h2>
+        <h2><span class="num">5</span> Música de fondo</h2>
         <p class="desc">Suena automáticamente al abrir la invitación.</p>
         <div class="campo">
           <label>Archivo de audio (MP3)</label>
           <input type="file" accept="audio/*" onchange="subirAudioSimple(event, 'p-musica-url')">
           <input type="hidden" id="p-musica-url">
+          <div class="archivo-actual oculto" id="preview-p-musica-url"></div>
         </div>
         <button class="btn btn-dorado" onclick="guardarMusica()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-musica">Guardado</p>
@@ -114,11 +123,11 @@
 
       <!-- MENSAJE PERSONALIZADO (VOZ O VIDEO) -->
       <div class="tarjeta" id="tarjeta-mensaje">
-        <h2><span class="num">5</span> Mensaje para tus invitados</h2>
+        <h2><span class="num">6</span> Mensaje para tus invitados</h2>
         <p class="desc">Distinto al video de apertura (que ven todos): esta es una grabación de audio o video que solo se muestra a quien abre su link personalizado, dirigida a él/ella por su nombre. Requiere que tus invitados tengan link personalizado (RSVP Premium).</p>
         <div class="campo">
           <label>Tipo</label>
-          <select id="p-mensaje-tipo" class="select-campo">
+          <select id="p-mensaje-tipo" class="select-campo" onchange="refrescarPreview('p-mensaje-url', this.value)">
             <option value="audio">Audio (mensaje de voz)</option>
             <option value="video">Video</option>
           </select>
@@ -127,6 +136,7 @@
           <label>Archivo</label>
           <input type="file" accept="audio/*,video/*" onchange="subirMensajePersonalizado(event)">
           <input type="hidden" id="p-mensaje-url">
+          <div class="archivo-actual oculto" id="preview-p-mensaje-url"></div>
         </div>
         <button class="btn btn-dorado" onclick="guardarMensajePersonalizado()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-mensaje">Guardado</p>
@@ -134,12 +144,13 @@
 
       <!-- VIDEO DENTRO DE LA INVITACIÓN -->
       <div class="tarjeta" id="tarjeta-video-interno">
-        <h2><span class="num">6</span> Video dentro de la invitación</h2>
+        <h2><span class="num">7</span> Video dentro de la invitación</h2>
         <p class="desc">Distinto al video de apertura (sección 3) y al mensaje personalizado (sección 5): este lo ven <b>todos</b> los invitados, aparece como una sección más al hacer scroll, con una frase que tú escribes.</p>
         <div class="campo">
           <label>Video</label>
           <input type="file" accept="video/*" onchange="subirFotoSimple(event, 'p-video-interno-url')">
           <input type="hidden" id="p-video-interno-url">
+          <div class="archivo-actual oculto" id="preview-p-video-interno-url"></div>
         </div>
         <div class="campo"><label>Frase que acompaña al video</label><input type="text" id="p-video-interno-frase"></div>
         <button class="btn btn-dorado" onclick="guardarVideoInterno()">Guardar</button>
@@ -148,7 +159,7 @@
 
       <!-- HISTORIA -->
       <div class="tarjeta" id="tarjeta-historia">
-        <h2><span class="num">7</span> Nuestra historia</h2>
+        <h2><span class="num">8</span> Nuestra historia</h2>
         <p class="desc">Agrega los momentos que quieres contar.</p>
         <div id="lista-historia"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarHistoria()">+ Agregar momento</button>
@@ -159,7 +170,7 @@
 
       <!-- ITINERARIO -->
       <div class="tarjeta" id="tarjeta-timeline">
-        <h2><span class="num">8</span> Itinerario</h2>
+        <h2><span class="num">9</span> Itinerario</h2>
         <p class="desc">Los momentos del día, en orden.</p>
         <div id="lista-timeline"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarTimeline()">+ Agregar momento</button>
@@ -170,7 +181,7 @@
 
       <!-- DETALLES IMPORTANTES -->
       <div class="tarjeta" id="tarjeta-detalles">
-        <h2><span class="num">9</span> Detalles importantes</h2>
+        <h2><span class="num">10</span> Detalles importantes</h2>
         <p class="desc">Hora de llegada, restricciones, etc.</p>
         <div id="lista-detalles"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarDetalle()">+ Agregar detalle</button>
@@ -181,7 +192,7 @@
 
       <!-- VESTIMENTA -->
       <div class="tarjeta" id="tarjeta-vestimenta">
-        <h2><span class="num">10</span> Código de vestimenta</h2>
+        <h2><span class="num">11</span> Código de vestimenta</h2>
         <div class="campo"><label>Descripción</label><textarea id="p-vestimenta-texto" placeholder="Etiqueta formal, colores..."></textarea></div>
         <div class="campo"><label>Link de referencias (Pinterest, etc. — opcional)</label><input type="text" id="p-vestimenta-boton"></div>
         <button class="btn btn-dorado" onclick="guardarVestimenta()">Guardar</button>
@@ -190,34 +201,39 @@
         <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
         <p class="desc">Paleta de colores sugerida para tus invitados (opcional). Se muestra como círculos de color junto a la descripción.</p>
         <div class="paleta-form" id="paleta-form">
-          <label class="paleta-fila">
+          <div class="paleta-fila">
             <input type="checkbox" id="p-paleta-incluir-1" class="paleta-check" checked>
-            <input type="color" id="p-paleta-color-1" value="#9B6B6B" class="paleta-swatch-input">
+            <div class="color-swatch-btn" id="p-paleta-swatch-1" style="background:#9B6B6B" onclick="document.getElementById('p-paleta-color-1').click()"></div>
+            <input type="color" id="p-paleta-color-1" value="#9B6B6B" class="color-input-oculto" oninput="actualizarSwatch('p-paleta-color-1','p-paleta-swatch-1')">
             <input type="text" id="p-paleta-nombre-1" placeholder="Nombre (opcional)">
-          </label>
-          <label class="paleta-fila">
+          </div>
+          <div class="paleta-fila">
             <input type="checkbox" id="p-paleta-incluir-2" class="paleta-check" checked>
-            <input type="color" id="p-paleta-color-2" value="#C4907A" class="paleta-swatch-input">
+            <div class="color-swatch-btn" id="p-paleta-swatch-2" style="background:#C4907A" onclick="document.getElementById('p-paleta-color-2').click()"></div>
+            <input type="color" id="p-paleta-color-2" value="#C4907A" class="color-input-oculto" oninput="actualizarSwatch('p-paleta-color-2','p-paleta-swatch-2')">
             <input type="text" id="p-paleta-nombre-2" placeholder="Nombre (opcional)">
-          </label>
-          <label class="paleta-fila">
+          </div>
+          <div class="paleta-fila">
             <input type="checkbox" id="p-paleta-incluir-3" class="paleta-check">
-            <input type="color" id="p-paleta-color-3" value="#D4A99A" class="paleta-swatch-input">
+            <div class="color-swatch-btn" id="p-paleta-swatch-3" style="background:#D4A99A" onclick="document.getElementById('p-paleta-color-3').click()"></div>
+            <input type="color" id="p-paleta-color-3" value="#D4A99A" class="color-input-oculto" oninput="actualizarSwatch('p-paleta-color-3','p-paleta-swatch-3')">
             <input type="text" id="p-paleta-nombre-3" placeholder="Nombre (opcional)">
-          </label>
-          <label class="paleta-fila">
+          </div>
+          <div class="paleta-fila">
             <input type="checkbox" id="p-paleta-incluir-4" class="paleta-check">
-            <input type="color" id="p-paleta-color-4" value="#EDD5C5" class="paleta-swatch-input">
+            <div class="color-swatch-btn" id="p-paleta-swatch-4" style="background:#EDD5C5" onclick="document.getElementById('p-paleta-color-4').click()"></div>
+            <input type="color" id="p-paleta-color-4" value="#EDD5C5" class="color-input-oculto" oninput="actualizarSwatch('p-paleta-color-4','p-paleta-swatch-4')">
             <input type="text" id="p-paleta-nombre-4" placeholder="Nombre (opcional)">
-          </label>
+          </div>
         </div>
         <div class="campo" style="margin-top:.8rem">
           <label>¿Hay un color que quieras pedirles que eviten? (opcional)</label>
-          <label class="paleta-fila">
+          <div class="paleta-fila">
             <input type="checkbox" id="p-color-evitar-incluir">
-            <input type="color" id="p-color-evitar" value="#FFFFFF" class="paleta-swatch-input">
+            <div class="color-swatch-btn" id="p-color-evitar-swatch" style="background:#FFFFFF" onclick="document.getElementById('p-color-evitar').click()"></div>
+            <input type="color" id="p-color-evitar" value="#FFFFFF" class="color-input-oculto" oninput="actualizarSwatch('p-color-evitar','p-color-evitar-swatch')">
             <input type="text" id="p-color-evitar-nombre" placeholder="Ej. Blanco (reservado para la novia)">
-          </label>
+          </div>
         </div>
         <button class="btn btn-dorado" onclick="guardarPaleta()">Guardar paleta</button>
         <p class="mensaje-ok oculto" id="ok-paleta">Guardado</p>
@@ -225,7 +241,7 @@
 
       <!-- REGALOS -->
       <div class="tarjeta" id="tarjeta-regalos">
-        <h2><span class="num">11</span> Regalos</h2>
+        <h2><span class="num">12</span> Regalos</h2>
         <div class="campo"><label>Texto principal</label><textarea id="p-regalos-texto" placeholder="Tu presencia es nuestro regalo..."></textarea></div>
         <div class="campo"><label>Datos de cuenta (opcional — aparece en un botón "más detalles")</label><textarea id="p-regalos-cuenta" placeholder="Banco, número de cuenta, a nombre de..."></textarea></div>
         <button class="btn btn-dorado" onclick="guardarRegalos()">Guardar</button>
@@ -234,7 +250,7 @@
 
       <!-- PLAYLIST -->
       <div class="tarjeta" id="tarjeta-playlist">
-        <h2><span class="num">12</span> Playlist para la fiesta</h2>
+        <h2><span class="num">13</span> Playlist para la fiesta</h2>
         <p class="desc">Si ya tienes una playlist colaborativa de Spotify o YouTube, pega el link aquí — tus invitados podrán abrirla y agregar canciones directamente ahí. Si la dejas vacía, en su lugar les aparecerá un formulario para que te sugieran canciones por escrito.</p>
         <div class="campo"><label>Link de tu playlist (Spotify o YouTube)</label><input type="text" id="p-playlist-url" placeholder="https://open.spotify.com/playlist/..."></div>
         <button class="btn btn-dorado" onclick="guardarPlaylist()">Guardar</button>
@@ -243,7 +259,7 @@
 
       <!-- MENSAJES -->
       <div class="tarjeta" id="tarjeta-mensajes-especiales">
-        <h2><span class="num">13</span> Versículo o mensaje especial</h2>
+        <h2><span class="num">14</span> Versículo o mensaje especial</h2>
         <div id="lista-mensajes"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarMensaje()">+ Agregar mensaje</button>
         <br><br>
@@ -253,17 +269,19 @@
 
       <!-- FOTOS DECORATIVAS -->
       <div class="tarjeta" id="tarjeta-fotos-decorativas">
-        <h2><span class="num">14</span> Fotos adicionales (opcional)</h2>
+        <h2><span class="num">15</span> Fotos adicionales (opcional)</h2>
         <p class="desc">Se muestran en el libro de firmas y en la sección de confirmación.</p>
         <div class="campo">
           <label>Foto en libro de firmas</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-firmas-foto')">
           <input type="hidden" id="p-firmas-foto">
+          <div class="archivo-actual oculto" id="preview-p-firmas-foto"></div>
         </div>
         <div class="campo">
           <label>Foto en confirmación (RSVP)</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-rsvp-foto')">
           <input type="hidden" id="p-rsvp-foto">
+          <div class="archivo-actual oculto" id="preview-p-rsvp-foto"></div>
         </div>
         <button class="btn btn-dorado" onclick="guardarFotosDecorativas()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-fotos-decorativas">Guardado</p>
@@ -271,7 +289,7 @@
 
       <!-- GALERÍA -->
       <div class="tarjeta" id="tarjeta-galeria">
-        <h2><span class="num">15</span> Galería</h2>
+        <h2><span class="num">16</span> Galería</h2>
         <p class="desc">Fotos de ustedes que se muestran en la invitación (no es donde suben fotos los invitados — eso es aparte).</p>
         <div class="campo">
           <label>Agregar foto</label>

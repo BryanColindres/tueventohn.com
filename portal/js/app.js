@@ -115,6 +115,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('progreso-wrap').classList.remove('oculto');
   activarAvisoDeCambios();
 
+  // Vistas previas de todo lo que ya esté subido (fotos, audio, video).
+  ['p-lugar-foto', 'p-foto-hero', 'p-foto-footer', 'p-foto-hero-b', 'p-firmas-foto', 'p-rsvp-foto']
+    .forEach(id => refrescarPreview(id, 'image'));
+  refrescarPreview('p-musica-url', 'audio');
+  refrescarPreview('p-video-interno-url', 'video');
+  refrescarPreview('p-video-apertura-url', 'video');
+  refrescarPreview('p-mensaje-url', document.getElementById('p-mensaje-tipo').value === 'video' ? 'video' : 'audio');
+
+  // Swatches de la paleta, ya con los colores cargados.
+  [1, 2, 3, 4].forEach(n => actualizarSwatch(`p-paleta-color-${n}`, `p-paleta-swatch-${n}`));
+  actualizarSwatch('p-color-evitar', 'p-color-evitar-swatch');
+
   aplicarBloqueosPorModulo(datos.modulosActivos || {});
 });
 
@@ -259,9 +271,46 @@ async function subirArchivoCloudinary(archivo, tipoRecurso){
   formData.append('file', archivo);
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
   if (EVENTO_ID) formData.append('folder', `tuboda/${EVENTO_ID}`);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${tipoRecurso}/upload`, { method: 'POST', body: formData });
-  const data = await res.json();
-  return data.secure_url || null;
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${tipoRecurso}/upload`, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) {
+      console.error('Error de Cloudinary:', data.error);
+      alert(`No se pudo subir el archivo: ${data.error.message}`);
+      return null;
+    }
+    return data.secure_url || null;
+  } catch (err) {
+    console.error(err);
+    alert('No se pudo subir el archivo. Revisa tu conexión e intenta de nuevo.');
+    return null;
+  }
+}
+
+// ---------------- SELECTOR DE COLOR (círculo propio, no el nativo) ----------------
+function actualizarSwatch(idColor, idSwatch){
+  const hex = valor(idColor);
+  const swatch = document.getElementById(idSwatch);
+  if (swatch) swatch.style.background = hex;
+}
+// Un <input type="file"> nunca puede "recordar" lo que ya subiste (por
+// seguridad del navegador) -- por eso, junto a cada uno, se muestra esto
+// aparte, leyendo el link guardado.
+function refrescarPreview(idCampo, tipo){
+  const cont = document.getElementById(`preview-${idCampo}`);
+  if (!cont) return;
+  const url = valor(idCampo);
+  if (!url) { cont.classList.add('oculto'); cont.innerHTML = ''; return; }
+  cont.classList.remove('oculto');
+  if (tipo === 'image') {
+    cont.innerHTML = `<img src="${url}" alt="" class="preview-img"><span class="preview-label">✓ Ya subiste esto</span>`;
+  } else if (tipo === 'audio') {
+    cont.innerHTML = `<audio controls src="${url}" class="preview-audio"></audio><span class="preview-label">✓ Ya subiste esto</span>`;
+  } else if (tipo === 'video') {
+    cont.innerHTML = `<video controls src="${url}" class="preview-video"></video><span class="preview-label">✓ Ya subiste esto</span>`;
+  } else {
+    cont.innerHTML = `<a href="${url}" target="_blank" class="preview-label">✓ Ver archivo actual</a>`;
+  }
 }
 
 async function subirFotoSimple(e, idDestino){
@@ -269,21 +318,31 @@ async function subirFotoSimple(e, idDestino){
   if (!archivo) return;
   const esVideo = archivo.type.startsWith('video/');
   const url = await subirArchivoCloudinary(archivo, esVideo ? 'video' : 'image');
-  if (url) document.getElementById(idDestino).value = url;
+  if (url) {
+    document.getElementById(idDestino).value = url;
+    refrescarPreview(idDestino, esVideo ? 'video' : 'image');
+  }
 }
 
 async function subirAudioSimple(e, idDestino){
   const archivo = e.target.files[0];
   if (!archivo) return;
   const url = await subirArchivoCloudinary(archivo, 'video'); // Cloudinary sube audio bajo el recurso "video"
-  if (url) document.getElementById(idDestino).value = url;
+  if (url) {
+    document.getElementById(idDestino).value = url;
+    refrescarPreview(idDestino, 'audio');
+  }
 }
 
 async function subirMensajePersonalizado(e){
   const archivo = e.target.files[0];
   if (!archivo) return;
+  const esVideo = archivo.type.startsWith('video/');
   const url = await subirArchivoCloudinary(archivo, 'video');
-  if (url) document.getElementById('p-mensaje-url').value = url;
+  if (url) {
+    document.getElementById('p-mensaje-url').value = url;
+    refrescarPreview('p-mensaje-url', esVideo ? 'video' : 'audio');
+  }
 }
 
 // ---------------- GUARDAR CADA BLOQUE ----------------
@@ -409,7 +468,10 @@ async function subirVideoApertura(e){
   const archivo = e.target.files[0];
   if (!archivo) return;
   const url = await subirArchivoCloudinary(archivo, 'video');
-  if (url) document.getElementById('p-video-apertura-url').value = url;
+  if (url) {
+    document.getElementById('p-video-apertura-url').value = url;
+    refrescarPreview('p-video-apertura-url', 'video');
+  }
 }
 
 async function guardarVideoApertura(){
