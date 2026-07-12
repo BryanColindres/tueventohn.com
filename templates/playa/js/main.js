@@ -231,13 +231,14 @@ function pintarCancion(){
   const form = document.getElementById('form-cancion');
   const intro = document.getElementById('cancion-intro');
   const hayPlaylistReal = C.cancionModo === 'embed' && C.cancionEmbedUrl;
+  const urlEmbebida = hayPlaylistReal ? TuBodaBackend.normalizarPlaylistUrl(C.cancionEmbedUrl) : null;
   if (hayPlaylistReal) {
     intro.textContent = 'Esta es nuestra playlist para la fiesta. Ábrela y, si quieres, agrega ahí mismo tu canción favorita.';
-    const esSpotify = C.cancionEmbedUrl.includes('spotify.com');
-    const esYoutube = C.cancionEmbedUrl.includes('youtube.com') || C.cancionEmbedUrl.includes('youtu.be');
-    if (esSpotify) embedWrap.innerHTML = `<iframe src="${C.cancionEmbedUrl}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-    else if (esYoutube) embedWrap.innerHTML = `<iframe width="100%" height="220" src="${C.cancionEmbedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
-    else embedWrap.innerHTML = `<a href="${C.cancionEmbedUrl}" target="_blank" class="btn btn-outline">Abrir playlist</a>`;
+    const esSpotify = urlEmbebida.includes('spotify.com');
+    const esYoutube = urlEmbebida.includes('youtube.com') || urlEmbebida.includes('youtu.be');
+    if (esSpotify) embedWrap.innerHTML = `<iframe src="${urlEmbebida}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    else if (esYoutube) embedWrap.innerHTML = `<iframe width="100%" height="220" src="${urlEmbebida}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
+    else embedWrap.innerHTML = `<a href="${urlEmbebida}" target="_blank" class="btn btn-outline">Abrir playlist</a>`;
     embedWrap.classList.remove('oculto');
     form.classList.add('oculto');
     return;
@@ -268,7 +269,7 @@ async function enviarFirma(e){
   const nombre = document.getElementById('firma-nombre').value.trim();
   const mensaje = document.getElementById('firma-mensaje').value.trim();
   try {
-    await TuBodaBackend.enviarFirma(C.eventoId, nombre, mensaje, window.IDENTIFICADOR_INVITADO || null);
+    await TuBodaBackend.enviarFirma(C.eventoId, nombre, mensaje);
     document.getElementById('form-firma').reset();
     document.getElementById('firma-pendiente-nombre').textContent = nombre;
     document.getElementById('firma-pendiente-mensaje').textContent = mensaje;

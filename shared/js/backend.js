@@ -270,6 +270,31 @@ async function confirmarAsistencia(identificador, decisiones, mensaje) {
   });
 }
 
+// ---------------- PLAYLIST: normalizar cualquier link a su versión embebida ----------------
+// El cliente pega el link que le da Spotify/YouTube al compartir (con montón
+// de parámetros de tracking, o el link normal de la app) — esto lo convierte
+// siempre al formato que sí se puede incrustar, sin pedirle que lo edite.
+function normalizarPlaylistUrl(url) {
+  if (!url) return null;
+  url = url.trim();
+
+  // Spotify: playlist, álbum o show — funciona con o sin parámetros extra,
+  // y si ya viene en formato /embed/ lo deja igual.
+  let m = url.match(/open\.spotify\.com\/(?:embed\/)?(playlist|album|show)\/([a-zA-Z0-9]+)/);
+  if (m) return `https://open.spotify.com/embed/${m[1]}/${m[2]}`;
+
+  // YouTube: playlist completa (?list=...)
+  m = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+  if (m) return `https://www.youtube.com/embed/videoseries?list=${m[1]}`;
+
+  // YouTube: un solo video (youtu.be/ID o watch?v=ID)
+  m = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+
+  // No se reconoce el formato: se deja tal cual (se mostrará como link para abrir).
+  return url;
+}
+
 window.TuBodaBackend = {
   cargarConfig,
   enviarFirma,
@@ -287,5 +312,6 @@ window.TuBodaBackend = {
   iconoTimelineHtml,
   marcarApertura,
   cargarPersonasParaRSVP,
-  confirmarAsistencia
+  confirmarAsistencia,
+  normalizarPlaylistUrl
 };
