@@ -9,6 +9,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_Ij3gofHHYKTHps92RKXKwQ_5Hya3_GW";
 
 let CODIGO = null;
 let INVITADOS = [];      // caché local de la última carga
+let FAMILIAS = [];
 let FIRMAS = [];
 let DUPLICADO_PENDIENTE = null; // datos en espera de confirmación de familia duplicada
 
@@ -55,6 +56,7 @@ async function cargarTodo() {
 
   renderResumen();
   renderTablaInvitados();
+  await cargarFamilias();
 }
 
 /* ============================================================ TABS ====== */
@@ -343,6 +345,55 @@ function mostrarToast(msg) {
   el.classList.remove('oculto');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.add('oculto'), 2200);
+}
+
+/* ============================================================ FAMILIAS == */
+async function cargarFamilias() {
+  const data = await rpc('portal_listar_familias', { p_codigo: CODIGO });
+  if (!data.ok) return;
+  FAMILIAS = data.familias || [];
+  renderListaFamilias();
+}
+
+async function crearFamilia() {
+  const nombre = document.getElementById('nueva-familia-nombre').value.trim();
+  if (!nombre) { mostrarToast('Escribe el nombre de la familia'); return; }
+  const res = await rpc('portal_crear_familia', { p_codigo: CODIGO, p_nombre: nombre });
+  if (res.ok) {
+    document.getElementById('nueva-familia-nombre').value = '';
+    await cargarFamilias();
+    mostrarToast('Link familiar creado');
+  }
+}
+
+function renderListaFamilias() {
+  const cont = document.getElementById('lista-familias');
+  if (!FAMILIAS.length) { cont.innerHTML = `<p class="desc" style="margin-top:.8rem">Todavía no hay familias — se crean solas en cuanto le pongas la misma familia a más de un invitado.</p>`; return; }
+
+  cont.innerHTML = FAMILIAS.map(f => {
+    const conteo = f.conteo_manual != null ? f.conteo_manual : f.conteo_miembros;
+    return `
+    <div class="familia-fila">
+      <div>
+        <div class="ti-nombre">${escapar(f.nombre)}</div>
+        <div class="ti-sub">
+          ${f.conteo_miembros} invitado(s) ligado(s) ·
+          <span>conteo a mostrar:</span>
+          <input type="number" min="0" value="${conteo}" class="conteo-input" onchange="actualizarConteoFamilia('${f.id}', this.value)">
+        </div>
+      </div>
+      <div class="ti-acciones">
+        <button class="ti-icon-btn" title="Copiar link familiar" onclick="copiarLinkInvitado('${f.link}')">🔗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function actualizarConteoFamilia(familiaId, valor) {
+  const conteo = parseInt(valor, 10);
+  if (isNaN(conteo) || conteo < 0) { mostrarToast('Escribe un número válido'); await cargarFamilias(); return; }
+  const res = await rpc('portal_actualizar_conteo_familia', { p_codigo: CODIGO, p_familia_id: familiaId, p_conteo: conteo });
+  if (res.ok) mostrarToast('Conteo actualizado');
 }
 
 /* ============================================================ MURO DE FIRMAS (moderación) == */

@@ -285,4 +285,10 @@ a{text-decoration:none;color:inherit}
 .cancion-form{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:1rem auto 0}
 .cancion-form input{padding:.7rem .9rem;border:1px solid var(--cream-line);border-radius:6px;font-family:var(--font-sans)}
 .cancion-gracias{text-align:center;font-size:.85rem;color:var(--camel-dark);margin-top:.6rem}
+.section-cancion{padding:4.5rem 2rem;text-align:center}
+.firmas-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem}
+.firmas-nav button{width:34px;height:34px;border-radius:50%;border:1px solid var(--camel);background:#fff;
+  color:var(--camel-dark);font-size:1.1rem;cursor:pointer;line-height:1}
+.firmas-nav button:disabled{opacity:.3;cursor:default}
+.firmas-nav span{font-size:.78rem;color:var(--texto-mid)}
 .vestimenta-evitar{font-size:.82rem;color:var(--texto-mid);margin-top:.6rem}

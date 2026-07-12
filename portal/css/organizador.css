@@ -68,6 +68,13 @@
 .badge-sin-abrir{background:#F4E9D8;color:#93712F}
 .badge-abierta{background:#E4EEF8;color:#2E5C8A}
 
+/* ---- links familiares ---- */
+.lista-familias{margin-top:1rem;display:flex;flex-direction:column;gap:.6rem}
+.familia-fila{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;
+  border:1px solid var(--borde);border-radius:10px;background:var(--celeste-nube)}
+.conteo-input{width:52px;padding:.15rem .3rem;border:1px solid var(--borde);border-radius:6px;
+  font-family:var(--font);font-size:.78rem;text-align:center}
+
 /* ---- moderación del muro de firmas ---- */
 .muro-toolbar{margin-bottom:1rem}
 .muro-toolbar select{padding:.6rem .8rem;border:1px solid var(--borde);border-radius:10px;background:#fff;font-family:var(--font);font-size:.85rem}

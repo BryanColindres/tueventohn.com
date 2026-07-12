@@ -196,12 +196,10 @@ function pintarAddons(){
     const grid = document.getElementById('galeria-grid');
     (C.galeriaMuestra || []).forEach(src => {
       const div = document.createElement('div');
-      div.className = 'gal-item';
+      div.className = 'gal-item reveal';
       div.innerHTML = `<img src="${src}" alt="">`;
       grid.appendChild(div);
     });
-    document.getElementById('btn-subir-foto').addEventListener('click', () => document.getElementById('input-foto').click());
-    document.getElementById('input-foto').addEventListener('change', subirFoto);
   }
 
   const seccionFirmas = document.getElementById('section-firmas');
@@ -216,22 +214,30 @@ function pintarAddons(){
   if (!C.modules || !C.modules.cancion) {
     seccionCancion.style.display = 'none';
   } else {
-    document.getElementById('form-cancion').addEventListener('submit', enviarCancionForm);
-    cargarCancionesLista();
+    const embedWrap = document.getElementById('cancion-embed-wrap');
+    const form = document.getElementById('form-cancion');
+    const intro = document.getElementById('cancion-intro');
+    const hayPlaylistReal = C.cancionModo === 'embed' && C.cancionEmbedUrl;
+    if (hayPlaylistReal) {
+      intro.textContent = 'Esta es nuestra playlist para la fiesta. Ábrela y, si quieres, agrega ahí mismo tu canción favorita.';
+      const esSpotify = C.cancionEmbedUrl.includes('spotify.com');
+      const esYoutube = C.cancionEmbedUrl.includes('youtube.com') || C.cancionEmbedUrl.includes('youtu.be');
+      if (esSpotify) {
+        embedWrap.innerHTML = `<iframe src="${C.cancionEmbedUrl}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+      } else if (esYoutube) {
+        embedWrap.innerHTML = `<iframe width="100%" height="220" src="${C.cancionEmbedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
+      } else {
+        embedWrap.innerHTML = `<a href="${C.cancionEmbedUrl}" target="_blank" class="btn btn-outline">Abrir playlist</a>`;
+      }
+      embedWrap.classList.remove('oculto');
+      form.classList.add('oculto');
+    } else {
+      document.getElementById('form-cancion').addEventListener('submit', enviarCancionForm);
+      cargarCancionesLista();
+    }
   }
 }
 
-async function subirFoto(e){
-  const archivo = e.target.files[0];
-  if (!archivo) return;
-  try {
-    const url = await TuBodaBackend.subirFotoGaleria(C.eventoId, archivo);
-    const div = document.createElement('div');
-    div.className = 'gal-item';
-    div.innerHTML = `<img src="${url}" alt="">`;
-    document.getElementById('galeria-grid').prepend(div);
-  } catch (err) { alert('No se pudo subir la foto. Intenta de nuevo.'); }
-}
 
 async function enviarFirma(e){
   e.preventDefault();
@@ -251,14 +257,38 @@ async function enviarFirma(e){
 async function cargarFirmas(){
   try {
     const registros = await TuBodaBackend.cargarFirmas(C.eventoId);
-    const lista = document.getElementById('firmas-lista');
     if (!registros || !registros.length) return;
-    lista.innerHTML = registros.map(r => `
+    iniciarPaginacionFirmas(registros);
+  } catch (err) { console.error(err); }
+}
+
+function iniciarPaginacionFirmas(registros){
+  const POR_PAGINA = 4;
+  let pagina = 0;
+  const totalPaginas = Math.ceil(registros.length / POR_PAGINA);
+  const lista = document.getElementById('firmas-lista');
+  const nav = document.getElementById('firmas-nav');
+
+  function render(){
+    const inicio = pagina * POR_PAGINA;
+    const pagados = registros.slice(inicio, inicio + POR_PAGINA);
+    lista.innerHTML = pagados.map(r => `
       <div class="firma-item">
         <div class="nombre">${r.nombre || ''}</div>
         <div class="mensaje">${r.mensaje || ''}</div>
       </div>`).join('');
-  } catch (err) { console.error(err); }
+
+    if (totalPaginas > 1) {
+      nav.classList.remove('oculto');
+      nav.innerHTML = `
+        <button type="button" id="firmas-prev" ${pagina === 0 ? 'disabled' : ''}>‹</button>
+        <span>${pagina + 1} / ${totalPaginas}</span>
+        <button type="button" id="firmas-next" ${pagina === totalPaginas - 1 ? 'disabled' : ''}>›</button>`;
+      document.getElementById('firmas-prev').addEventListener('click', () => { pagina--; render(); });
+      document.getElementById('firmas-next').addEventListener('click', () => { pagina++; render(); });
+    }
+  }
+  render();
 }
 
 // ---------------- PEDIR CANCIÓN ----------------
@@ -293,7 +323,6 @@ async function pintarRSVP(){
   }
 
   const tienePremium = !!(C.modules && C.modules.rsvp_premium);
-
   if (!tienePremium) {
     const msj = encodeURIComponent(`Hola, confirmo mi asistencia a la boda de ${C.pareja.nombreA} y ${C.pareja.nombreB}`);
     document.getElementById('rsvp-novio').href = `https://wa.me/${C.whatsapp.novio}?text=${msj}`;
@@ -303,32 +332,60 @@ async function pintarRSVP(){
   }
 
   const id = window.IDENTIFICADOR_INVITADO;
-  const wrap = document.getElementById('rsvp-personas');
   const formWrap = document.getElementById('rsvp-form-wrap');
   const sinLink = document.getElementById('rsvp-sin-link');
 
   let personas = [];
-  if (id) {
-    personas = await TuBodaBackend.cargarPersonasParaRSVP(id);
-  } else if (C.rsvpDemoPersonas) {
-    personas = C.rsvpDemoPersonas;
-  }
+  if (id) personas = await TuBodaBackend.cargarPersonasParaRSVP(id);
+  else if (C.rsvpDemoPersonas) personas = C.rsvpDemoPersonas;
 
-  if (!personas.length) {
-    sinLink.classList.remove('oculto');
+  if (!personas.length) { sinLink.classList.remove('oculto'); return; }
+
+  const todosRespondieron = personas.every(p => p.estado && p.estado !== 'pendiente');
+  if (todosRespondieron) { mostrarResumenRSVP(personas); return; }
+
+  formWrap.classList.remove('oculto');
+
+  if (personas.length === 1) {
+    const persona = personas[0];
+    document.getElementById('rsvp-individual').classList.remove('oculto');
+    const guardar = async (asiste) => {
+      if (!id) { alert('Esto es una vista de ejemplo — aquí no se guarda nada.'); return; }
+      try {
+        await TuBodaBackend.confirmarAsistencia(id, [{ invitado_id: persona.invitado_id, asiste }]);
+        formWrap.classList.add('oculto');
+        document.getElementById('rsvp-gracias').classList.remove('oculto');
+      } catch (err) { alert('No se pudo enviar tu confirmación. Intenta de nuevo.'); }
+    };
+    document.getElementById('rsvp-individual-si').addEventListener('click', () => guardar(true));
+    document.getElementById('rsvp-individual-no').addEventListener('click', () => guardar(false));
     return;
   }
 
-  formWrap.classList.remove('oculto');
+  const botonEntrada = document.getElementById('rsvp-boton-entrada');
+  botonEntrada.classList.remove('oculto');
+  botonEntrada.addEventListener('click', () => {
+    botonEntrada.classList.add('oculto');
+    desplegarFamiliaRSVP(personas, id, formWrap);
+  }, { once: true });
+}
+
+function desplegarFamiliaRSVP(personas, id, formWrap) {
+  const wrap = document.getElementById('rsvp-personas');
+  const familiaWrap = document.getElementById('rsvp-familia-wrap');
+  familiaWrap.classList.remove('oculto');
+
   const decisiones = {};
   wrap.innerHTML = personas.map(p => `
     <div class="rsvp-persona">
       <span class="rsvp-persona-nombre">${p.nombre}</span>
       <span class="rsvp-toggle">
-        <button type="button" class="rsvp-op rsvp-si" data-id="${p.invitado_id}" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
-        <button type="button" class="rsvp-op rsvp-no" data-id="${p.invitado_id}" data-texto="opcionNoAsiste">No podré asistir</button>
+        <button type="button" class="rsvp-op rsvp-si${p.estado === 'confirmado' ? ' activo' : ''}" data-id="${p.invitado_id}" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
+        <button type="button" class="rsvp-op rsvp-no${p.estado === 'rechazado' ? ' activo' : ''}" data-id="${p.invitado_id}" data-texto="opcionNoAsiste">No podré asistir</button>
       </span>
     </div>`).join('');
+
+  personas.forEach(p => { if (p.estado && p.estado !== 'pendiente') decisiones[p.invitado_id] = p.estado === 'confirmado'; });
 
   wrap.querySelectorAll('.rsvp-op').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -349,6 +406,16 @@ async function pintarRSVP(){
       document.getElementById('rsvp-gracias').classList.remove('oculto');
     } catch (err) { alert('No se pudo enviar tu confirmación. Intenta de nuevo.'); }
   });
+}
+
+function mostrarResumenRSVP(personas) {
+  const cont = document.getElementById('rsvp-resumen');
+  const iconos = { confirmado: '✅', rechazado: '🚫' };
+  cont.innerHTML = (personas.length === 1
+    ? `<p>${personas[0].estado === 'confirmado' ? 'Ya confirmaste tu asistencia. ¡Te esperamos!' : 'Registramos que no podrás acompañarnos. ¡Gracias por avisarnos!'}</p>`
+    : `<p>Así quedaron las confirmaciones de tu familia:</p><ul class="rsvp-resumen-lista">${personas.map(p => `<li>${iconos[p.estado] || '•'} ${p.nombre}</li>`).join('')}</ul>`
+  );
+  cont.classList.remove('oculto');
 }
 
 function pintarFooter(){
@@ -379,9 +446,15 @@ function iniciarCountdown(){
 
 // ---------------- BANNER PERSONALIZADO ----------------
 function pintarBannerPersonal(){
-  if (!C.invitado || !C.invitado.nombre) return;
-  document.getElementById('banner-personal-nombre').textContent = C.invitado.nombre;
-  document.getElementById('banner-personal').classList.remove('oculto');
+  if (C.invitado && C.invitado.nombre) {
+    document.getElementById('banner-personal-nombre').textContent = C.invitado.nombre;
+    document.getElementById('banner-personal').classList.remove('oculto');
+    return;
+  }
+  if (!window.IDENTIFICADOR_INVITADO && C.eventoId === 'demo' && C.modules && C.modules.rsvp_premium) {
+    document.getElementById('banner-personal-nombre').textContent = '[aquí va el nombre de tu invitado]';
+    document.getElementById('banner-personal').classList.remove('oculto');
+  }
 }
 
 // ---------------- VIDEO INTERNO ----------------
@@ -604,3 +677,4 @@ function iniciarReveal(){
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 }
+

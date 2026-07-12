@@ -320,22 +320,28 @@ function pintarCancion(){
   const form = document.getElementById('form-cancion');
   const intro = document.getElementById('cancion-intro');
 
-  if (C.cancionModo === 'embed' && C.cancionEmbedUrl) {
-    intro.textContent = 'Escúchala mientras confirmas, y si quieres agrega una canción para la fiesta.';
+  const hayPlaylistReal = C.cancionModo === 'embed' && C.cancionEmbedUrl;
+
+  if (hayPlaylistReal) {
+    // Es una playlist real y compartida: ábranla y agreguen ahí mismo, no
+    // hace falta un formulario aparte en el sitio.
+    intro.textContent = 'Esta es nuestra playlist para la fiesta. Ábrela y, si quieres, agrega ahí mismo tu canción favorita.';
     const esSpotify = C.cancionEmbedUrl.includes('spotify.com');
     const esYoutube = C.cancionEmbedUrl.includes('youtube.com') || C.cancionEmbedUrl.includes('youtu.be');
     if (esSpotify) {
-      embedWrap.innerHTML = `<iframe src="${C.cancionEmbedUrl}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+      embedWrap.innerHTML = `<iframe src="${C.cancionEmbedUrl}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
     } else if (esYoutube) {
       embedWrap.innerHTML = `<iframe width="100%" height="220" src="${C.cancionEmbedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
     } else {
-      embedWrap.innerHTML = `<a href="${C.cancionEmbedUrl}" target="_blank" class="btn btn-outline">Escuchar playlist</a>`;
+      embedWrap.innerHTML = `<a href="${C.cancionEmbedUrl}" target="_blank" class="btn btn-outline">Abrir playlist</a>`;
     }
     embedWrap.classList.remove('oculto');
-  } else {
-    intro.textContent = 'Escribe una canción que no puede faltar en la fiesta.';
+    form.classList.add('oculto');
+    return;
   }
 
+  // Sin playlist real compartida: dejamos que sugieran una canción por escrito.
+  intro.textContent = 'Escribe una canción que no puede faltar en la fiesta.';
   form.classList.remove('oculto');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -380,14 +386,38 @@ async function enviarFirma(e){
 async function cargarFirmas(){
   try {
     const registros = await TuBodaBackend.cargarFirmas(C.eventoId);
-    const lista = document.getElementById('firmas-lista');
     if (!registros || !registros.length) return;
-    lista.innerHTML = registros.map(r => `
+    iniciarPaginacionFirmas(registros);
+  } catch (err) { console.error(err); }
+}
+
+function iniciarPaginacionFirmas(registros){
+  const POR_PAGINA = 4;
+  let pagina = 0;
+  const totalPaginas = Math.ceil(registros.length / POR_PAGINA);
+  const lista = document.getElementById('firmas-lista');
+  const nav = document.getElementById('firmas-nav');
+
+  function render(){
+    const inicio = pagina * POR_PAGINA;
+    const pagados = registros.slice(inicio, inicio + POR_PAGINA);
+    lista.innerHTML = pagados.map(r => `
       <div class="firma-item">
         <div class="nombre">${r.nombre || ''}</div>
         <div class="mensaje">${r.mensaje || ''}</div>
       </div>`).join('');
-  } catch (err) { console.error(err); }
+
+    if (totalPaginas > 1) {
+      nav.classList.remove('oculto');
+      nav.innerHTML = `
+        <button type="button" id="firmas-prev" ${pagina === 0 ? 'disabled' : ''}>‹</button>
+        <span>${pagina + 1} / ${totalPaginas}</span>
+        <button type="button" id="firmas-next" ${pagina === totalPaginas - 1 ? 'disabled' : ''}>›</button>`;
+      document.getElementById('firmas-prev').addEventListener('click', () => { pagina--; render(); });
+      document.getElementById('firmas-next').addEventListener('click', () => { pagina++; render(); });
+    }
+  }
+  render();
 }
 
 // ---------------- RSVP ----------------

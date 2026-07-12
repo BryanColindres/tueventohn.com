@@ -100,11 +100,11 @@ window.CONFIG_DEMO = {
   firmasFotoUrl: "../../assets/demo/img/preboda9.jpg",
 
   // Vista previa del RSVP cuando no hay ?id= real en la URL (ej. catálogo).
-  // No se guarda nada, es solo para que el demo se vea completo.
+  // Representa UNA familia de ejemplo -- solo personas individuales, nunca
+  // el nombre de la familia como una opción más. No se guarda nada.
   rsvpDemoPersonas: [
-    { invitado_id: "demo-1", nombre: "Familia Colindres Mejía" },
-    { invitado_id: "demo-2", nombre: "Ana Colindres" },
-    { invitado_id: "demo-3", nombre: "Diego Colindres" }
+    { invitado_id: "demo-1", nombre: "Ana Colindres" },
+    { invitado_id: "demo-2", nombre: "Diego Colindres" }
   ],
 
   // TODO activado — el demo debe verse completo sin importar el paquete real.
@@ -118,7 +118,7 @@ window.CONFIG_DEMO = {
   // Cómo se muestra la sección de canción (depende del paquete real del cliente;
   // en el demo mostramos el modo "embed" para que se vea la versión completa).
   cancionModo: "embed", // "embed" (Spotify/YouTube embebido) | "lista" (solo escriben, sin reproductor)
-  cancionEmbedUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcfZ6moR6J0G",
+  cancionEmbedUrl: "https://open.spotify.com/embed/playlist/4q1xgZvpq2mJjQaZKajgFp",
 
   galeriaMuestra: ["../../assets/demo/img/preboda2.jpg", "../../assets/demo/img/preboda3.jpg", "../../assets/demo/img/preboda4.jpg", "../../assets/demo/img/preboda5.jpg", "../../assets/demo/img/preboda6.jpg", "../../assets/demo/img/preboda7.jpg"],
 

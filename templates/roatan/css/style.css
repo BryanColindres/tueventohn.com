@@ -268,3 +268,18 @@ a{text-decoration:none;color:inherit}
 .paleta-circulo--inline{display:inline-block;width:14px;height:14px;vertical-align:middle;margin:0 4px}
 .paleta-nombre{font-size:.68rem;opacity:.7;text-align:center;max-width:70px}
 .vestimenta-evitar{font-size:.82rem;opacity:.75;margin-top:.6rem}
+
+.section-cancion{padding:4rem 2rem;text-align:center}
+.cancion-embed-wrap{margin:1.2rem auto;max-width:380px}
+.cancion-embed-wrap iframe{border-radius:10px;display:block}
+.cancion-gracias{text-align:center;font-size:.85rem;opacity:.8;margin-top:.6rem}
+.deseos-nav, .firmas-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem}
+.deseos-nav button, .firmas-nav button{width:34px;height:34px;border-radius:50%;border:1px solid currentColor;background:transparent;font-size:1.1rem;cursor:pointer;opacity:.8}
+.deseos-nav button:disabled, .firmas-nav button:disabled{opacity:.25;cursor:default}
+.deseos-nav span, .firmas-nav span{font-size:.78rem;opacity:.7}
+#rsvp-boton-entrada{margin:0 auto}
+.rsvp-individual{display:flex;gap:10px;justify-content:center;max-width:380px;margin:0 auto}
+.rsvp-individual .rsvp-op{flex:1}
+.rsvp-resumen{margin-top:1rem}
+.rsvp-resumen-lista{list-style:none;padding:0;margin:.6rem 0 0}
+.rsvp-resumen-lista li{padding:.3rem 0}

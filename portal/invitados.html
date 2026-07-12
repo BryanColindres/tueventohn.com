@@ -89,6 +89,17 @@
           </div>
         </div>
 
+        <!-- LINKS FAMILIARES -->
+        <div class="tarjeta">
+          <h2>Links familiares</h2>
+          <p class="desc">Cada familia genera su link automáticamente en cuanto le asignas el mismo nombre de familia a más de un invitado. Aquí puedes verlos todos, copiarlos, y ajustar el conteo si quieres mostrar otro número.</p>
+          <div class="form-grid">
+            <div class="campo"><label>¿Familia sin invitados todavía? Créala aquí</label><input type="text" id="nueva-familia-nombre" placeholder="Ej. Familia Colindres Mejía"></div>
+          </div>
+          <button class="btn btn-dorado btn-chico" onclick="crearFamilia()">Crear link familiar</button>
+          <div id="lista-familias" class="lista-familias"></div>
+        </div>
+
         <div class="inv-toolbar">
           <input type="text" id="buscar-invitado" placeholder="Buscar por nombre o familia..." oninput="renderTablaInvitados()">
           <select id="filtro-estado" onchange="renderTablaInvitados()">

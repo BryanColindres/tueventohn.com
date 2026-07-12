@@ -162,14 +162,23 @@
     </section>
 
     <!-- GALERÍA — BARCO REAL -->
+    <!-- CANCIÓN / PLAYLIST -->
+    <section class="section-cancion" id="section-cancion">
+      <span class="eyebrow">Música</span>
+      <h2 class="titulo">Nuestra Playlist</h2>
+      <p class="rsvp-desc" id="cancion-intro"></p>
+      <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
+      <form class="form-firma oculto" id="form-cancion">
+        <input type="text" id="cancion-nombre" placeholder="Tu nombre">
+        <input type="text" id="cancion-input" placeholder="Artista - Canción" required>
+        <button type="submit" class="btn btn-mar">Agregar</button>
+      </form>
+    </section>
+
     <section class="section-galeria" id="section-galeria">
       <div id="burbujas-galeria"></div>
-      <span class="eyebrow">Comparte tus fotos</span>
+      <span class="eyebrow">Galería</span>
       <h2 class="titulo">Vistas desde el barco</h2>
-      <div style="margin-top:1.2rem">
-        <input type="file" id="input-foto" accept="image/*" hidden>
-        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
-      </div>
       <div class="barco-wrap">
         <svg class="barco-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
           <rect x="150" y="20" width="60" height="50" fill="#E8735A" rx="4"/>
@@ -206,6 +215,7 @@
       <p class="deseo-gracias" id="deseo-gracias">Tu deseo ya va mar adentro. Gracias.</p>
 
       <div class="deseos-lista" id="deseos-lista"></div>
+      <div class="deseos-nav oculto" id="deseos-nav"></div>
       <div class="deseo-pendiente oculto" id="deseo-pendiente">
         <p id="deseo-pendiente-texto"></p>
         <span class="tag-revision" data-texto="etiquetaEnRevision">En revisión</span>
@@ -229,9 +239,17 @@
         <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline" style="color:#fff;border-color:#fff">Confirmar con Stefany</a>
       </div>
       <div class="oculto" id="rsvp-form-wrap">
-        <div class="rsvp-personas" id="rsvp-personas"></div>
-        <button type="button" class="btn btn-mar" id="rsvp-enviar" data-texto="botonRSVP" style="background:#fff;color:var(--turquesa-osc)">Enviar Confirmación</button>
+        <button type="button" class="btn btn-mar oculto" id="rsvp-boton-entrada" data-texto="botonRSVPEntrada" style="background:#fff;color:var(--turquesa-osc)">Confirmar asistencia</button>
+        <div class="rsvp-individual oculto" id="rsvp-individual">
+          <button type="button" class="rsvp-op rsvp-si" id="rsvp-individual-si" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
+          <button type="button" class="rsvp-op rsvp-no" id="rsvp-individual-no" data-texto="opcionNoAsiste">No podré asistir</button>
+        </div>
+        <div class="oculto" id="rsvp-familia-wrap">
+          <div class="rsvp-personas" id="rsvp-personas"></div>
+          <button type="button" class="btn btn-mar" id="rsvp-enviar" data-texto="botonRSVP" style="background:#fff;color:var(--turquesa-osc)">Enviar Confirmación</button>
+        </div>
       </div>
+      <div class="rsvp-resumen oculto" id="rsvp-resumen" style="color:#fff"></div>
       <div class="rsvp-gracias oculto" id="rsvp-gracias" data-texto="mensajeRSVPGracias" style="color:#fff">Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!</div>
       <p class="rsvp-sin-link oculto" id="rsvp-sin-link" style="color:#fff">Este enlace no trae tu identificador de invitado. Escríbenos si necesitas ayuda para confirmar.</p>
     </section>

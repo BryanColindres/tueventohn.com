@@ -162,15 +162,26 @@
     </section>
 
     <!-- GALERÍA — CARRUSEL -->
+    
+    <!-- CANCIÓN / PLAYLIST -->
+    <section class="section-cancion" id="section-cancion">
+      <span class="eyebrow">Música</span>
+      <h2 class="titulo-fantasia">Nuestra Playlist</h2>
+      <p class="subtitulo" id="cancion-intro"></p>
+      <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
+      <form class="cancion-form oculto" id="form-cancion">
+        <input type="text" id="cancion-nombre" placeholder="Tu nombre">
+        <input type="text" id="cancion-input" placeholder="Artista - Canción" required>
+        <button type="submit" class="btn btn-outline btn-chico">Agregar</button>
+      </form>
+    </section>
+
     <section class="section-galeria" id="section-galeria">
       <div class="container">
-        <span class="eyebrow">Comparte tus fotos</span>
+        <span class="eyebrow">Galería</span>
         <h2 class="titulo-fantasia">Momentos del Bosque</h2>
-        <p class="subtitulo">Sube tus mejores momentos de la celebración</p>
         <div style="margin-top:1.4rem">
-          <input type="file" id="input-foto" accept="image/*" hidden>
-          <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
-        </div>
+          </div>
       </div>
       <div class="carrusel-wrap">
         <div class="carrusel-track" id="galeria-grid"></div>
@@ -191,6 +202,7 @@
           <p class="firmas-vacio">Sé el primero en firmar</p>
         </div>
 
+        <div class="firmas-nav oculto" id="firmas-nav"></div>
         <div class="firma-pendiente oculto" id="firma-pendiente">
           <div class="nombre" id="firma-pendiente-nombre"></div>
           <div class="mensaje" id="firma-pendiente-mensaje"></div>
@@ -210,9 +222,17 @@
       </div>
 
       <div class="oculto" id="rsvp-form-wrap">
-        <div class="rsvp-personas" id="rsvp-personas"></div>
-        <button type="button" class="btn btn-bosque" id="rsvp-enviar" data-texto="botonRSVP">Enviar Confirmación</button>
+        <button type="button" class="btn btn-bosque oculto" id="rsvp-boton-entrada" data-texto="botonRSVPEntrada">Confirmar asistencia</button>
+        <div class="rsvp-individual oculto" id="rsvp-individual">
+          <button type="button" class="rsvp-op rsvp-si" id="rsvp-individual-si" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
+          <button type="button" class="rsvp-op rsvp-no" id="rsvp-individual-no" data-texto="opcionNoAsiste">No podré asistir</button>
+        </div>
+        <div class="oculto" id="rsvp-familia-wrap">
+          <div class="rsvp-personas" id="rsvp-personas"></div>
+          <button type="button" class="btn btn-bosque" id="rsvp-enviar" data-texto="botonRSVP">Enviar Confirmación</button>
+        </div>
       </div>
+      <div class="rsvp-resumen oculto" id="rsvp-resumen"></div>
       <div class="rsvp-gracias oculto" id="rsvp-gracias" data-texto="mensajeRSVPGracias">Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!</div>
       <p class="rsvp-sin-link oculto" id="rsvp-sin-link">Este enlace no trae tu identificador de invitado. Escríbenos si necesitas ayuda para confirmar.</p>
     </section>
