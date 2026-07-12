@@ -9,6 +9,8 @@ const SUPABASE_ANON_KEY = "sb_publishable_Ij3gofHHYKTHps92RKXKwQ_5Hya3_GW";
 
 let CODIGO = null;
 let INVITADOS = [];      // caché local de la última carga
+let FAMILIAS = [];
+let FIRMAS = [];
 let DUPLICADO_PENDIENTE = null; // datos en espera de confirmación de familia duplicada
 
 async function rpc(nombre, parametros) {
@@ -50,6 +52,7 @@ async function cargarTodo() {
 
   renderResumen();
   renderTablaInvitados();
+  await cargarFamilias();
 }
 
 /* ============================================================ TABS ====== */
@@ -58,6 +61,7 @@ function cambiarTabPanel(tab) {
   document.querySelectorAll('.panel-vista').forEach(v => v.classList.add('oculto'));
   document.getElementById(`tab-${tab}`).classList.remove('oculto');
   if (tab === 'mesas' && window.cargarMesasSiNecesario) window.cargarMesasSiNecesario();
+  if (tab === 'muro') cargarFirmas();
 }
 
 function cambiarTabGenerador(tab) {
@@ -76,10 +80,8 @@ function renderResumen() {
   const adultos = confirmados.reduce((s, i) => s + (i.adultos || 0), 0);
   const ninos = confirmados.reduce((s, i) => s + (i.ninos || 0), 0);
 
-  const hoyStr = new Date().toISOString().slice(0, 10);
-  const haceSieteDias = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
-  const hoy = INVITADOS.filter(i => i.fecha_confirmacion && i.fecha_confirmacion.slice(0, 10) === hoyStr).length;
-  const semana = INVITADOS.filter(i => i.fecha_confirmacion && i.fecha_confirmacion.slice(0, 10) >= haceSieteDias).length;
+  const abiertas = INVITADOS.filter(i => i.primera_apertura_en).length;
+  const sinAbrir = total - abiertas;
 
   set('st-total', total);
   set('st-confirmados', confirmados.length);
@@ -87,8 +89,8 @@ function renderResumen() {
   set('st-rechazados', rechazados.length);
   set('st-adultos', adultos);
   set('st-ninos', ninos);
-  set('st-hoy', hoy);
-  set('st-semana', semana);
+  set('st-abiertas', abiertas);
+  set('st-sin-abrir', sinAbrir);
 
   const pct = total ? Math.round((confirmados.length / total) * 100) : 0;
   set('rsvp-pct', `${pct}%`);
@@ -118,6 +120,7 @@ function renderTablaInvitados() {
       </div>
       <div class="ti-sub">${i.telefono ? escapar(i.telefono) : '—'}</div>
       <div>${badgeEstado(i)}</div>
+      <div class="ti-sub">${badgeApertura(i)}</div>
       <div class="ti-sub">${(i.adultos || 0) + (i.ninos || 0)}</div>
       <div class="ti-acciones">
         <button class="ti-icon-btn" title="Copiar link" onclick="copiarLinkInvitado('${i.link}')">🔗</button>
@@ -132,10 +135,18 @@ function renderTablaInvitados() {
 }
 
 function badgeEstado(i) {
-  const etiquetas = { pendiente: 'Pendiente', confirmado: 'Confirmado', rechazado: 'No viene' };
+  const etiquetas = { pendiente: 'Sin responder', confirmado: 'Confirmado', rechazado: 'No viene' };
   return `<select class="badge-estado badge-${i.estado}" onchange="cambiarEstadoSelect('${i.id}', this.value)">
     ${Object.entries(etiquetas).map(([v, l]) => `<option value="${v}" ${v === i.estado ? 'selected' : ''}>${l}</option>`).join('')}
   </select>`;
+}
+
+function badgeApertura(i) {
+  if (!i.primera_apertura_en) return `<span class="badge-apertura badge-sin-abrir">⏳ Sin abrir</span>`;
+  const fecha = new Date(i.ultima_apertura_en || i.primera_apertura_en);
+  const fechaTexto = fecha.toLocaleDateString('es-HN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const veces = i.veces_abierto > 1 ? ` (${i.veces_abierto}x)` : '';
+  return `<span class="badge-apertura badge-abierta" title="Se abrió ${i.veces_abierto || 1} vez(es)">✉️ ${fechaTexto}${veces}</span>`;
 }
 
 async function cambiarEstadoSelect(id, estado) {
@@ -313,4 +324,92 @@ function mostrarToast(msg) {
   el.classList.remove('oculto');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.add('oculto'), 2200);
+}
+
+/* ============================================================ FAMILIAS == */
+async function cargarFamilias() {
+  const data = await rpc('portal_listar_familias', { p_codigo: CODIGO });
+  if (!data.ok) return;
+  FAMILIAS = data.familias || [];
+  renderListaFamilias();
+}
+
+async function crearFamilia() {
+  const nombre = document.getElementById('nueva-familia-nombre').value.trim();
+  if (!nombre) { mostrarToast('Escribe el nombre de la familia'); return; }
+  const res = await rpc('portal_crear_familia', { p_codigo: CODIGO, p_nombre: nombre });
+  if (res.ok) {
+    document.getElementById('nueva-familia-nombre').value = '';
+    await cargarFamilias();
+    mostrarToast('Link familiar creado');
+  }
+}
+
+function renderListaFamilias() {
+  const cont = document.getElementById('lista-familias');
+  if (!FAMILIAS.length) { cont.innerHTML = `<p class="desc" style="margin-top:.8rem">Todavía no has creado ningún link familiar.</p>`; return; }
+
+  cont.innerHTML = FAMILIAS.map(f => {
+    const conteo = f.conteo_manual != null ? f.conteo_manual : f.conteo_miembros;
+    return `
+    <div class="familia-fila">
+      <div>
+        <div class="ti-nombre">${escapar(f.nombre)}</div>
+        <div class="ti-sub">
+          ${f.conteo_miembros} invitado(s) ligado(s) ·
+          <span>conteo a mostrar:</span>
+          <input type="number" min="0" value="${conteo}" class="conteo-input" onchange="actualizarConteoFamilia('${f.id}', this.value)">
+        </div>
+      </div>
+      <div class="ti-acciones">
+        <button class="ti-icon-btn" title="Copiar link familiar" onclick="copiarLinkInvitado('${f.link}')">🔗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function actualizarConteoFamilia(familiaId, valor) {
+  const conteo = parseInt(valor, 10);
+  if (isNaN(conteo) || conteo < 0) { mostrarToast('Escribe un número válido'); await cargarFamilias(); return; }
+  const res = await rpc('portal_actualizar_conteo_familia', { p_codigo: CODIGO, p_familia_id: familiaId, p_conteo: conteo });
+  if (res.ok) mostrarToast('Conteo actualizado');
+}
+
+/* ============================================================ MURO DE FIRMAS (moderación) == */
+async function cargarFirmas() {
+  const data = await rpc('portal_listar_firmas', { p_codigo: CODIGO });
+  if (!Array.isArray(data)) { FIRMAS = []; } else { FIRMAS = data; }
+  renderTablaFirmas();
+}
+
+function renderTablaFirmas() {
+  const filtro = document.getElementById('filtro-firma').value;
+  const filtradas = filtro === 'todos' ? FIRMAS : FIRMAS.filter(f => f.estado === filtro);
+
+  const cont = document.getElementById('lista-firmas-moderacion');
+  cont.innerHTML = filtradas.map(f => `
+    <div class="firma-moderacion firma-${f.estado}">
+      <div class="firma-moderacion__cuerpo">
+        <div class="ti-nombre">${escapar(f.nombre)}</div>
+        <p class="desc" style="margin:.2rem 0 .5rem">${escapar(f.mensaje)}</p>
+        <span class="badge-firma-estado badge-${f.estado}">${etiquetaEstadoFirma(f.estado)}</span>
+      </div>
+      <div class="ti-acciones">
+        ${f.estado !== 'aprobado' ? `<button class="ti-icon-btn" title="Aprobar" onclick="moderarFirma('${f.id}', 'aprobado')">✅</button>` : ''}
+        ${f.estado !== 'rechazado' ? `<button class="ti-icon-btn" title="Rechazar" onclick="moderarFirma('${f.id}', 'rechazado')">🚫</button>` : ''}
+        ${f.estado !== 'pendiente' ? `<button class="ti-icon-btn" title="Volver a pendiente" onclick="moderarFirma('${f.id}', 'pendiente')">↩️</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('sin-firmas').classList.toggle('oculto', filtradas.length > 0);
+}
+
+function etiquetaEstadoFirma(estado) {
+  return { pendiente: 'Pendiente', aprobado: 'Aprobado', rechazado: 'Rechazado' }[estado] || estado;
+}
+
+async function moderarFirma(firmaId, estado) {
+  const res = await rpc('portal_moderar_firma', { p_codigo: CODIGO, p_firma_id: firmaId, p_estado: estado });
+  if (res.ok) { await cargarFirmas(); mostrarToast('Mensaje actualizado'); }
 }

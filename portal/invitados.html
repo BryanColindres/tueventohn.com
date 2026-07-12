@@ -21,14 +21,14 @@
     <div id="portal-contenido" class="oculto">
 
       <div class="panel-tabs no-print">
-        <button class="panel-tab activo" data-tab="resumen" onclick="cambiarTabPanel('resumen')">Resumen</button>
-        <button class="panel-tab" data-tab="invitados" onclick="cambiarTabPanel('invitados')">Invitados</button>
+        <button class="panel-tab activo" data-tab="invitados" onclick="cambiarTabPanel('invitados')">Invitados</button>
         <button class="panel-tab" data-tab="mesas" onclick="cambiarTabPanel('mesas')">Mesas</button>
+        <button class="panel-tab" data-tab="muro" onclick="cambiarTabPanel('muro')">Muro de Firmas</button>
         <button class="panel-tab" disabled title="Próximamente">Recordatorios</button>
       </div>
 
-      <!-- ================= RESUMEN ================= -->
-      <div id="tab-resumen" class="panel-vista">
+      <!-- ================= INVITADOS (incluye el resumen) ================= -->
+      <div id="tab-invitados" class="panel-vista">
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-label">Total invitados</div><div class="stat-value" id="st-total">0</div></div>
           <div class="stat-card acento"><div class="stat-label">Confirmados</div><div class="stat-value" id="st-confirmados">0</div></div>
@@ -38,8 +38,8 @@
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-label">Adultos confirmados</div><div class="stat-value" id="st-adultos">0</div></div>
           <div class="stat-card"><div class="stat-label">Niños confirmados</div><div class="stat-value" id="st-ninos">0</div></div>
-          <div class="stat-card"><div class="stat-label">Confirmaciones hoy</div><div class="stat-value" id="st-hoy">0</div></div>
-          <div class="stat-card"><div class="stat-label">Confirmaciones (7 días)</div><div class="stat-value" id="st-semana">0</div></div>
+          <div class="stat-card"><div class="stat-label">Abiertas</div><div class="stat-value" id="st-abiertas">0</div></div>
+          <div class="stat-card"><div class="stat-label">Sin abrir</div><div class="stat-value" id="st-sin-abrir">0</div></div>
         </div>
 
         <div class="rsvp-progreso">
@@ -58,10 +58,6 @@
             <span><i style="background:#C9645C"></i>No viene</span>
           </div>
         </div>
-      </div>
-
-      <!-- ================= INVITADOS ================= -->
-      <div id="tab-invitados" class="panel-vista oculto">
 
         <div class="tarjeta">
           <h2>Agregar invitados</h2>
@@ -93,6 +89,17 @@
           </div>
         </div>
 
+        <!-- LINKS FAMILIARES -->
+        <div class="tarjeta">
+          <h2>Links familiares</h2>
+          <p class="desc">Envía un solo link a toda una familia (ej. "Familia Colindres Mejía") para que confirmen juntos. El conteo se calcula solo con los invitados que le asignes, pero puedes cambiarlo a mano si quieres mostrar otro número.</p>
+          <div class="form-grid">
+            <div class="campo"><label>Nombre de la familia</label><input type="text" id="nueva-familia-nombre" placeholder="Ej. Familia Colindres Mejía"></div>
+          </div>
+          <button class="btn btn-dorado btn-chico" onclick="crearFamilia()">Crear link familiar</button>
+          <div id="lista-familias" class="lista-familias"></div>
+        </div>
+
         <div class="inv-toolbar">
           <input type="text" id="buscar-invitado" placeholder="Buscar por nombre o familia..." oninput="renderTablaInvitados()">
           <select id="filtro-estado" onchange="renderTablaInvitados()">
@@ -105,7 +112,7 @@
 
         <div class="tabla-invitados">
           <div class="ti-fila encabezado">
-            <span>Invitado</span><span>Teléfono</span><span>Estado</span><span>Asist.</span><span>Acciones</span>
+            <span>Invitado</span><span>Teléfono</span><span>Confirmación</span><span>Apertura</span><span>Asist.</span><span>Acciones</span>
           </div>
           <div id="cuerpo-tabla-invitados"></div>
         </div>
@@ -157,6 +164,26 @@
 
         <!-- Solo se muestra al imprimir -->
         <div id="print-mesas" class="print-only"></div>
+      </div>
+
+      <!-- ================= MURO DE FIRMAS (moderación) ================= -->
+      <div id="tab-muro" class="panel-vista oculto">
+        <div class="tarjeta">
+          <h2>Moderación del Muro de Firmas</h2>
+          <p class="desc">Los mensajes que apruebes aparecerán en la invitación. Los que rechaces o dejes pendientes no se muestran.</p>
+        </div>
+
+        <div class="muro-toolbar">
+          <select id="filtro-firma" onchange="renderTablaFirmas()">
+            <option value="pendiente">Pendientes</option>
+            <option value="aprobado">Aprobados</option>
+            <option value="rechazado">Rechazados</option>
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        <div id="lista-firmas-moderacion"></div>
+        <p id="sin-firmas" class="desc oculto" style="text-align:center;margin-top:1rem">No hay mensajes en este filtro.</p>
       </div>
 
     </div>

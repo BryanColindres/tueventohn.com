@@ -223,3 +223,33 @@ a{text-decoration:none;color:inherit}
 /* ---- ÍCONO OPCIONAL EN EL ITINERARIO ---- */
 .icono-itinerario{display:inline-flex;vertical-align:middle;width:16px;height:16px;margin-right:.4rem;opacity:.85}
 .icono-itinerario svg{width:100%;height:100%}
+
+/* ---- HISTORIA: VISOR ESTILO INSTAGRAM STORIES ---- */
+.story{position:relative;max-width:320px;margin:0 auto;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.story-bars{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:5px;z-index:5}
+.story-bar{flex:1;height:3px;background:rgba(255,255,255,.35);border-radius:2px;overflow:hidden}
+.story-bar-fill{height:100%;width:0%;background:#fff}
+.story-slides{position:relative;width:100%;height:100%}
+.story-slide{position:absolute;inset:0;opacity:0;transition:opacity .25s ease}
+.story-slide.active{opacity:1}
+.story-caption{position:absolute;left:0;right:0;bottom:0;padding:22px 18px 26px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff}
+.story-caption .st-title{font-size:1.4rem;margin-bottom:4px}
+.story-caption .st-text{font-size:.82rem;line-height:1.5;font-weight:300}
+.story-tap{position:absolute;top:0;bottom:0;width:50%;z-index:4;cursor:pointer}
+.story-tap.left{left:0}.story-tap.right{right:0}
+.story-hint{text-align:center;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.55;margin-top:14px}
+
+#rsvp-personas{max-width:380px;margin:1.6rem auto 0;display:flex;flex-direction:column;gap:12px}
+.rsvp-persona{display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:rgba(0,0,0,.04);border-radius:10px;text-align:left}
+.rsvp-toggle{display:flex;gap:8px}
+.rsvp-op{flex:1;padding:.55rem .6rem;font-size:.72rem;border:1px solid rgba(0,0,0,.15);background:#fff;border-radius:6px;cursor:pointer}
+.rsvp-op.activo{color:#fff}
+.rsvp-op.rsvp-si.activo{background:#2CA6A6}
+.rsvp-op.rsvp-no.activo{background:#999}
+.rsvp-gracias{margin-top:1.4rem}
+.rsvp-sin-link{font-size:.85rem;opacity:.6;margin-top:1rem}
+
+.firma-pendiente{margin-top:1rem;padding:14px 16px;background:rgba(0,0,0,.04);border-left:3px solid #2CA6A6;border-radius:0 8px 8px 0;text-align:left}
+.firma-pendiente .mensaje{font-style:italic;opacity:.8;margin:.3rem 0 .5rem}
+.tag-revision{display:inline-block;font-size:.65rem;text-transform:uppercase;padding:2px 9px;border-radius:10px;background:#f3e3c9;color:#8a6a2a}
+.vestimenta-evitar{font-size:.82rem;opacity:.75;margin-top:.6rem}

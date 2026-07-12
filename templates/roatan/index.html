@@ -137,6 +137,8 @@
       <span class="eyebrow">Código de vestimenta</span>
       <h2 class="titulo" id="vestimenta-titulo">Etiqueta formal</h2>
       <p class="vestimenta-texto" id="vestimenta-texto"></p>
+      <div class="vestimenta-paleta oculto" id="vestimenta-paleta"></div>
+      <p class="vestimenta-evitar oculto" id="vestimenta-evitar"></p>
       <a href="#" target="_blank" class="btn btn-outline oculto" id="vestimenta-boton">Ver referencias de vestimenta</a>
     </section>
 
@@ -204,6 +206,10 @@
       <p class="deseo-gracias" id="deseo-gracias">Tu deseo ya va mar adentro. Gracias.</p>
 
       <div class="deseos-lista" id="deseos-lista"></div>
+      <div class="deseo-pendiente oculto" id="deseo-pendiente">
+        <p id="deseo-pendiente-texto"></p>
+        <span class="tag-revision" data-texto="etiquetaEnRevision">En revisión</span>
+      </div>
     </section>
 
     <!-- RSVP — FARO -->
@@ -218,10 +224,16 @@
       <span class="eyebrow">Confirmación</span>
       <h2 class="titulo">¿Nos acompañas?</h2>
       <p class="rsvp-desc">Nos encantaría contar con tu presencia. Confirma antes del <span id="rsvp-fecha-limite">15 de septiembre de 2026</span>.</p>
-      <div class="rsvp-btns">
+      <div class="rsvp-btns oculto" id="rsvp-whatsapp">
         <a id="rsvp-novio" href="#" target="_blank" class="btn btn-mar" style="background:#fff;color:var(--turquesa-osc);border-color:#fff">Confirmar con Bryan</a>
         <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline" style="color:#fff;border-color:#fff">Confirmar con Stefany</a>
       </div>
+      <div class="oculto" id="rsvp-form-wrap">
+        <div class="rsvp-personas" id="rsvp-personas"></div>
+        <button type="button" class="btn btn-mar" id="rsvp-enviar" data-texto="botonRSVP" style="background:#fff;color:var(--turquesa-osc)">Enviar Confirmación</button>
+      </div>
+      <div class="rsvp-gracias oculto" id="rsvp-gracias" data-texto="mensajeRSVPGracias" style="color:#fff">Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!</div>
+      <p class="rsvp-sin-link oculto" id="rsvp-sin-link" style="color:#fff">Este enlace no trae tu identificador de invitado. Escríbenos si necesitas ayuda para confirmar.</p>
     </section>
 
     <footer class="footer">
@@ -236,8 +248,9 @@
 
   </div>
 
-  <script src="js/config-demo.js"></script>
-  <script src="js/backend.js"></script>
+  <script src="../../shared/js/config-demo.js"></script>
+  <script src="../../shared/js/backend.js"></script>
+  <script src="../../shared/js/textos.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

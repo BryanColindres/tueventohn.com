@@ -42,7 +42,7 @@
 
 /* ---- tabla de invitados ---- */
 .tabla-invitados{background:#fff;border:1px solid var(--borde);border-radius:16px;overflow:hidden}
-.ti-fila{display:grid;grid-template-columns:2fr 1fr 1fr .7fr auto;gap:.6rem;align-items:center;
+.ti-fila{display:grid;grid-template-columns:2fr 1fr 1fr 1fr .7fr auto;gap:.6rem;align-items:center;
   padding:.8rem 1.1rem;border-bottom:1px solid var(--borde);font-size:.85rem}
 .ti-fila.encabezado{background:var(--celeste-nube);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--texto-mid)}
 .ti-fila:last-child{border-bottom:none}
@@ -57,6 +57,30 @@
 .badge-pendiente{background:#F4E9D8;color:#93712F}
 .badge-confirmado{background:#DCF3E4;color:#2B7A4B}
 .badge-rechazado{background:#FBE2E0;color:#B0473F}
+
+/* ---- apertura ---- */
+.badge-apertura{display:inline-block;font-size:.72rem;padding:.2rem .5rem;border-radius:8px;white-space:nowrap}
+.badge-sin-abrir{background:#F4E9D8;color:#93712F}
+.badge-abierta{background:#E4EEF8;color:#2E5C8A}
+
+/* ---- links familiares ---- */
+.lista-familias{margin-top:1rem;display:flex;flex-direction:column;gap:.6rem}
+.familia-fila{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;
+  border:1px solid var(--borde);border-radius:10px;background:var(--celeste-nube)}
+.conteo-input{width:52px;padding:.15rem .3rem;border:1px solid var(--borde);border-radius:6px;
+  font-family:var(--font);font-size:.78rem;text-align:center}
+
+/* ---- moderación del muro de firmas ---- */
+.muro-toolbar{margin-bottom:1rem}
+.muro-toolbar select{padding:.6rem .8rem;border:1px solid var(--borde);border-radius:10px;background:#fff;font-family:var(--font);font-size:.85rem}
+.firma-moderacion{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;
+  padding:.9rem 1.1rem;border:1px solid var(--borde);border-radius:12px;background:#fff;margin-bottom:.7rem}
+.firma-moderacion.firma-rechazado{opacity:.55}
+.badge-firma-estado{display:inline-block;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;
+  padding:.2rem .55rem;border-radius:999px;font-weight:600}
+.badge-firma-estado.badge-pendiente{background:#F4E9D8;color:#93712F}
+.badge-firma-estado.badge-aprobado{background:#DCF3E4;color:#2B7A4B}
+.badge-firma-estado.badge-rechazado{background:#FBE2E0;color:#B0473F}
 
 .excel-error{background:#FBE2E0;color:#B0473F;border-radius:9px;padding:.6rem .8rem;font-size:.78rem;margin:.6rem 0}
 

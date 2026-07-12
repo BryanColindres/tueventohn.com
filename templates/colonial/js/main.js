@@ -3,6 +3,11 @@ let C;
 document.addEventListener('DOMContentLoaded', async () => {
   C = await TuBodaBackend.cargarConfig();
   if (!C) return;
+  TuBodaTextos.aplicar(C);
+
+  if (window.IDENTIFICADOR_INVITADO) {
+    TuBodaBackend.marcarApertura(window.IDENTIFICADOR_INVITADO);
+  }
 
   iniciarVideo();
   pintarHero();
@@ -87,14 +92,57 @@ function pintarHistoria(){
   const seccion = document.getElementById('section-historia');
   const cont = document.getElementById('historia-contenido');
   if ((C.modules && C.modules.historia === false) || !C.historia || !C.historia.length) { seccion.style.display = 'none'; return; }
-  cont.innerHTML = C.historia.map(h => `
-    <div class="puerta reveal">
-      <div class="arco"><img src="${h.foto}" alt="${h.titulo || ''}"></div>
-      <div class="puerta-texto">
-        ${h.titulo ? `<h3>${h.titulo}</h3>` : ''}
-        <p>${h.texto}</p>
+
+  const slides = C.historia;
+  cont.innerHTML = `
+    <div class="story" id="story">
+      <div class="story-bars" id="story-bars">
+        ${slides.map(() => `<div class="story-bar"><div class="story-bar-fill"></div></div>`).join('')}
       </div>
-    </div>`).join('');
+      <div class="story-slides" id="story-slides">
+        ${slides.map((h, i) => `
+          <div class="story-slide${i === 0 ? ' active' : ''}">
+            <img src="${h.foto}" alt="${h.titulo || ''}">
+            <div class="story-caption">
+              ${h.titulo ? `<div class="st-title">${h.titulo}</div>` : ''}
+              <div class="st-text">${h.texto}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="story-tap left" id="story-tap-left"></div>
+      <div class="story-tap right" id="story-tap-right"></div>
+    </div>
+    <p class="story-hint">Toca los lados para avanzar o retroceder</p>`;
+
+  iniciarStory(slides.length);
+}
+
+function iniciarStory(total){
+  let actual = 0;
+  let temporizador = null;
+  const DURACION = 4500;
+  const bars = () => document.querySelectorAll('#story-bars .story-bar');
+  const slides = () => document.querySelectorAll('#story-slides .story-slide');
+
+  function render(){
+    slides().forEach((s, i) => s.classList.toggle('active', i === actual));
+    bars().forEach((b, i) => {
+      const f = b.querySelector('.story-bar-fill');
+      if (i < actual) { f.style.transition = 'none'; f.style.width = '100%'; }
+      else if (i === actual) {
+        f.style.transition = 'none'; f.style.width = '0%';
+        requestAnimationFrame(() => { f.style.transition = `width ${DURACION}ms linear`; f.style.width = '100%'; });
+      } else { f.style.transition = 'none'; f.style.width = '0%'; }
+    });
+  }
+  function siguiente(){ if (actual < total - 1) { actual++; render(); reiniciar(); } }
+  function anterior(){ if (actual > 0) { actual--; render(); reiniciar(); } }
+  function reiniciar(){ clearTimeout(temporizador); temporizador = setTimeout(siguiente, DURACION); }
+
+  document.getElementById('story-tap-right').addEventListener('click', siguiente);
+  document.getElementById('story-tap-left').addEventListener('click', anterior);
+  render();
+  reiniciar();
 }
 
 function pintarTimeline(){
@@ -172,9 +220,13 @@ async function enviarFirma(e){
   const nombre = document.getElementById('firma-nombre').value.trim();
   const mensaje = document.getElementById('firma-mensaje').value.trim();
   try {
-    await TuBodaBackend.enviarFirma(C.eventoId, nombre, mensaje);
+    await TuBodaBackend.enviarFirma(C.eventoId, nombre, mensaje, window.IDENTIFICADOR_INVITADO || null);
     document.getElementById('form-firma').reset();
-    cargarFirmas();
+    // Entra "pendiente": no se agrega a la lista pública. Mostramos su propio
+    // mensaje marcado "en revisión" para que sepa que sí se envió.
+    document.getElementById('firma-pendiente-nombre').textContent = nombre;
+    document.getElementById('firma-pendiente-mensaje').textContent = mensaje;
+    document.getElementById('firma-pendiente').classList.remove('oculto');
   } catch (err) { alert('No se pudo guardar tu firma. Intenta de nuevo.'); }
 }
 
@@ -191,16 +243,71 @@ async function cargarFirmas(){
   } catch (err) { console.error(err); }
 }
 
-function pintarRSVP(){
+async function pintarRSVP(){
   const spanFechaLimite = document.getElementById('rsvp-fecha-limite');
   if (spanFechaLimite) spanFechaLimite.textContent = C.rsvpFechaLimite || 'la fecha indicada';
   if (C.rsvpFotoUrl) {
     document.getElementById('rsvp-foto').innerHTML = `<img src="${C.rsvpFotoUrl}" alt="">`;
     document.getElementById('rsvp-foto').classList.remove('oculto');
   }
-  const msj = encodeURIComponent(`Hola, confirmo mi asistencia a la boda de ${C.pareja.nombreA} y ${C.pareja.nombreB}`);
-  document.getElementById('rsvp-novio').href = `https://wa.me/${C.whatsapp.novio}?text=${msj}`;
-  document.getElementById('rsvp-novia').href = `https://wa.me/${C.whatsapp.novia}?text=${msj}`;
+
+  const tienePremium = !!(C.modules && C.modules.rsvp_premium);
+
+  if (!tienePremium) {
+    const msj = encodeURIComponent(`Hola, confirmo mi asistencia a la boda de ${C.pareja.nombreA} y ${C.pareja.nombreB}`);
+    document.getElementById('rsvp-novio').href = `https://wa.me/${C.whatsapp.novio}?text=${msj}`;
+    document.getElementById('rsvp-novia').href = `https://wa.me/${C.whatsapp.novia}?text=${msj}`;
+    document.getElementById('rsvp-whatsapp').classList.remove('oculto');
+    return;
+  }
+
+  const id = window.IDENTIFICADOR_INVITADO;
+  const wrap = document.getElementById('rsvp-personas');
+  const formWrap = document.getElementById('rsvp-form-wrap');
+  const sinLink = document.getElementById('rsvp-sin-link');
+
+  let personas = [];
+  if (id) {
+    personas = await TuBodaBackend.cargarPersonasParaRSVP(id);
+  } else if (C.rsvpDemoPersonas) {
+    personas = C.rsvpDemoPersonas;
+  }
+
+  if (!personas.length) {
+    sinLink.classList.remove('oculto');
+    return;
+  }
+
+  formWrap.classList.remove('oculto');
+  const decisiones = {};
+  wrap.innerHTML = personas.map(p => `
+    <div class="rsvp-persona">
+      <span class="rsvp-persona-nombre">${p.nombre}</span>
+      <span class="rsvp-toggle">
+        <button type="button" class="rsvp-op rsvp-si" data-id="${p.invitado_id}" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
+        <button type="button" class="rsvp-op rsvp-no" data-id="${p.invitado_id}" data-texto="opcionNoAsiste">No podré asistir</button>
+      </span>
+    </div>`).join('');
+
+  wrap.querySelectorAll('.rsvp-op').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pid = btn.dataset.id;
+      decisiones[pid] = btn.classList.contains('rsvp-si');
+      wrap.querySelectorAll(`.rsvp-op[data-id="${pid}"]`).forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+    });
+  });
+
+  document.getElementById('rsvp-enviar').addEventListener('click', async () => {
+    const arr = Object.entries(decisiones).map(([invitado_id, asiste]) => ({ invitado_id, asiste }));
+    if (arr.length < personas.length) { alert('Selecciona una opción para cada persona de la lista.'); return; }
+    if (!id) { alert('Esto es una vista de ejemplo — aquí no se guarda nada.'); return; }
+    try {
+      await TuBodaBackend.confirmarAsistencia(id, arr);
+      formWrap.classList.add('oculto');
+      document.getElementById('rsvp-gracias').classList.remove('oculto');
+    } catch (err) { alert('No se pudo enviar tu confirmación. Intenta de nuevo.'); }
+  });
 }
 
 function pintarFooter(){
@@ -276,9 +383,27 @@ function pintarVestimenta(){
     return;
   }
   document.getElementById('vestimenta-texto').textContent = C.vestimenta.texto;
-  if (C.vestimenta.botonUrl) {
+
+  if (C.vestimenta.paletaColores && C.vestimenta.paletaColores.length) {
+    const cont = document.getElementById('vestimenta-paleta');
+    cont.innerHTML = C.vestimenta.paletaColores.map(c => `
+      <div class="paleta-swatch">
+        <span class="paleta-circulo" style="background:${c.hex}"></span>
+        <span class="paleta-nombre">${c.nombre || ''}</span>
+      </div>`).join('');
+    cont.classList.remove('oculto');
+  }
+
+  if (C.vestimenta.colorEvitar) {
+    const p = document.getElementById('vestimenta-evitar');
+    p.innerHTML = `Evitemos: <span class="paleta-circulo paleta-circulo--inline" style="background:${C.vestimenta.colorEvitar.hex}"></span> ${C.vestimenta.colorEvitar.nombre || ''}`;
+    p.classList.remove('oculto');
+  }
+
+  const url = C.vestimenta.fotoReferenciaUrl || C.vestimenta.pinterestUrl || C.vestimenta.botonUrl;
+  if (url) {
     const btn = document.getElementById('vestimenta-boton');
-    btn.href = C.vestimenta.botonUrl;
+    btn.href = url;
     btn.classList.remove('oculto');
   }
 }

@@ -105,8 +105,12 @@ function mostrarErrorCarga(mensaje) {
 }
 
 // ---------------- LIBRO DE FIRMAS ----------------
-async function enviarFirma(eventoId, nombre, mensaje) {
-  await _insert("firmas", [{ evento_id: eventoId, nombre, mensaje }]);
+// Siempre entra como "pendiente" (lo fuerza un trigger en la base de datos,
+// sin importar qué se mande aquí). cargarFirmas() solo puede ver las
+// aprobadas — el filtro lo hace la política de seguridad de la base de datos,
+// no este archivo, así que no hay que tocar nada aquí para que funcione.
+async function enviarFirma(eventoId, nombre, mensaje, invitadoId) {
+  await _insert("firmas", [{ evento_id: eventoId, nombre, mensaje, invitado_id: invitadoId || null }]);
 }
 
 async function cargarFirmas(eventoId) {
@@ -157,6 +161,41 @@ async function validarInvitado(slug, identificador) {
   }
 }
 
+// ---------------- APERTURA ----------------
+// Se llama una sola vez al cargar la invitación (si la URL trae ?id=).
+// No crea filas: actualiza primera_apertura_en / ultima_apertura_en / veces_abierto
+// de la fila que ya existe. Falla en silencio (nunca debe romper la invitación).
+async function marcarApertura(identificador) {
+  if (!identificador) return;
+  try {
+    await _rpc("portal_marcar_apertura", { p_identificador: identificador });
+  } catch (err) {
+    console.warn("No se pudo registrar la apertura:", err);
+  }
+}
+
+// ---------------- RSVP CON NOMBRES REALES (individual o familiar) ----------------
+// Nadie escribe su nombre: el link (?id=) ya identifica a la persona o a toda
+// la familia. Devuelve [{invitado_id, nombre, estado}, ...] — un solo elemento
+// si es link individual, varios si es link familiar.
+async function cargarPersonasParaRSVP(identificador) {
+  try {
+    return await _rpc("invitacion_personas_para_rsvp", { p_identificador: identificador });
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+// decisiones: [{invitado_id, asiste: true|false}, ...]
+async function confirmarAsistencia(identificador, decisiones, mensaje) {
+  return _rpc("invitacion_confirmar_asistencia", {
+    p_identificador: identificador,
+    p_decisiones: decisiones,
+    p_mensaje: mensaje || null
+  });
+}
+
 window.TuBodaBackend = {
   cargarConfig,
   enviarFirma,
@@ -165,5 +204,8 @@ window.TuBodaBackend = {
   cargarGaleria,
   enviarCancion,
   cargarCanciones,
-  validarInvitado
+  validarInvitado,
+  marcarApertura,
+  cargarPersonasParaRSVP,
+  confirmarAsistencia
 };

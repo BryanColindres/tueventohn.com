@@ -116,8 +116,8 @@
     <!-- TIMELINE / PROGRAMA -->
     <section class="section-timeline" id="section-timeline">
       <div style="text-align:center">
-        <span class="eyebrow">Itinerario</span>
-        <h2 class="titulo-script">El gran día</h2>
+        <span class="eyebrow" data-texto="eyebrowItinerario">Itinerario</span>
+        <h2 class="titulo-script" data-texto="tituloItinerario">El gran día</h2>
       </div>
       <div class="programa" id="timeline-contenido"></div>
     </section>
@@ -136,9 +136,11 @@
 
     <!-- CÓDIGO DE VESTIMENTA -->
     <section class="section-vestimenta" id="section-vestimenta">
-      <span class="eyebrow">Código de vestimenta</span>
+      <span class="eyebrow" data-texto="eyebrowVestimenta">Código de vestimenta</span>
       <h2 class="titulo-script" id="vestimenta-titulo">Etiqueta formal</h2>
       <p class="vestimenta-texto" id="vestimenta-texto"></p>
+      <div class="vestimenta-paleta oculto" id="vestimenta-paleta"></div>
+      <p class="vestimenta-evitar oculto" id="vestimenta-evitar"></p>
       <a href="#" target="_blank" class="btn btn-outline oculto" id="vestimenta-boton">Ver referencias de vestimenta</a>
     </section>
 
@@ -146,7 +148,7 @@
 
     <!-- UBICACIÓN -->
     <section class="section-map">
-      <span class="eyebrow">Ubicación</span>
+      <span class="eyebrow" data-texto="eyebrowUbicacion">Ubicación</span>
       <h2 class="titulo-script" id="ubicacion-nombre"></h2>
       <div class="linea-corta"></div>
       <div class="map-foto oculto" id="map-foto"></div>
@@ -166,8 +168,8 @@
 
     <!-- MESA DE REGALOS -->
     <section class="section-regalos" id="section-regalos">
-      <span class="eyebrow">Regalos</span>
-      <h2 class="titulo-script">Tu presencia es nuestro regalo</h2>
+      <span class="eyebrow" data-texto="eyebrowRegalos">Regalos</span>
+      <h2 class="titulo-script" data-texto="tituloRegalos">Tu presencia es nuestro regalo</h2>
       <p class="regalos-texto" id="regalos-texto"></p>
       <button class="btn btn-outline oculto" id="regalos-boton">Más detalles de cuenta</button>
       <div class="regalos-detalle oculto" id="regalos-detalle"></div>
@@ -192,16 +194,21 @@
     <!-- LIBRO DE FIRMAS -->
     <section class="section-firmas" id="section-firmas">
       <div class="firmas-foto oculto" id="firmas-foto"></div>
-      <span class="eyebrow">Libro de firmas</span>
-      <h2 class="titulo-script">Déjanos un mensaje</h2>
+      <span class="eyebrow" data-texto="eyebrowLibroFirmas">Libro de firmas</span>
+      <h2 class="titulo-script" data-texto="tituloLibroFirmas">Déjanos un mensaje</h2>
       <div class="firmas-wrap">
         <form id="form-firma" class="form-firma">
-          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
-          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
-          <button type="submit" class="btn btn-camel">Firmar</button>
+          <input type="text" id="firma-nombre" data-texto="placeholderNombreFirma" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" data-texto="placeholderMensajeFirma" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-camel" data-texto="botonPublicarFirma">Firmar</button>
         </form>
         <div class="firmas-lista" id="firmas-lista">
           <p class="firmas-vacio">Sé el primero en firmar</p>
+        </div>
+        <div class="firma-pendiente oculto" id="firma-pendiente">
+          <div class="nombre" id="firma-pendiente-nombre"></div>
+          <div class="mensaje" id="firma-pendiente-mensaje"></div>
+          <span class="tag-revision" data-texto="etiquetaEnRevision">En revisión</span>
         </div>
       </div>
     </section>
@@ -211,13 +218,23 @@
     <!-- RSVP -->
     <section class="section-rsvp" id="section-rsvp">
       <div class="rsvp-foto oculto" id="rsvp-foto"></div>
-      <span class="eyebrow">Confirmación</span>
-      <h2 class="titulo-script">¿Vienes?</h2>
+      <span class="eyebrow" data-texto="eyebrowRSVP">Confirmación</span>
+      <h2 class="titulo-script" data-texto="tituloRSVP">¿Vienes?</h2>
       <p class="rsvp-desc">Nos encantaría contar con tu presencia. Por favor confirma antes del <span id="rsvp-fecha-limite">15 de septiembre de 2026</span>.</p>
-      <div class="rsvp-btns">
+
+      <!-- Paquetes SIN RSVP Premium: confirman por WhatsApp -->
+      <div class="rsvp-btns oculto" id="rsvp-whatsapp">
         <a id="rsvp-novio" href="#" target="_blank" class="btn btn-camel">Confirmar con Bryan</a>
         <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
       </div>
+
+      <!-- Paquetes CON RSVP Premium: confirman en la página, con nombres reales -->
+      <div class="oculto" id="rsvp-form-wrap">
+        <div class="rsvp-personas" id="rsvp-personas"></div>
+        <button type="button" class="btn btn-camel" id="rsvp-enviar" data-texto="botonRSVP">Enviar Confirmación</button>
+      </div>
+      <div class="rsvp-gracias oculto" id="rsvp-gracias" data-texto="mensajeRSVPGracias">Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!</div>
+      <p class="rsvp-sin-link oculto" id="rsvp-sin-link">Este enlace no trae tu identificador de invitado. Escríbenos si necesitas ayuda para confirmar.</p>
     </section>
 
     <!-- FOOTER -->
@@ -233,8 +250,9 @@
 
   </div>
 
-  <script src="js/config-demo.js"></script>
-  <script src="js/backend.js"></script>
+  <script src="../../shared/js/config-demo.js"></script>
+  <script src="../../shared/js/backend.js"></script>
+  <script src="../../shared/js/textos.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
