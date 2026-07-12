@@ -81,18 +81,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Igual la paleta de vestimenta y la foto B de portada.
   const extras = await rpc('portal_obtener_extras', { p_codigo: CODIGO });
   if (extras && extras.ok) {
+    [1, 2, 3, 4].forEach(n => { document.getElementById(`p-paleta-incluir-${n}`).checked = false; });
     (extras.vestimentaPaleta || []).forEach((c, i) => {
       const n = i + 1;
       if (document.getElementById(`p-paleta-color-${n}`)) {
+        document.getElementById(`p-paleta-incluir-${n}`).checked = true;
         document.getElementById(`p-paleta-color-${n}`).value = c.hex || '#000000';
         document.getElementById(`p-paleta-nombre-${n}`).value = c.nombre || '';
       }
     });
     if (extras.vestimentaColorEvitar) {
+      document.getElementById('p-color-evitar-incluir').checked = true;
       document.getElementById('p-color-evitar').value = extras.vestimentaColorEvitar.hex || '#FFFFFF';
       document.getElementById('p-color-evitar-nombre').value = extras.vestimentaColorEvitar.nombre || '';
     }
     document.getElementById('p-foto-hero-b').value = extras.fotoHeroBUrl || '';
+    document.getElementById('p-firmas-foto').value = extras.firmasFotoUrl || '';
+    document.getElementById('p-rsvp-foto').value = extras.rsvpFotoUrl || '';
+    document.getElementById('p-video-apertura-url').value = extras.videoAperturaUrl || '';
+    renderGaleriaPortal(extras.galeria || []);
   }
 
   historiaItems = datos.historia || [];
@@ -106,6 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   actualizarProgreso();
   document.getElementById('progreso-wrap').classList.remove('oculto');
+  activarAvisoDeCambios();
 
   aplicarBloqueosPorModulo(datos.modulosActivos || {});
 });
@@ -157,16 +165,48 @@ function aplicarBloqueosPorModulo(modulosActivos){
 
 // ---------------- BARRA DE PROGRESO (cuenta cuántas tarjetas ya tienen algo) ----------------
 function actualizarProgreso(){
-  const total = document.querySelectorAll('.tarjeta:not(.tarjeta-final)').length;
+  const tarjetas = [...document.querySelectorAll('.tarjeta:not(.tarjeta-final)')];
   let completas = 0;
-  document.querySelectorAll('.tarjeta:not(.tarjeta-final)').forEach(tarjeta => {
-    const campos = tarjeta.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="hidden"], textarea');
+  const pendientes = [];
+
+  tarjetas.forEach(tarjeta => {
+    const campos = tarjeta.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="hidden"], input[type="color"]:checked, textarea');
     const tieneAlgo = [...campos].some(c => c.value && c.value.trim());
-    if (tieneAlgo) completas++;
+    const h2 = tarjeta.querySelector('h2');
+    const titulo = h2 ? h2.textContent.trim() : '';
+    if (tieneAlgo) {
+      completas++;
+    } else if (h2) {
+      pendientes.push({ titulo, id: tarjeta.id });
+    }
   });
-  const porcentaje = Math.round((completas / total) * 100);
+
+  const total = tarjetas.length;
+  const porcentaje = total ? Math.round((completas / total) * 100) : 0;
   document.getElementById('progreso-fill').style.width = porcentaje + '%';
   document.getElementById('progreso-texto').textContent = `${porcentaje}% completo`;
+
+  const checklist = document.getElementById('progreso-checklist');
+  if (!pendientes.length) {
+    checklist.innerHTML = '<p class="checklist-completo">¡Ya completaste todas las secciones! 🎉</p>';
+  } else {
+    checklist.innerHTML = '<p class="checklist-titulo">Todavía te falta:</p>' + pendientes.map(p => `
+      <button type="button" class="checklist-item" onclick="irATarjeta('${p.id}')">○ ${p.titulo}</button>
+    `).join('');
+  }
+}
+
+function toggleChecklist(){
+  const el = document.getElementById('progreso-checklist');
+  const btn = document.getElementById('progreso-toggle');
+  el.classList.toggle('oculto');
+  btn.textContent = el.classList.contains('oculto') ? 'Ver qué me falta ▾' : 'Ocultar ▴';
+}
+
+function irATarjeta(id){
+  if (!id) return;
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function mostrarError(){
@@ -177,10 +217,40 @@ function mostrarError(){
 function mostrarOk(idBoton){
   const el = document.getElementById(idBoton);
   el.classList.remove('oculto');
+  setTimeout(() => el.classList.add('oculto'), 4000);
+
+  const tarjeta = el.closest('.tarjeta');
+  if (tarjeta) {
+    tarjeta.classList.remove('tarjeta-sin-guardar');
+    const aviso = tarjeta.querySelector('.aviso-sin-guardar');
+    if (aviso) aviso.remove();
+  }
   actualizarProgreso();
 }
 
 function valor(id){ return document.getElementById(id).value; }
+
+// ---------------- INDICADOR DE "CAMBIOS SIN GUARDAR" ----------------
+// Se marca la tarjeta apenas alguien toca un campo que ya tenía datos
+// cargados, y se quita en mostrarOk() cuando esa misma tarjeta se guarda.
+function activarAvisoDeCambios(){
+  document.querySelectorAll('.tarjeta').forEach(tarjeta => {
+    tarjeta.addEventListener('input', () => marcarTarjetaSinGuardar(tarjeta));
+    tarjeta.addEventListener('change', () => marcarTarjetaSinGuardar(tarjeta));
+  });
+}
+
+function marcarTarjetaSinGuardar(tarjeta){
+  if (tarjeta.classList.contains('tarjeta-sin-guardar')) return;
+  tarjeta.classList.add('tarjeta-sin-guardar');
+  const h2 = tarjeta.querySelector('h2');
+  if (h2 && !tarjeta.querySelector('.aviso-sin-guardar')) {
+    const aviso = document.createElement('span');
+    aviso.className = 'aviso-sin-guardar';
+    aviso.textContent = 'Cambios sin guardar';
+    h2.after(aviso);
+  }
+}
 
 // ---------------- SUBIDA DE ARCHIVOS (foto/audio/video genérico) ----------------
 async function subirArchivoCloudinary(archivo, tipoRecurso){
@@ -296,18 +366,19 @@ async function guardarPlaylist(){
   mostrarOk('ok-playlist');
 }
 
-function leerColorFila(prefijoColor, prefijoNombre){
+function leerColorFila(prefijoColor, prefijoCheckbox, prefijoNombre){
+  const casilla = document.getElementById(prefijoCheckbox);
+  if (casilla && !casilla.checked) return null; // desmarcado: no se incluye
   const hex = valor(prefijoColor);
   const nombre = valor(prefijoNombre);
-  if (!nombre) return null; // sin nombre, no se guarda ese color
-  return { hex, nombre };
+  return { hex, nombre: nombre || null };
 }
 
 async function guardarPaleta(){
   const paleta = [1, 2, 3, 4]
-    .map(n => leerColorFila(`p-paleta-color-${n}`, `p-paleta-nombre-${n}`))
+    .map(n => leerColorFila(`p-paleta-color-${n}`, `p-paleta-incluir-${n}`, `p-paleta-nombre-${n}`))
     .filter(Boolean);
-  const colorEvitar = leerColorFila('p-color-evitar', 'p-color-evitar-nombre');
+  const colorEvitar = leerColorFila('p-color-evitar', 'p-color-evitar-incluir', 'p-color-evitar-nombre');
 
   await rpc('portal_actualizar_vestimenta_paleta', {
     p_codigo: CODIGO,
@@ -326,12 +397,57 @@ async function guardarFotoHeroB(){
 }
 
 async function guardarFotosDecorativas(){
-  await rpc('portal_actualizar_evento', {
+  await rpc('portal_actualizar_fotos_decorativas', {
     p_codigo: CODIGO,
     p_firmas_foto_url: valor('p-firmas-foto'),
     p_rsvp_foto_url: valor('p-rsvp-foto')
   });
   mostrarOk('ok-fotos-decorativas');
+}
+
+async function subirVideoApertura(e){
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  const url = await subirArchivoCloudinary(archivo, 'video');
+  if (url) document.getElementById('p-video-apertura-url').value = url;
+}
+
+async function guardarVideoApertura(){
+  await rpc('portal_actualizar_video_apertura', { p_codigo: CODIGO, p_url: valor('p-video-apertura-url') });
+  mostrarOk('ok-video-apertura');
+}
+
+// ---------------- GALERÍA ----------------
+async function subirFotoGaleriaCliente(e){
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  const url = await subirArchivoCloudinary(archivo, 'image');
+  if (!url) return;
+  const res = await rpc('portal_agregar_foto_galeria', { p_codigo: CODIGO, p_url: url });
+  if (res && res.ok) {
+    const extras = await rpc('portal_obtener_extras', { p_codigo: CODIGO });
+    if (extras && extras.ok) renderGaleriaPortal(extras.galeria || []);
+  }
+  e.target.value = '';
+}
+
+function renderGaleriaPortal(fotos){
+  const cont = document.getElementById('galeria-lista');
+  if (!fotos.length) { cont.innerHTML = '<p class="desc">Todavía no has agregado fotos.</p>'; return; }
+  cont.innerHTML = fotos.map(f => `
+    <div class="galeria-item-portal">
+      <img src="${f.url}" alt="">
+      <button type="button" class="galeria-eliminar" onclick="eliminarFotoGaleriaCliente('${f.id}')" title="Eliminar">✕</button>
+    </div>
+  `).join('');
+}
+
+async function eliminarFotoGaleriaCliente(id){
+  const res = await rpc('portal_eliminar_foto_galeria', { p_codigo: CODIGO, p_id: id });
+  if (res && res.ok) {
+    const extras = await rpc('portal_obtener_extras', { p_codigo: CODIGO });
+    if (extras && extras.ok) renderGaleriaPortal(extras.galeria || []);
+  }
 }
 
 // ---------------- HISTORIA (repetidor) ----------------

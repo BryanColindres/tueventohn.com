@@ -20,12 +20,14 @@
     <div class="progreso-wrap oculto" id="progreso-wrap">
       <div class="progreso-barra"><div class="progreso-fill" id="progreso-fill" style="width:0%"></div></div>
       <p class="progreso-texto" id="progreso-texto">0% completo</p>
+      <button type="button" class="progreso-toggle" id="progreso-toggle" onclick="toggleChecklist()">Ver qué me falta ▾</button>
+      <div class="progreso-checklist oculto" id="progreso-checklist"></div>
     </div>
 
     <div id="portal-contenido" class="oculto">
 
       <!-- DATOS PRINCIPALES -->
-      <div class="tarjeta">
+      <div class="tarjeta" id="tarjeta-datos">
         <h2><span class="num">1</span> Datos principales</h2>
         <p class="desc">Nombres, contacto y fecha del evento.</p>
         <div class="form-grid">
@@ -44,7 +46,7 @@
       </div>
 
       <!-- UBICACIÓN -->
-      <div class="tarjeta">
+      <div class="tarjeta" id="tarjeta-ubicacion">
         <h2><span class="num">2</span> Ubicación</h2>
         <p class="desc">Nombre del lugar, dirección y links de mapa.</p>
         <div class="campo"><label>Lugar</label><input type="text" id="p-lugar-nombre"></div>
@@ -79,6 +81,16 @@
 
         <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
         <div class="campo">
+          <label>Video de apertura (opcional)</label>
+          <p class="desc" style="margin:.2rem 0 .6rem">Se reproduce solo al abrir la invitación, antes de que aparezca el resto. Si no subes uno, se salta directo al contenido.</p>
+          <input type="file" accept="video/*" onchange="subirVideoApertura(event)">
+          <input type="hidden" id="p-video-apertura-url">
+        </div>
+        <button class="btn btn-outline btn-chico" onclick="guardarVideoApertura()">Guardar video de apertura</button>
+        <p class="mensaje-ok oculto" id="ok-video-apertura">Guardado</p>
+
+        <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
+        <div class="campo">
           <label>Foto de portada B (opcional — solo la usa la plantilla "Opuestos", que muestra dos fotos)</label>
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-hero-b')">
           <input type="hidden" id="p-foto-hero-b">
@@ -103,7 +115,7 @@
       <!-- MENSAJE PERSONALIZADO (VOZ O VIDEO) -->
       <div class="tarjeta" id="tarjeta-mensaje">
         <h2><span class="num">5</span> Mensaje para tus invitados</h2>
-        <p class="desc">Una grabación de audio o video que aparece dentro de la invitación (requiere que tus invitados tengan link personalizado).</p>
+        <p class="desc">Distinto al video de apertura (que ven todos): esta es una grabación de audio o video que solo se muestra a quien abre su link personalizado, dirigida a él/ella por su nombre. Requiere que tus invitados tengan link personalizado (RSVP Premium).</p>
         <div class="campo">
           <label>Tipo</label>
           <select id="p-mensaje-tipo" class="select-campo">
@@ -123,7 +135,7 @@
       <!-- VIDEO DENTRO DE LA INVITACIÓN -->
       <div class="tarjeta" id="tarjeta-video-interno">
         <h2><span class="num">6</span> Video dentro de la invitación</h2>
-        <p class="desc">Diferente al video de apertura — este aparece como una sección más, con una frase.</p>
+        <p class="desc">Distinto al video de apertura (sección 3) y al mensaje personalizado (sección 5): este lo ven <b>todos</b> los invitados, aparece como una sección más al hacer scroll, con una frase que tú escribes.</p>
         <div class="campo">
           <label>Video</label>
           <input type="file" accept="video/*" onchange="subirFotoSimple(event, 'p-video-interno-url')">
@@ -178,14 +190,34 @@
         <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
         <p class="desc">Paleta de colores sugerida para tus invitados (opcional). Se muestra como círculos de color junto a la descripción.</p>
         <div class="paleta-form" id="paleta-form">
-          <div class="paleta-fila"><input type="color" id="p-paleta-color-1" value="#9B6B6B"><input type="text" id="p-paleta-nombre-1" placeholder="Ej. Rosa profundo"></div>
-          <div class="paleta-fila"><input type="color" id="p-paleta-color-2" value="#C4907A"><input type="text" id="p-paleta-nombre-2" placeholder="Ej. Rosa medio"></div>
-          <div class="paleta-fila"><input type="color" id="p-paleta-color-3" value="#D4A99A"><input type="text" id="p-paleta-nombre-3" placeholder="Ej. Rosa suave"></div>
-          <div class="paleta-fila"><input type="color" id="p-paleta-color-4" value="#EDD5C5"><input type="text" id="p-paleta-nombre-4" placeholder="Ej. Blush (opcional)"></div>
+          <label class="paleta-fila">
+            <input type="checkbox" id="p-paleta-incluir-1" class="paleta-check" checked>
+            <input type="color" id="p-paleta-color-1" value="#9B6B6B" class="paleta-swatch-input">
+            <input type="text" id="p-paleta-nombre-1" placeholder="Nombre (opcional)">
+          </label>
+          <label class="paleta-fila">
+            <input type="checkbox" id="p-paleta-incluir-2" class="paleta-check" checked>
+            <input type="color" id="p-paleta-color-2" value="#C4907A" class="paleta-swatch-input">
+            <input type="text" id="p-paleta-nombre-2" placeholder="Nombre (opcional)">
+          </label>
+          <label class="paleta-fila">
+            <input type="checkbox" id="p-paleta-incluir-3" class="paleta-check">
+            <input type="color" id="p-paleta-color-3" value="#D4A99A" class="paleta-swatch-input">
+            <input type="text" id="p-paleta-nombre-3" placeholder="Nombre (opcional)">
+          </label>
+          <label class="paleta-fila">
+            <input type="checkbox" id="p-paleta-incluir-4" class="paleta-check">
+            <input type="color" id="p-paleta-color-4" value="#EDD5C5" class="paleta-swatch-input">
+            <input type="text" id="p-paleta-nombre-4" placeholder="Nombre (opcional)">
+          </label>
         </div>
         <div class="campo" style="margin-top:.8rem">
           <label>¿Hay un color que quieras pedirles que eviten? (opcional)</label>
-          <div class="paleta-fila"><input type="color" id="p-color-evitar" value="#FFFFFF"><input type="text" id="p-color-evitar-nombre" placeholder="Ej. Blanco (reservado para la novia)"></div>
+          <label class="paleta-fila">
+            <input type="checkbox" id="p-color-evitar-incluir">
+            <input type="color" id="p-color-evitar" value="#FFFFFF" class="paleta-swatch-input">
+            <input type="text" id="p-color-evitar-nombre" placeholder="Ej. Blanco (reservado para la novia)">
+          </label>
         </div>
         <button class="btn btn-dorado" onclick="guardarPaleta()">Guardar paleta</button>
         <p class="mensaje-ok oculto" id="ok-paleta">Guardado</p>
@@ -210,7 +242,7 @@
       </div>
 
       <!-- MENSAJES -->
-      <div class="tarjeta">
+      <div class="tarjeta" id="tarjeta-mensajes-especiales">
         <h2><span class="num">13</span> Versículo o mensaje especial</h2>
         <div id="lista-mensajes"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarMensaje()">+ Agregar mensaje</button>
@@ -235,6 +267,17 @@
         </div>
         <button class="btn btn-dorado" onclick="guardarFotosDecorativas()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-fotos-decorativas">Guardado</p>
+      </div>
+
+      <!-- GALERÍA -->
+      <div class="tarjeta" id="tarjeta-galeria">
+        <h2><span class="num">15</span> Galería</h2>
+        <p class="desc">Fotos de ustedes que se muestran en la invitación (no es donde suben fotos los invitados — eso es aparte).</p>
+        <div class="campo">
+          <label>Agregar foto</label>
+          <input type="file" accept="image/*" onchange="subirFotoGaleriaCliente(event)">
+        </div>
+        <div id="galeria-lista" class="galeria-lista-portal"></div>
       </div>
 
       <!-- FINALIZAR -->
