@@ -274,4 +274,15 @@ a{text-decoration:none;color:inherit}
 .paleta-circulo{display:block;width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--cream-line)}
 .paleta-circulo--inline{display:inline-block;width:14px;height:14px;vertical-align:middle;margin:0 4px}
 .paleta-nombre{font-size:.68rem;color:var(--texto-mid);text-align:center;max-width:70px}
+#rsvp-boton-entrada{margin:0 auto}
+.rsvp-individual{display:flex;gap:10px;justify-content:center;max-width:380px;margin:0 auto}
+.rsvp-individual .rsvp-op{flex:1}
+.rsvp-resumen{font-family:var(--font-serif);font-size:1.05rem;color:var(--texto);margin-top:1rem}
+.rsvp-resumen-lista{list-style:none;padding:0;margin:.6rem 0 0}
+.rsvp-resumen-lista li{padding:.3rem 0}
+.cancion-embed-wrap{margin:1.2rem auto;max-width:380px}
+.cancion-embed-wrap iframe{border-radius:10px;display:block}
+.cancion-form{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:1rem auto 0}
+.cancion-form input{padding:.7rem .9rem;border:1px solid var(--cream-line);border-radius:6px;font-family:var(--font-sans)}
+.cancion-gracias{text-align:center;font-size:.85rem;color:var(--camel-dark);margin-top:.6rem}
 .vestimenta-evitar{font-size:.82rem;color:var(--texto-mid);margin-top:.6rem}

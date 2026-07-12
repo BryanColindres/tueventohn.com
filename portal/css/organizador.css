@@ -42,18 +42,23 @@
 
 /* ---- tabla de invitados ---- */
 .tabla-invitados{background:#fff;border:1px solid var(--borde);border-radius:16px;overflow:hidden}
-.ti-fila{display:grid;grid-template-columns:2fr 1fr 1fr 1fr .7fr auto;gap:.6rem;align-items:center;
+.ti-fila{display:grid;grid-template-columns:2.2fr 1.3fr 1fr auto;gap:.8rem;align-items:center;
   padding:.8rem 1.1rem;border-bottom:1px solid var(--borde);font-size:.85rem}
 .ti-fila.encabezado{background:var(--celeste-nube);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--texto-mid)}
 .ti-fila:last-child{border-bottom:none}
 .ti-nombre{font-weight:600;color:var(--texto)}
 .ti-sub{font-size:.72rem;color:var(--texto-mid)}
-.ti-acciones{display:flex;gap:.35rem}
+.ti-acciones{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:flex-end}
 .ti-icon-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--borde);background:#fff;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;color:var(--texto-mid)}
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;color:var(--texto-mid);flex-shrink:0}
 .ti-icon-btn:hover{background:var(--celeste-nube)}
 
-.badge-estado{border:none;border-radius:999px;padding:.28rem .6rem;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);appearance:none;-webkit-appearance:none}
+/* el select de confirmación necesita verse claramente como un desplegable */
+.select-wrap{position:relative;display:inline-block}
+.select-wrap::after{content:"▾";position:absolute;right:.5rem;top:50%;transform:translateY(-50%);
+  font-size:.65rem;pointer-events:none;opacity:.6}
+.badge-estado{border:none;border-radius:999px;padding:.28rem 1.4rem .28rem .6rem;font-size:.72rem;font-weight:600;
+  cursor:pointer;font-family:var(--font);appearance:none;-webkit-appearance:none}
 .badge-pendiente{background:#F4E9D8;color:#93712F}
 .badge-confirmado{background:#DCF3E4;color:#2B7A4B}
 .badge-rechazado{background:#FBE2E0;color:#B0473F}
@@ -62,13 +67,6 @@
 .badge-apertura{display:inline-block;font-size:.72rem;padding:.2rem .5rem;border-radius:8px;white-space:nowrap}
 .badge-sin-abrir{background:#F4E9D8;color:#93712F}
 .badge-abierta{background:#E4EEF8;color:#2E5C8A}
-
-/* ---- links familiares ---- */
-.lista-familias{margin-top:1rem;display:flex;flex-direction:column;gap:.6rem}
-.familia-fila{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;
-  border:1px solid var(--borde);border-radius:10px;background:var(--celeste-nube)}
-.conteo-input{width:52px;padding:.15rem .3rem;border:1px solid var(--borde);border-radius:6px;
-  font-family:var(--font);font-size:.78rem;text-align:center}
 
 /* ---- moderación del muro de firmas ---- */
 .muro-toolbar{margin-bottom:1rem}
@@ -81,6 +79,12 @@
 .badge-firma-estado.badge-pendiente{background:#F4E9D8;color:#93712F}
 .badge-firma-estado.badge-aprobado{background:#DCF3E4;color:#2B7A4B}
 .badge-firma-estado.badge-rechazado{background:#FBE2E0;color:#B0473F}
+
+@media (max-width:640px){
+  .ti-fila{grid-template-columns:1fr;gap:.4rem}
+  .ti-fila.encabezado{display:none}
+  .ti-acciones{justify-content:flex-start}
+}
 
 .excel-error{background:#FBE2E0;color:#B0473F;border-radius:9px;padding:.6rem .8rem;font-size:.78rem;margin:.6rem 0}
 

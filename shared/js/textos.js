@@ -27,6 +27,7 @@ const TEXTOS_POR_DEFECTO = {
   tituloUbicacion: "Ubicación",
   tituloCountdown: "Faltan...",
   tituloRSVP: "Confirmar Asistencia",
+  botonRSVPEntrada: "Confirmar asistencia",
   botonRSVP: "Enviar Confirmación",
   mensajeRSVPGracias: "Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!",
   preguntaAsiste: "¿Asistirás?",

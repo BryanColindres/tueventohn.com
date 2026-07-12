@@ -177,15 +177,25 @@
 
     <div class="divisor-mas divisor">+</div>
 
+    <!-- CANCIÓN / PLAYLIST -->
+    <section class="section-cancion" id="section-cancion">
+      <span class="eyebrow" data-texto="eyebrowCancion">Música</span>
+      <h2 class="titulo-script" data-texto="tituloCancion">Nuestra Playlist</h2>
+      <p class="subtitulo-serif" id="cancion-intro"></p>
+      <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
+      <form class="cancion-form oculto" id="form-cancion">
+        <input type="text" id="cancion-nombre" placeholder="Tu nombre">
+        <input type="text" id="cancion-input" placeholder="Artista - Canción" required>
+        <button type="submit" class="btn btn-outline btn-chico">Agregar</button>
+      </form>
+    </section>
+
+    <div class="divisor-mas divisor">+</div>
+
     <!-- GALERÍA -->
     <section class="section-galeria" id="section-galeria">
-      <span class="eyebrow">Comparte tus fotos</span>
-      <h2 class="titulo-script">Galería</h2>
-      <p class="subtitulo-serif">Sube tus mejores momentos de la celebración</p>
-      <div style="margin-top:1.6rem">
-        <input type="file" id="input-foto" accept="image/*" hidden>
-        <button id="btn-subir-foto" class="btn btn-outline">Subir foto</button>
-      </div>
+      <span class="eyebrow">Galería</span>
+      <h2 class="titulo-script">Algunos momentos</h2>
       <div class="galeria-grid" id="galeria-grid"></div>
     </section>
 
@@ -228,11 +238,22 @@
         <a id="rsvp-novia" href="#" target="_blank" class="btn btn-outline">Confirmar con Stefany</a>
       </div>
 
-      <!-- Paquetes CON RSVP Premium: confirman en la página, con nombres reales -->
+      <!-- Paquetes CON RSVP Premium -->
       <div class="oculto" id="rsvp-form-wrap">
-        <div class="rsvp-personas" id="rsvp-personas"></div>
-        <button type="button" class="btn btn-camel" id="rsvp-enviar" data-texto="botonRSVP">Enviar Confirmación</button>
+        <button type="button" class="btn btn-camel oculto" id="rsvp-boton-entrada" data-texto="botonRSVPEntrada">Confirmar asistencia</button>
+
+        <div class="rsvp-individual oculto" id="rsvp-individual">
+          <button type="button" class="rsvp-op rsvp-si" id="rsvp-individual-si" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
+          <button type="button" class="rsvp-op rsvp-no" id="rsvp-individual-no" data-texto="opcionNoAsiste">No podré asistir</button>
+        </div>
+
+        <div class="oculto" id="rsvp-familia-wrap">
+          <div class="rsvp-personas" id="rsvp-personas"></div>
+          <button type="button" class="btn btn-camel" id="rsvp-enviar" data-texto="botonRSVP">Enviar Confirmación</button>
+        </div>
       </div>
+
+      <div class="rsvp-resumen oculto" id="rsvp-resumen"></div>
       <div class="rsvp-gracias oculto" id="rsvp-gracias" data-texto="mensajeRSVPGracias">Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!</div>
       <p class="rsvp-sin-link oculto" id="rsvp-sin-link">Este enlace no trae tu identificador de invitado. Escríbenos si necesitas ayuda para confirmar.</p>
     </section>

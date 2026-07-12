@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   pintarUbicacion();
   pintarRegalos();
   pintarAddons();
+  pintarCancion();
   pintarRSVP();
   pintarFooter();
   iniciarMusica();
@@ -88,9 +89,17 @@ function pintarHero(){
 }
 
 function pintarBannerPersonal(){
-  if (!C.invitado || !C.invitado.nombre) return;
-  document.getElementById('banner-personal-nombre').textContent = C.invitado.nombre;
-  document.getElementById('banner-personal').classList.remove('oculto');
+  if (C.invitado && C.invitado.nombre) {
+    document.getElementById('banner-personal-nombre').textContent = C.invitado.nombre;
+    document.getElementById('banner-personal').classList.remove('oculto');
+    return;
+  }
+  // Vista de catálogo/demo (sin ?id= real): mostramos un ejemplo de cómo
+  // se vería la personalización, para que el cliente entienda que existe.
+  if (!window.IDENTIFICADOR_INVITADO && C.eventoId === 'demo' && C.modules && C.modules.rsvp_premium) {
+    document.getElementById('banner-personal-nombre').textContent = '[aquí va el nombre de tu invitado]';
+    document.getElementById('banner-personal').classList.remove('oculto');
+  }
 }
 
 // ---------------- MENSAJES / PROMESAS DE AMOR ----------------
@@ -278,18 +287,16 @@ function pintarRegalos(){
 // ---------------- GALERÍA + LIBRO DE FIRMAS ----------------
 function pintarAddons(){
   const seccionGaleria = document.getElementById('section-galeria');
-  if (!C.modules || !C.modules.galeria) {
+  if (!C.modules || !C.modules.galeria || !C.galeriaMuestra || !C.galeriaMuestra.length) {
     seccionGaleria.style.display = 'none';
   } else {
     const grid = document.getElementById('galeria-grid');
-    (C.galeriaMuestra || []).forEach(src => {
+    C.galeriaMuestra.forEach(src => {
       const div = document.createElement('div');
       div.className = 'gal-item reveal';
       div.innerHTML = `<img src="${src}" alt="">`;
       grid.appendChild(div);
     });
-    document.getElementById('btn-subir-foto').addEventListener('click', () => document.getElementById('input-foto').click());
-    document.getElementById('input-foto').addEventListener('change', subirFoto);
   }
 
   const seccionFirmas = document.getElementById('section-firmas');
@@ -305,16 +312,53 @@ function pintarAddons(){
   }
 }
 
-async function subirFoto(e){
-  const archivo = e.target.files[0];
-  if (!archivo) return;
-  try {
-    const url = await TuBodaBackend.subirFotoGaleria(C.eventoId, archivo);
-    const div = document.createElement('div');
-    div.className = 'gal-item';
-    div.innerHTML = `<img src="${url}" alt="">`;
-    document.getElementById('galeria-grid').prepend(div);
-  } catch (err) { alert('No se pudo subir la foto. Intenta de nuevo.'); }
+function pintarCancion(){
+  const seccion = document.getElementById('section-cancion');
+  if (!C.modules || !C.modules.cancion) { seccion.style.display = 'none'; return; }
+
+  const embedWrap = document.getElementById('cancion-embed-wrap');
+  const form = document.getElementById('form-cancion');
+  const intro = document.getElementById('cancion-intro');
+
+  if (C.cancionModo === 'embed' && C.cancionEmbedUrl) {
+    intro.textContent = 'Escúchala mientras confirmas, y si quieres agrega una canción para la fiesta.';
+    const esSpotify = C.cancionEmbedUrl.includes('spotify.com');
+    const esYoutube = C.cancionEmbedUrl.includes('youtube.com') || C.cancionEmbedUrl.includes('youtu.be');
+    if (esSpotify) {
+      embedWrap.innerHTML = `<iframe src="${C.cancionEmbedUrl}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    } else if (esYoutube) {
+      embedWrap.innerHTML = `<iframe width="100%" height="220" src="${C.cancionEmbedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
+    } else {
+      embedWrap.innerHTML = `<a href="${C.cancionEmbedUrl}" target="_blank" class="btn btn-outline">Escuchar playlist</a>`;
+    }
+    embedWrap.classList.remove('oculto');
+  } else {
+    intro.textContent = 'Escribe una canción que no puede faltar en la fiesta.';
+  }
+
+  form.classList.remove('oculto');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('cancion-input');
+    const nombreInput = document.getElementById('cancion-nombre');
+    const texto = input.value.trim();
+    if (!texto) return;
+    try {
+      await TuBodaBackend.enviarCancion(C.eventoId, nombreInput.value.trim() || 'Invitado', texto);
+      input.value = '';
+      nombreInput.value = '';
+      mostrarConfirmacionCancion();
+    } catch (err) { alert('No se pudo guardar tu canción. Intenta de nuevo.'); }
+  });
+}
+
+function mostrarConfirmacionCancion(){
+  const form = document.getElementById('form-cancion');
+  const aviso = document.createElement('p');
+  aviso.className = 'cancion-gracias';
+  aviso.textContent = '¡Gracias! Ya la anotamos.';
+  form.after(aviso);
+  setTimeout(() => aviso.remove(), 3000);
 }
 
 async function enviarFirma(e){
@@ -368,8 +412,9 @@ async function pintarRSVP(){
 
   // Paquete con RSVP Premium: formulario en la página, con nombres reales
   // ya cargados (nadie escribe su nombre).
+  // Paquete con RSVP Premium: nadie escribe su nombre, ya viene identificado
+  // por el link (individual o familiar).
   const id = window.IDENTIFICADOR_INVITADO;
-  const wrap = document.getElementById('rsvp-personas');
   const formWrap = document.getElementById('rsvp-form-wrap');
   const sinLink = document.getElementById('rsvp-sin-link');
 
@@ -377,25 +422,60 @@ async function pintarRSVP(){
   if (id) {
     personas = await TuBodaBackend.cargarPersonasParaRSVP(id);
   } else if (C.rsvpDemoPersonas) {
-    // Sin ?id= en la URL (ej. viendo el catálogo): vista de ejemplo, no guarda nada.
+    // Sin ?id= real (ej. viendo el catálogo): vista de ejemplo, no guarda nada.
     personas = C.rsvpDemoPersonas;
   }
 
-  if (!personas.length) {
-    sinLink.classList.remove('oculto');
+  if (!personas.length) { sinLink.classList.remove('oculto'); return; }
+
+  const todosRespondieron = personas.every(p => p.estado && p.estado !== 'pendiente');
+  if (todosRespondieron) { mostrarResumenRSVP(personas); return; }
+
+  formWrap.classList.remove('oculto');
+
+  if (personas.length === 1) {
+    // Una sola persona: confirma directo con un clic, sin pasos extra.
+    const persona = personas[0];
+    document.getElementById('rsvp-individual').classList.remove('oculto');
+    const guardar = async (asiste) => {
+      if (!id) { alert('Esto es una vista de ejemplo — aquí no se guarda nada.'); return; }
+      try {
+        await TuBodaBackend.confirmarAsistencia(id, [{ invitado_id: persona.invitado_id, asiste }]);
+        formWrap.classList.add('oculto');
+        document.getElementById('rsvp-gracias').classList.remove('oculto');
+      } catch (err) { alert('No se pudo enviar tu confirmación. Intenta de nuevo.'); }
+    };
+    document.getElementById('rsvp-individual-si').addEventListener('click', () => guardar(true));
+    document.getElementById('rsvp-individual-no').addEventListener('click', () => guardar(false));
     return;
   }
 
-  formWrap.classList.remove('oculto');
+  // Familia: un solo botón de entrada; al tocarlo se despliegan los nombres
+  // (nunca "Familia X" como opción — solo personas individuales).
+  const botonEntrada = document.getElementById('rsvp-boton-entrada');
+  botonEntrada.classList.remove('oculto');
+  botonEntrada.addEventListener('click', () => {
+    botonEntrada.classList.add('oculto');
+    desplegarFamiliaRSVP(personas, id, formWrap);
+  }, { once: true });
+}
+
+function desplegarFamiliaRSVP(personas, id, formWrap) {
+  const wrap = document.getElementById('rsvp-personas');
+  const familiaWrap = document.getElementById('rsvp-familia-wrap');
+  familiaWrap.classList.remove('oculto');
+
   const decisiones = {};
   wrap.innerHTML = personas.map(p => `
     <div class="rsvp-persona">
       <span class="rsvp-persona-nombre">${p.nombre}</span>
       <span class="rsvp-toggle">
-        <button type="button" class="rsvp-op rsvp-si" data-id="${p.invitado_id}" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
-        <button type="button" class="rsvp-op rsvp-no" data-id="${p.invitado_id}" data-texto="opcionNoAsiste">No podré asistir</button>
+        <button type="button" class="rsvp-op rsvp-si${p.estado === 'confirmado' ? ' activo' : ''}" data-id="${p.invitado_id}" data-texto="opcionSiAsiste">Sí, ahí estaré</button>
+        <button type="button" class="rsvp-op rsvp-no${p.estado === 'rechazado' ? ' activo' : ''}" data-id="${p.invitado_id}" data-texto="opcionNoAsiste">No podré asistir</button>
       </span>
     </div>`).join('');
+
+  personas.forEach(p => { if (p.estado && p.estado !== 'pendiente') decisiones[p.invitado_id] = p.estado === 'confirmado'; });
 
   wrap.querySelectorAll('.rsvp-op').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -416,6 +496,16 @@ async function pintarRSVP(){
       document.getElementById('rsvp-gracias').classList.remove('oculto');
     } catch (err) { alert('No se pudo enviar tu confirmación. Intenta de nuevo.'); }
   });
+}
+
+function mostrarResumenRSVP(personas) {
+  const cont = document.getElementById('rsvp-resumen');
+  const iconos = { confirmado: '✅', rechazado: '🚫' };
+  cont.innerHTML = (personas.length === 1
+    ? `<p>${personas[0].estado === 'confirmado' ? 'Ya confirmaste tu asistencia. ¡Te esperamos!' : 'Registramos que no podrás acompañarnos. ¡Gracias por avisarnos!'}</p>`
+    : `<p>Así quedaron las confirmaciones de tu familia:</p><ul class="rsvp-resumen-lista">${personas.map(p => `<li>${iconos[p.estado] || '•'} ${p.nombre}</li>`).join('')}</ul>`
+  );
+  cont.classList.remove('oculto');
 }
 
 // ---------------- FOOTER ----------------

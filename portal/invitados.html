@@ -89,17 +89,6 @@
           </div>
         </div>
 
-        <!-- LINKS FAMILIARES -->
-        <div class="tarjeta">
-          <h2>Links familiares</h2>
-          <p class="desc">Envía un solo link a toda una familia (ej. "Familia Colindres Mejía") para que confirmen juntos. El conteo se calcula solo con los invitados que le asignes, pero puedes cambiarlo a mano si quieres mostrar otro número.</p>
-          <div class="form-grid">
-            <div class="campo"><label>Nombre de la familia</label><input type="text" id="nueva-familia-nombre" placeholder="Ej. Familia Colindres Mejía"></div>
-          </div>
-          <button class="btn btn-dorado btn-chico" onclick="crearFamilia()">Crear link familiar</button>
-          <div id="lista-familias" class="lista-familias"></div>
-        </div>
-
         <div class="inv-toolbar">
           <input type="text" id="buscar-invitado" placeholder="Buscar por nombre o familia..." oninput="renderTablaInvitados()">
           <select id="filtro-estado" onchange="renderTablaInvitados()">
@@ -112,7 +101,7 @@
 
         <div class="tabla-invitados">
           <div class="ti-fila encabezado">
-            <span>Invitado</span><span>Teléfono</span><span>Confirmación</span><span>Apertura</span><span>Asist.</span><span>Acciones</span>
+            <span>Invitado</span><span>Confirmación</span><span>Apertura</span><span>Acciones</span>
           </div>
           <div id="cuerpo-tabla-invitados"></div>
         </div>
@@ -232,11 +221,12 @@
 
   <div id="modal-duplicado" class="modal-fondo oculto">
     <div class="modal-caja">
-      <h3>Familia ya existe</h3>
-      <p class="desc" style="margin-bottom:1.3rem">Ya existe una familia con ese nombre. ¿Deseas crearla de todas formas?</p>
-      <div style="display:flex;gap:.6rem">
-        <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="cerrarModalDuplicado()">Cancelar</button>
-        <button class="btn btn-dorado" style="flex:1;justify-content:center" onclick="confirmarCrearDuplicado()">Crear de todas formas</button>
+      <h3>¿Es la misma familia?</h3>
+      <p class="desc" style="margin-bottom:1.3rem">Ya existe <b id="duplicado-nombre-existente"></b>. ¿Quisiste decir esa familia, o es una distinta?</p>
+      <div style="display:flex;flex-direction:column;gap:.6rem">
+        <button class="btn btn-dorado" style="justify-content:center" onclick="usarFamiliaExistente()">Sí, usar "<span id="duplicado-nombre-existente-2"></span>"</button>
+        <button class="btn btn-outline" style="justify-content:center" onclick="confirmarCrearDuplicado()">No, es una familia distinta</button>
+        <button class="btn btn-outline" style="justify-content:center" onclick="cerrarModalDuplicado()">Cancelar</button>
       </div>
     </div>
   </div>

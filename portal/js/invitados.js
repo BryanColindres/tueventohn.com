@@ -9,7 +9,6 @@ const SUPABASE_ANON_KEY = "sb_publishable_Ij3gofHHYKTHps92RKXKwQ_5Hya3_GW";
 
 let CODIGO = null;
 let INVITADOS = [];      // caché local de la última carga
-let FAMILIAS = [];
 let FIRMAS = [];
 let DUPLICADO_PENDIENTE = null; // datos en espera de confirmación de familia duplicada
 
@@ -50,9 +49,12 @@ async function cargarTodo() {
   document.getElementById('portal-contenido').classList.remove('oculto');
   document.getElementById('portal-nombre-evento').textContent = 'Panel del Organizador';
 
+  // Se limpia por si el navegador restauró un valor viejo del buscador al recargar.
+  document.getElementById('buscar-invitado').value = '';
+  document.getElementById('filtro-estado').value = 'todos';
+
   renderResumen();
   renderTablaInvitados();
-  await cargarFamilias();
 }
 
 /* ============================================================ TABS ====== */
@@ -102,11 +104,13 @@ function set(id, val) { document.getElementById(id).textContent = val; }
 
 /* ============================================================ TABLA ===== */
 function renderTablaInvitados() {
-  const busqueda = (document.getElementById('buscar-invitado').value || '').toLowerCase();
+  const busqueda = (document.getElementById('buscar-invitado').value || '').toLowerCase().trim();
   const filtro = document.getElementById('filtro-estado').value;
 
   const filtrados = INVITADOS.filter(i => {
-    const coincideBusqueda = i.nombre.toLowerCase().includes(busqueda) || (i.familia || '').toLowerCase().includes(busqueda);
+    const nombre = (i.nombre || '').toLowerCase();
+    const familia = (i.familia || '').toLowerCase();
+    const coincideBusqueda = !busqueda || nombre.includes(busqueda) || familia.includes(busqueda);
     const coincideEstado = filtro === 'todos' || i.estado === filtro;
     return coincideBusqueda && coincideEstado;
   });
@@ -116,14 +120,16 @@ function renderTablaInvitados() {
     <div class="ti-fila">
       <div>
         <div class="ti-nombre">${escapar(i.nombre)}</div>
-        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}</div>
+        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}</div>
       </div>
-      <div class="ti-sub">${i.telefono ? escapar(i.telefono) : '—'}</div>
-      <div>${badgeEstado(i)}</div>
+      <div>
+        ${badgeEstado(i)}
+        <div class="ti-sub" style="margin-top:.3rem">${(i.adultos || 0) + (i.ninos || 0)} asistente(s)</div>
+      </div>
       <div class="ti-sub">${badgeApertura(i)}</div>
-      <div class="ti-sub">${(i.adultos || 0) + (i.ninos || 0)}</div>
       <div class="ti-acciones">
-        <button class="ti-icon-btn" title="Copiar link" onclick="copiarLinkInvitado('${i.link}')">🔗</button>
+        <button class="ti-icon-btn" title="Copiar link personal" onclick="copiarLinkInvitado('${i.link}')">🔗</button>
+        ${i.link_familiar ? `<button class="ti-icon-btn" title="Copiar link familiar (toda la familia)" onclick="copiarLinkInvitado('${i.link_familiar}')">👪</button>` : ''}
         <button class="ti-icon-btn" title="WhatsApp" onclick="compartirWhatsapp('${i.id}')">💬</button>
         <button class="ti-icon-btn" title="Editar" onclick="abrirModalEditar('${i.id}')">✎</button>
         <button class="ti-icon-btn" title="Eliminar" onclick="eliminarInvitado('${i.id}')">🗑</button>
@@ -136,9 +142,11 @@ function renderTablaInvitados() {
 
 function badgeEstado(i) {
   const etiquetas = { pendiente: 'Sin responder', confirmado: 'Confirmado', rechazado: 'No viene' };
-  return `<select class="badge-estado badge-${i.estado}" onchange="cambiarEstadoSelect('${i.id}', this.value)">
-    ${Object.entries(etiquetas).map(([v, l]) => `<option value="${v}" ${v === i.estado ? 'selected' : ''}>${l}</option>`).join('')}
-  </select>`;
+  return `<div class="select-wrap">
+    <select class="badge-estado badge-${i.estado}" onchange="cambiarEstadoSelect('${i.id}', this.value)">
+      ${Object.entries(etiquetas).map(([v, l]) => `<option value="${v}" ${v === i.estado ? 'selected' : ''}>${l}</option>`).join('')}
+    </select>
+  </div>`;
 }
 
 function badgeApertura(i) {
@@ -167,7 +175,9 @@ async function agregarInvitadoManual(forzar = false) {
   });
 
   if (res.familia_duplicada) {
-    DUPLICADO_PENDIENTE = { nombre, familia, telefono };
+    DUPLICADO_PENDIENTE = { nombre, familia, telefono, nombreExistente: res.nombre_existente };
+    document.getElementById('duplicado-nombre-existente').textContent = `"${res.nombre_existente}"`;
+    document.getElementById('duplicado-nombre-existente-2').textContent = res.nombre_existente;
     document.getElementById('modal-duplicado').classList.remove('oculto');
     return;
   }
@@ -189,6 +199,15 @@ async function confirmarCrearDuplicado() {
   if (!DUPLICADO_PENDIENTE) return;
   document.getElementById('nuevo-nombre').value = DUPLICADO_PENDIENTE.nombre;
   document.getElementById('nuevo-familia').value = DUPLICADO_PENDIENTE.familia;
+  document.getElementById('nuevo-telefono').value = DUPLICADO_PENDIENTE.telefono;
+  DUPLICADO_PENDIENTE = null;
+  await agregarInvitadoManual(true);
+}
+async function usarFamiliaExistente() {
+  document.getElementById('modal-duplicado').classList.add('oculto');
+  if (!DUPLICADO_PENDIENTE) return;
+  document.getElementById('nuevo-nombre').value = DUPLICADO_PENDIENTE.nombre;
+  document.getElementById('nuevo-familia').value = DUPLICADO_PENDIENTE.nombreExistente;
   document.getElementById('nuevo-telefono').value = DUPLICADO_PENDIENTE.telefono;
   DUPLICADO_PENDIENTE = null;
   await agregarInvitadoManual(true);
@@ -324,55 +343,6 @@ function mostrarToast(msg) {
   el.classList.remove('oculto');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.add('oculto'), 2200);
-}
-
-/* ============================================================ FAMILIAS == */
-async function cargarFamilias() {
-  const data = await rpc('portal_listar_familias', { p_codigo: CODIGO });
-  if (!data.ok) return;
-  FAMILIAS = data.familias || [];
-  renderListaFamilias();
-}
-
-async function crearFamilia() {
-  const nombre = document.getElementById('nueva-familia-nombre').value.trim();
-  if (!nombre) { mostrarToast('Escribe el nombre de la familia'); return; }
-  const res = await rpc('portal_crear_familia', { p_codigo: CODIGO, p_nombre: nombre });
-  if (res.ok) {
-    document.getElementById('nueva-familia-nombre').value = '';
-    await cargarFamilias();
-    mostrarToast('Link familiar creado');
-  }
-}
-
-function renderListaFamilias() {
-  const cont = document.getElementById('lista-familias');
-  if (!FAMILIAS.length) { cont.innerHTML = `<p class="desc" style="margin-top:.8rem">Todavía no has creado ningún link familiar.</p>`; return; }
-
-  cont.innerHTML = FAMILIAS.map(f => {
-    const conteo = f.conteo_manual != null ? f.conteo_manual : f.conteo_miembros;
-    return `
-    <div class="familia-fila">
-      <div>
-        <div class="ti-nombre">${escapar(f.nombre)}</div>
-        <div class="ti-sub">
-          ${f.conteo_miembros} invitado(s) ligado(s) ·
-          <span>conteo a mostrar:</span>
-          <input type="number" min="0" value="${conteo}" class="conteo-input" onchange="actualizarConteoFamilia('${f.id}', this.value)">
-        </div>
-      </div>
-      <div class="ti-acciones">
-        <button class="ti-icon-btn" title="Copiar link familiar" onclick="copiarLinkInvitado('${f.link}')">🔗</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function actualizarConteoFamilia(familiaId, valor) {
-  const conteo = parseInt(valor, 10);
-  if (isNaN(conteo) || conteo < 0) { mostrarToast('Escribe un número válido'); await cargarFamilias(); return; }
-  const res = await rpc('portal_actualizar_conteo_familia', { p_codigo: CODIGO, p_familia_id: familiaId, p_conteo: conteo });
-  if (res.ok) mostrarToast('Conteo actualizado');
 }
 
 /* ============================================================ MURO DE FIRMAS (moderación) == */
