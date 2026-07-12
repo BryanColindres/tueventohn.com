@@ -77,3 +77,8 @@ body{background:linear-gradient(180deg,var(--celeste-nube),var(--blanco) 340px);
 .tarjeta-bloqueada{background:var(--celeste-nube);border:1px dashed var(--celeste)}
 .bloqueo-mensaje{text-align:center;padding:.6rem 0 .4rem}
 .bloqueo-mensaje p{color:var(--texto-mid);font-size:.86rem;margin-bottom:1.1rem;line-height:1.6}
+
+.paleta-form{display:flex;flex-direction:column;gap:.6rem}
+.paleta-fila{display:flex;gap:.6rem;align-items:center}
+.paleta-fila input[type="color"]{width:44px;height:38px;border:1px solid #ddd;border-radius:8px;padding:2px;cursor:pointer;flex-shrink:0}
+.paleta-fila input[type="text"]{flex:1}

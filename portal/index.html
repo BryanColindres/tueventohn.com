@@ -76,6 +76,15 @@
         </div>
         <button class="btn btn-dorado" onclick="guardarFotos()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-fotos">Guardado</p>
+
+        <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
+        <div class="campo">
+          <label>Foto de portada B (opcional — solo la usa la plantilla "Opuestos", que muestra dos fotos)</label>
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-hero-b')">
+          <input type="hidden" id="p-foto-hero-b">
+        </div>
+        <button class="btn btn-outline btn-chico" onclick="guardarFotoHeroB()">Guardar foto B</button>
+        <p class="mensaje-ok oculto" id="ok-foto-hero-b">Guardado</p>
       </div>
 
       <!-- MÚSICA DE FONDO -->
@@ -165,6 +174,21 @@
         <div class="campo"><label>Link de referencias (Pinterest, etc. — opcional)</label><input type="text" id="p-vestimenta-boton"></div>
         <button class="btn btn-dorado" onclick="guardarVestimenta()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-vestimenta">Guardado</p>
+
+        <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
+        <p class="desc">Paleta de colores sugerida para tus invitados (opcional). Se muestra como círculos de color junto a la descripción.</p>
+        <div class="paleta-form" id="paleta-form">
+          <div class="paleta-fila"><input type="color" id="p-paleta-color-1" value="#9B6B6B"><input type="text" id="p-paleta-nombre-1" placeholder="Ej. Rosa profundo"></div>
+          <div class="paleta-fila"><input type="color" id="p-paleta-color-2" value="#C4907A"><input type="text" id="p-paleta-nombre-2" placeholder="Ej. Rosa medio"></div>
+          <div class="paleta-fila"><input type="color" id="p-paleta-color-3" value="#D4A99A"><input type="text" id="p-paleta-nombre-3" placeholder="Ej. Rosa suave"></div>
+          <div class="paleta-fila"><input type="color" id="p-paleta-color-4" value="#EDD5C5"><input type="text" id="p-paleta-nombre-4" placeholder="Ej. Blush (opcional)"></div>
+        </div>
+        <div class="campo" style="margin-top:.8rem">
+          <label>¿Hay un color que quieras pedirles que eviten? (opcional)</label>
+          <div class="paleta-fila"><input type="color" id="p-color-evitar" value="#FFFFFF"><input type="text" id="p-color-evitar-nombre" placeholder="Ej. Blanco (reservado para la novia)"></div>
+        </div>
+        <button class="btn btn-dorado" onclick="guardarPaleta()">Guardar paleta</button>
+        <p class="mensaje-ok oculto" id="ok-paleta">Guardado</p>
       </div>
 
       <!-- REGALOS -->
@@ -176,9 +200,18 @@
         <p class="mensaje-ok oculto" id="ok-regalos">Guardado</p>
       </div>
 
+      <!-- PLAYLIST -->
+      <div class="tarjeta" id="tarjeta-playlist">
+        <h2><span class="num">12</span> Playlist para la fiesta</h2>
+        <p class="desc">Si ya tienes una playlist colaborativa de Spotify o YouTube, pega el link aquí — tus invitados podrán abrirla y agregar canciones directamente ahí. Si la dejas vacía, en su lugar les aparecerá un formulario para que te sugieran canciones por escrito.</p>
+        <div class="campo"><label>Link de tu playlist (Spotify o YouTube)</label><input type="text" id="p-playlist-url" placeholder="https://open.spotify.com/playlist/..."></div>
+        <button class="btn btn-dorado" onclick="guardarPlaylist()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-playlist">Guardado</p>
+      </div>
+
       <!-- MENSAJES -->
       <div class="tarjeta">
-        <h2><span class="num">12</span> Versículo o mensaje especial</h2>
+        <h2><span class="num">13</span> Versículo o mensaje especial</h2>
         <div id="lista-mensajes"></div>
         <button class="btn btn-outline btn-chico" onclick="agregarMensaje()">+ Agregar mensaje</button>
         <br><br>
@@ -188,7 +221,7 @@
 
       <!-- FOTOS DECORATIVAS -->
       <div class="tarjeta" id="tarjeta-fotos-decorativas">
-        <h2><span class="num">13</span> Fotos adicionales (opcional)</h2>
+        <h2><span class="num">14</span> Fotos adicionales (opcional)</h2>
         <p class="desc">Se muestran en el libro de firmas y en la sección de confirmación.</p>
         <div class="campo">
           <label>Foto en libro de firmas</label>

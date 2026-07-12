@@ -73,6 +73,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('p-firmas-foto').value = datos.firmasFotoUrl || '';
   document.getElementById('p-rsvp-foto').value = datos.rsvpFotoUrl || '';
 
+  // La playlist se carga aparte (columna nueva, función propia) para no
+  // tener que tocar portal_obtener_evento.
+  const playlist = await rpc('portal_obtener_playlist', { p_codigo: CODIGO });
+  document.getElementById('p-playlist-url').value = (playlist && playlist.cancionEmbedUrl) || '';
+
+  // Igual la paleta de vestimenta y la foto B de portada.
+  const extras = await rpc('portal_obtener_extras', { p_codigo: CODIGO });
+  if (extras && extras.ok) {
+    (extras.vestimentaPaleta || []).forEach((c, i) => {
+      const n = i + 1;
+      if (document.getElementById(`p-paleta-color-${n}`)) {
+        document.getElementById(`p-paleta-color-${n}`).value = c.hex || '#000000';
+        document.getElementById(`p-paleta-nombre-${n}`).value = c.nombre || '';
+      }
+    });
+    if (extras.vestimentaColorEvitar) {
+      document.getElementById('p-color-evitar').value = extras.vestimentaColorEvitar.hex || '#FFFFFF';
+      document.getElementById('p-color-evitar-nombre').value = extras.vestimentaColorEvitar.nombre || '';
+    }
+    document.getElementById('p-foto-hero-b').value = extras.fotoHeroBUrl || '';
+  }
+
   historiaItems = datos.historia || [];
   timelineItems = datos.timeline || [];
   mensajesItems = datos.mensajes || [];
@@ -264,6 +286,43 @@ async function guardarRegalos(){
     p_regalos_cuenta_texto: valor('p-regalos-cuenta')
   });
   mostrarOk('ok-regalos');
+}
+
+async function guardarPlaylist(){
+  await rpc('portal_actualizar_playlist', {
+    p_codigo: CODIGO,
+    p_cancion_embed_url: valor('p-playlist-url')
+  });
+  mostrarOk('ok-playlist');
+}
+
+function leerColorFila(prefijoColor, prefijoNombre){
+  const hex = valor(prefijoColor);
+  const nombre = valor(prefijoNombre);
+  if (!nombre) return null; // sin nombre, no se guarda ese color
+  return { hex, nombre };
+}
+
+async function guardarPaleta(){
+  const paleta = [1, 2, 3, 4]
+    .map(n => leerColorFila(`p-paleta-color-${n}`, `p-paleta-nombre-${n}`))
+    .filter(Boolean);
+  const colorEvitar = leerColorFila('p-color-evitar', 'p-color-evitar-nombre');
+
+  await rpc('portal_actualizar_vestimenta_paleta', {
+    p_codigo: CODIGO,
+    p_paleta: paleta,
+    p_color_evitar: colorEvitar
+  });
+  mostrarOk('ok-paleta');
+}
+
+async function guardarFotoHeroB(){
+  await rpc('portal_actualizar_foto_hero_b', {
+    p_codigo: CODIGO,
+    p_url: valor('p-foto-hero-b')
+  });
+  mostrarOk('ok-foto-hero-b');
 }
 
 async function guardarFotosDecorativas(){
