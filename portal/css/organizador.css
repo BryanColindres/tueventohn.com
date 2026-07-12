@@ -119,6 +119,11 @@
 .asiento.ocupado{cursor:pointer;border:none}
 .resize-handle{position:absolute;right:-3px;bottom:-3px;width:13px;height:13px;cursor:nwse-resize;
   border-right:2.5px solid var(--celeste-oscuro);border-bottom:2.5px solid var(--celeste-oscuro);opacity:.7}
+@media (pointer:coarse){
+  .resize-handle{width:30px;height:30px;right:-10px;bottom:-10px}
+  .canvas-resize{width:34px;height:34px}
+  .asiento{width:32px;height:32px}
+}
 
 .zona-en-canvas{position:absolute;border-radius:12px;border:1.5px dashed var(--celeste-oscuro);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:grab;

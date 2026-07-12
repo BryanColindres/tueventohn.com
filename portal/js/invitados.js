@@ -219,8 +219,8 @@ async function procesarExcel() {
   };
 
   const invitados = filas
-    .map(f => ({ nombre: clave(f, 'nombre'), familia: clave(f, 'familia'), telefono: clave(f, 'teléfono') || clave(f, 'telefono') }))
-    .filter(i => i.nombre);
+    .map(f => ({ nombre: clave(f, 'nombre'), familia: clave(f, 'familia'), telefono: clave(f, 'teléfono') || clave(f, 'telefono'), esEjemplo: clave(f, 'es_ejemplo').toLowerCase() === 'si' }))
+    .filter(i => i.nombre && !i.esEjemplo);
 
   if (!invitados.length) {
     mostrarErrorExcel('La columna "Nombre" está vacía en todas las filas. Completa al menos un invitado y súbelo de nuevo.');
