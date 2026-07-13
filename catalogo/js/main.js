@@ -66,9 +66,9 @@ const CARACTERISTICAS = [
     'Playlist personalizada de Spotify o YouTube'
   ],
   [
-    'Portal para editar el contenido de tu invitación cuando quieras, sin escribirnos',
-    'Organizador de mesas: acomoda a tus invitados arrastrando y soltando',
-    'Recordatorios automáticos por WhatsApp a quien no ha confirmado',
+    'Dashboard de invitados con confirmaciones, aperturas y estadísticas.',
+    'Organizador de mesas para planificar la distribución de tus invitados.',
+   // 'Recordatorios automáticos por WhatsApp a quien no ha confirmado',
     'Soporte prioritario durante todo el proceso'
   ]
 ];
