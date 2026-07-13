@@ -236,7 +236,7 @@ async function procesarExcel() {
       fila.some(celda => String(celda).trim().toLowerCase() === 'nombre')
     );
     if (filaEncabezado === -1) {
-      mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
+      mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puede descargar arriba — no cambies el nombre de las columnas.');
       return;
     }
 
