@@ -88,14 +88,14 @@ async function cargarPaquetes(){
       const heredado = i > 0 ? `<li class="precio-heredado">Todo lo de ${paquetes[i - 1].nombre}, más:</li>` : '';
       const items = propias.map(f => `<li><span class="precio-check">✓</span>${f}</li>`).join('');
       return `
-      <div class="precio-card ${i === 1 ? 'destacado' : ''}">
-        ${i === 1 ? '<span class="precio-badge">Más elegido</span>' : ''}
+      <div class="precio-card ${i === 2 ? 'destacado' : ''}">
+        ${i === 2 ? '<span class="precio-badge">Más elegido</span>' : ''}
         <p class="precio-nombre">${p.nombre}</p>
         <p class="precio-valor">L. ${Number(p.precio).toLocaleString('es-HN')}</p>
         ${p.descripcion ? `<p style="color:var(--texto-mid);font-size:.86rem;margin-bottom:1rem">${p.descripcion}</p>` : ''}
         <ul class="precio-lista">${heredado}${items}</ul>
         <a href="https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent('Hola, quiero cotizar el paquete ' + p.nombre)}"
-           target="_blank" class="btn ${i === 1 ? 'btn-dorado' : 'btn-outline-claro'}" style="justify-content:center;${i!==1?'color:var(--texto);border-color:rgba(0,0,0,.2)':''}">
+           target="_blank" class="btn ${i === 2 ? 'btn-dorado' : 'btn-outline-claro'}" style="justify-content:center;${i!==2?'color:var(--texto);border-color:rgba(0,0,0,.2)':''}">
            Cotizar por WhatsApp</a>
       </div>`;
     }).join('');
