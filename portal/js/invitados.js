@@ -261,7 +261,7 @@ async function procesarExcel() {
     .filter(i => i.nombre && !i.esEjemplo);
 
   if (!invitados.length) {
-    mostrarErrorExcel('La columna "Nombre" está vacía en todas las filas. Completa al menos un invitado y súbelo de nuevo.');
+    mostrarErrorExcel('La columna "Nombre" está vacía en todas las filas, completa al menos un invitado y súbelo de nuevo.');
     return;
   }
 
