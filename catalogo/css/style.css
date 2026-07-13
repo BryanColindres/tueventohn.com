@@ -129,8 +129,11 @@ img{display:block;max-width:100%}
 
 .plantilla-nombre{font-family:var(--font-display);font-style:italic;font-size:1.3rem;color:var(--celeste-oscuro);margin-bottom:.3rem}
 .plantilla-tag{font-size:.8rem;color:var(--texto-mid);margin-bottom:1.1rem;min-height:2.4em;padding:0 .6rem}
-.btn-plantilla{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.6rem;border:1px solid var(--celeste-oscuro);border-radius:30px;font-size:.78rem;color:var(--celeste-oscuro);font-weight:500;transition:all .3s var(--ease)}
+.plantilla-btns{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.btn-plantilla{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;border:1px solid var(--celeste-oscuro);border-radius:30px;font-size:.76rem;color:var(--celeste-oscuro);font-weight:500;transition:all .3s var(--ease)}
 .btn-plantilla:hover{background:var(--celeste-oscuro);color:#fff}
+.btn-plantilla-ver{background:var(--celeste-nube);border-color:transparent}
+.btn-plantilla-ver:hover{background:var(--celeste-oscuro);color:#fff}
 
 /* CÓMO FUNCIONA */
 .pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2.2rem;counter-reset:paso}
@@ -152,9 +155,6 @@ img{display:block;max-width:100%}
 .precio-lista li:first-child{border-top:none}
 .precio-check{color:var(--celeste-oscuro);font-weight:600;flex-shrink:0}
 .precio-heredado{font-style:italic;color:var(--texto-mid);font-size:.8rem;padding-top:.6rem;padding-bottom:.2rem}
-.precio-lista{list-style:none;margin-bottom:1.8rem;flex:1}
-.precio-lista li{font-size:.86rem;color:var(--texto-mid);padding:.5rem 0;border-bottom:1px dotted rgba(30,110,156,.15);display:flex;gap:.5rem}
-.precio-lista li::before{content:'✓';color:var(--celeste-oscuro);font-weight:600}
 
 /* ADD-ONS */
 .addons-tabla{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.88rem}
@@ -178,6 +178,11 @@ img{display:block;max-width:100%}
 .footer-final .btn{position:relative;z-index:1}
 .footer-brand{margin-top:3rem;font-size:.78rem;color:var(--texto-light);position:relative;z-index:1}
 
-@media(max-width:480px){
-  .telefono-wrap{width:190px}
+@media(max-width:600px){
+  .catalogo-grid{grid-template-columns:repeat(2,1fr);gap:1.8rem 1rem}
+  .telefono-wrap{width:100%;max-width:135px;margin-bottom:.9rem}
+  .plantilla-nombre{font-size:1rem}
+  .plantilla-tag{font-size:.7rem;min-height:auto;padding:0 .2rem}
+  .plantilla-btns{flex-direction:column;gap:.4rem}
+  .btn-plantilla{padding:.55rem 1rem;font-size:.68rem;width:100%;justify-content:center}
 }

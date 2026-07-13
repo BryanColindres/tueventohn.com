@@ -38,7 +38,10 @@ async function cargarPlantillas(){
         </div>
         <p class="plantilla-nombre">${p.nombre}</p>
         <p class="plantilla-tag">${p.tagline || ''}</p>
-        <a href="https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent('Hola, me interesa la plantilla "' + p.nombre + '" del catálogo')}" target="_blank" class="btn-plantilla">Encargar invitación</a>
+        <div class="plantilla-btns">
+          <a href="${url}" target="_blank" rel="noopener" class="btn-plantilla btn-plantilla-ver">Ver plantilla</a>
+          <a href="https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent('Hola, me interesa la plantilla "' + p.nombre + '" del catálogo')}" target="_blank" class="btn-plantilla">Encargar invitación</a>
+        </div>
       </div>`;
     }).join('');
 
