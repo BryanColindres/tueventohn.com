@@ -12,6 +12,11 @@ let INVITADOS = [];      // caché local de la última carga
 let FAMILIAS = [];
 let FIRMAS = [];
 let DUPLICADO_PENDIENTE = null; // datos en espera de confirmación de familia duplicada
+let primeraCarga = true;
+let PAGINA_INVITADOS = 1;
+let POR_PAGINA_INVITADOS = 20;
+let PAGINA_FAMILIAS = 1;
+const POR_PAGINA_FAMILIAS = 10;
 
 async function rpc(nombre, parametros) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombre}`, {
@@ -50,9 +55,14 @@ async function cargarTodo() {
   document.getElementById('portal-contenido').classList.remove('oculto');
   document.getElementById('portal-nombre-evento').textContent = 'Panel del Organizador';
 
-  // Se limpia por si el navegador restauró un valor viejo del buscador al recargar.
-  document.getElementById('buscar-invitado').value = '';
-  document.getElementById('filtro-estado').value = 'todos';
+  if (primeraCarga) {
+    // Se limpia solo aquí, por si el navegador restauró un valor viejo del
+    // buscador al recargar la página. En recargas posteriores (después de
+    // confirmar, editar, etc.) NO se toca, para no perder el filtro activo.
+    document.getElementById('buscar-invitado').value = '';
+    document.getElementById('filtro-estado').value = 'todos';
+    primeraCarga = false;
+  }
 
   renderResumen();
   renderTablaInvitados();
@@ -117,8 +127,13 @@ function renderTablaInvitados() {
     return coincideBusqueda && coincideEstado;
   });
 
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA_INVITADOS));
+  if (PAGINA_INVITADOS > totalPaginas) PAGINA_INVITADOS = totalPaginas;
+  const inicio = (PAGINA_INVITADOS - 1) * POR_PAGINA_INVITADOS;
+  const pagina = filtrados.slice(inicio, inicio + POR_PAGINA_INVITADOS);
+
   const cuerpo = document.getElementById('cuerpo-tabla-invitados');
-  cuerpo.innerHTML = filtrados.map(i => `
+  cuerpo.innerHTML = pagina.map(i => `
     <div class="ti-fila">
       <div>
         <div class="ti-nombre">${escapar(i.nombre)}</div>
@@ -131,7 +146,9 @@ function renderTablaInvitados() {
       <div class="ti-sub">${badgeApertura(i)}</div>
       <div class="ti-acciones">
         <button class="ti-icon-btn" title="Copiar link personal" onclick="copiarLinkInvitado('${i.link}')">🔗</button>
-        ${i.link_familiar ? `<button class="ti-icon-btn" title="Copiar link familiar (toda la familia)" onclick="copiarLinkInvitado('${i.link_familiar}')">👪</button>` : ''}
+        ${i.link_familiar
+          ? `<button class="ti-icon-btn" title="Copiar link familiar (toda la familia)" onclick="copiarLinkInvitado('${i.link_familiar}')">👪</button>`
+          : `<span class="ti-icon-btn ti-icon-vacio"></span>`}
         <button class="ti-icon-btn" title="WhatsApp" onclick="compartirWhatsapp('${i.id}')">💬</button>
         <button class="ti-icon-btn" title="Editar" onclick="abrirModalEditar('${i.id}')">✎</button>
         <button class="ti-icon-btn" title="Eliminar" onclick="eliminarInvitado('${i.id}')">🗑</button>
@@ -140,6 +157,43 @@ function renderTablaInvitados() {
   `).join('');
 
   document.getElementById('sin-invitados').classList.toggle('oculto', filtrados.length > 0);
+  renderPaginacionInvitados(filtrados.length, totalPaginas);
+}
+
+function renderPaginacionInvitados(totalFiltrados, totalPaginas){
+  const cont = document.getElementById('paginacion-invitados');
+  if (!cont) return;
+  if (!totalFiltrados) { cont.innerHTML = ''; return; }
+
+  const inicio = (PAGINA_INVITADOS - 1) * POR_PAGINA_INVITADOS + 1;
+  const fin = Math.min(PAGINA_INVITADOS * POR_PAGINA_INVITADOS, totalFiltrados);
+
+  cont.innerHTML = `
+    <span class="paginacion-info">${inicio}–${fin} de ${totalFiltrados}</span>
+    <div class="paginacion-controles">
+      <button type="button" ${PAGINA_INVITADOS === 1 ? 'disabled' : ''} onclick="cambiarPaginaInvitados(${PAGINA_INVITADOS - 1})">‹</button>
+      <span>Página ${PAGINA_INVITADOS} de ${totalPaginas}</span>
+      <button type="button" ${PAGINA_INVITADOS === totalPaginas ? 'disabled' : ''} onclick="cambiarPaginaInvitados(${PAGINA_INVITADOS + 1})">›</button>
+    </div>
+    <label class="paginacion-cantidad">
+      Ver
+      <select onchange="cambiarCantidadPorPagina(this.value)">
+        ${[10, 20, 50, 100].map(n => `<option value="${n}" ${n === POR_PAGINA_INVITADOS ? 'selected' : ''}>${n}</option>`).join('')}
+      </select>
+      por página
+    </label>
+  `;
+}
+
+function cambiarPaginaInvitados(nueva){
+  PAGINA_INVITADOS = nueva;
+  renderTablaInvitados();
+}
+
+function cambiarCantidadPorPagina(valor){
+  POR_PAGINA_INVITADOS = parseInt(valor, 10);
+  PAGINA_INVITADOS = 1;
+  renderTablaInvitados();
 }
 
 function badgeEstado(i) {
@@ -236,7 +290,7 @@ async function procesarExcel() {
       fila.some(celda => String(celda).trim().toLowerCase() === 'nombre')
     );
     if (filaEncabezado === -1) {
-      mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puede descargar arriba — no cambies el nombre de las columnas.');
+      mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
       return;
     }
 
@@ -261,7 +315,7 @@ async function procesarExcel() {
     .filter(i => i.nombre && !i.esEjemplo);
 
   if (!invitados.length) {
-    mostrarErrorExcel('La columna "Nombre" está vacía en todas las filas, completa al menos un invitado y súbelo de nuevo.');
+    mostrarErrorExcel('La columna "Nombre" está vacía en todas las filas. Completa al menos un invitado y súbelo de nuevo.');
     return;
   }
 
@@ -374,9 +428,14 @@ async function crearFamilia() {
 
 function renderListaFamilias() {
   const cont = document.getElementById('lista-familias');
-  if (!FAMILIAS.length) { cont.innerHTML = `<p class="desc" style="margin-top:.8rem">Todavía no hay familias — se crean solas en cuanto le pongas la misma familia a más de un invitado.</p>`; return; }
+  if (!FAMILIAS.length) { cont.innerHTML = `<p class="desc" style="margin-top:.8rem">Todavía no hay familias — se crean solas en cuanto le pongas la misma familia a más de un invitado.</p>`; document.getElementById('paginacion-familias').innerHTML = ''; return; }
 
-  cont.innerHTML = FAMILIAS.map(f => {
+  const totalPaginas = Math.max(1, Math.ceil(FAMILIAS.length / POR_PAGINA_FAMILIAS));
+  if (PAGINA_FAMILIAS > totalPaginas) PAGINA_FAMILIAS = totalPaginas;
+  const inicio = (PAGINA_FAMILIAS - 1) * POR_PAGINA_FAMILIAS;
+  const pagina = FAMILIAS.slice(inicio, inicio + POR_PAGINA_FAMILIAS);
+
+  cont.innerHTML = pagina.map(f => {
     const conteo = f.conteo_manual != null ? f.conteo_manual : f.conteo_miembros;
     return `
     <div class="familia-fila">
@@ -393,6 +452,22 @@ function renderListaFamilias() {
       </div>
     </div>`;
   }).join('');
+
+  const pagFam = document.getElementById('paginacion-familias');
+  if (totalPaginas <= 1) { pagFam.innerHTML = ''; }
+  else {
+    pagFam.innerHTML = `
+      <div class="paginacion-controles">
+        <button type="button" ${PAGINA_FAMILIAS === 1 ? 'disabled' : ''} onclick="cambiarPaginaFamilias(${PAGINA_FAMILIAS - 1})">‹</button>
+        <span>Página ${PAGINA_FAMILIAS} de ${totalPaginas}</span>
+        <button type="button" ${PAGINA_FAMILIAS === totalPaginas ? 'disabled' : ''} onclick="cambiarPaginaFamilias(${PAGINA_FAMILIAS + 1})">›</button>
+      </div>`;
+  }
+}
+
+function cambiarPaginaFamilias(nueva){
+  PAGINA_FAMILIAS = nueva;
+  renderListaFamilias();
 }
 
 async function actualizarConteoFamilia(familiaId, valor) {

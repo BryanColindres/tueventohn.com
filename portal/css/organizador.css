@@ -42,16 +42,27 @@
 
 /* ---- tabla de invitados ---- */
 .tabla-invitados{background:#fff;border:1px solid var(--borde);border-radius:16px;overflow:hidden}
-.ti-fila{display:grid;grid-template-columns:2.2fr 1.3fr 1fr auto;gap:.8rem;align-items:center;
+.ti-fila{display:grid;grid-template-columns:2.2fr 1.3fr 1fr 172px;gap:.8rem;align-items:center;
   padding:.8rem 1.1rem;border-bottom:1px solid var(--borde);font-size:.85rem}
 .ti-fila.encabezado{background:var(--celeste-nube);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--texto-mid)}
 .ti-fila:last-child{border-bottom:none}
 .ti-nombre{font-weight:600;color:var(--texto)}
 .ti-sub{font-size:.72rem;color:var(--texto-mid)}
-.ti-acciones{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:flex-end}
+.ti-acciones{display:flex;gap:.35rem;justify-content:flex-end}
 .ti-icon-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--borde);background:#fff;
   display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;color:var(--texto-mid);flex-shrink:0}
 .ti-icon-btn:hover{background:var(--celeste-nube)}
+.ti-icon-vacio{border-color:transparent;background:transparent;cursor:default}
+
+/* ---- paginación ---- */
+.paginacion{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;
+  padding:.9rem 1.1rem;font-size:.8rem;color:var(--texto-mid)}
+.paginacion-controles{display:flex;align-items:center;gap:.7rem}
+.paginacion-controles button{width:28px;height:28px;border-radius:8px;border:1px solid var(--borde);
+  background:#fff;cursor:pointer;font-size:.9rem;color:var(--texto)}
+.paginacion-controles button:disabled{opacity:.35;cursor:default}
+.paginacion-cantidad select{margin:0 .3rem;padding:.25rem .5rem;border:1px solid var(--borde);border-radius:8px;
+  font-family:var(--font);background:#fff}
 
 /* el select de confirmación necesita verse claramente como un desplegable */
 .select-wrap{position:relative;display:inline-block}

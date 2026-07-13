@@ -98,11 +98,12 @@
           </div>
           <button class="btn btn-dorado btn-chico" onclick="crearFamilia()">Crear link familiar</button>
           <div id="lista-familias" class="lista-familias"></div>
+          <div id="paginacion-familias" class="paginacion"></div>
         </div>
 
         <div class="inv-toolbar">
-          <input type="text" id="buscar-invitado" placeholder="Buscar por nombre o familia..." oninput="renderTablaInvitados()">
-          <select id="filtro-estado" onchange="renderTablaInvitados()">
+          <input type="text" id="buscar-invitado" placeholder="Buscar por nombre o familia..." oninput="PAGINA_INVITADOS = 1; renderTablaInvitados()">
+          <select id="filtro-estado" onchange="PAGINA_INVITADOS = 1; renderTablaInvitados()">
             <option value="todos">Todos los estados</option>
             <option value="confirmado">Confirmados</option>
             <option value="pendiente">Pendientes</option>
@@ -116,6 +117,7 @@
           </div>
           <div id="cuerpo-tabla-invitados"></div>
         </div>
+        <div id="paginacion-invitados" class="paginacion"></div>
         <p id="sin-invitados" class="desc oculto" style="text-align:center;margin-top:1rem">No se encontraron invitados con ese filtro.</p>
       </div>
 
