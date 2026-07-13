@@ -227,7 +227,20 @@ async function procesarExcel() {
     const buffer = await archivo.arrayBuffer();
     const wb = XLSX.read(buffer, { type: 'array' });
     const hoja = wb.Sheets[wb.SheetNames[0]];
-    filas = XLSX.utils.sheet_to_json(hoja, { defval: '' });
+
+    // La plantilla trae un título y subtítulo decorativos arriba de los
+    // encabezados reales -- se busca la fila que de verdad dice "Nombre",
+    // sin importar cuántas filas de título haya encima.
+    const filasCrudas = XLSX.utils.sheet_to_json(hoja, { header: 1, defval: '' });
+    const filaEncabezado = filasCrudas.findIndex(fila =>
+      fila.some(celda => String(celda).trim().toLowerCase() === 'nombre')
+    );
+    if (filaEncabezado === -1) {
+      mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
+      return;
+    }
+
+    filas = XLSX.utils.sheet_to_json(hoja, { defval: '', range: filaEncabezado });
   } catch {
     mostrarErrorExcel('No se pudo leer el archivo. Asegúrate de subir un .xlsx o .xls sin dañar, idealmente descargando la plantilla de arriba.');
     return;
@@ -235,13 +248,6 @@ async function procesarExcel() {
 
   if (!filas.length) {
     mostrarErrorExcel('El archivo está vacío. Descarga la plantilla, agrega tus invitados desde la fila 5, y súbela de nuevo.');
-    return;
-  }
-
-  const primeraFila = filas[0];
-  const tieneColumnaNombre = Object.keys(primeraFila).some(k => k.trim().toLowerCase() === 'nombre');
-  if (!tieneColumnaNombre) {
-    mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
     return;
   }
 
