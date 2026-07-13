@@ -22,6 +22,15 @@ window.cargarMesasSiNecesario = async function () {
   MESAS_CARGADAS = true;
 };
 
+function cambiarVistaMesas(vista) {
+  const layout = document.getElementById('mesas-layout');
+  if (!layout) return;
+  layout.classList.toggle('modo-lista', vista === 'lista');
+  layout.classList.toggle('modo-plano', vista === 'plano');
+  document.getElementById('btn-vista-plano').classList.toggle('activo', vista === 'plano');
+  document.getElementById('btn-vista-lista').classList.toggle('activo', vista === 'lista');
+}
+
 async function cargarMesasDatos() {
   const data = await rpc('panel_listar_mesas', { p_codigo: CODIGO });
   if (data.error) return;
@@ -113,11 +122,11 @@ function crearElementoMesa(m) {
     <span class="badge-ocupacion ${llena ? 'llena' : ''}">${ocupadas}/${m.capacidad}</span>
     <span class="no-print" style="margin-left:auto;display:flex;gap:4px">
       <button type="button" class="btn-forma" title="Cambiar forma">⬡</button>
-      ${!m.es_novios ? `<button type="button" class="btn-eliminar" title="Eliminar">🗑</button>` : ''}
+      <button type="button" class="btn-eliminar" title="Eliminar">🗑</button>
     </span>
   `;
   header.querySelector('.btn-forma').addEventListener('click', (e) => { e.stopPropagation(); togglePopoverForma(m.id); });
-  if (!m.es_novios) header.querySelector('.btn-eliminar').addEventListener('click', (e) => { e.stopPropagation(); eliminarMesa(m.id); });
+  header.querySelector('.btn-eliminar').addEventListener('click', (e) => { e.stopPropagation(); eliminarMesa(m.id); });
   agregarArrastre(header, (e, punto) => { if (e.target.closest('button')) return; iniciarArrastreMesa(punto, m); });
   wrap.appendChild(header);
 
@@ -235,7 +244,15 @@ function moverArrastre(e) {
       const ns = clamp(ARRASTRE.startAncho + delta, 90, 320);
       m.ancho = ns; m.alto = ns;
     }
-    renderTodoMesas();
+    // Se actualiza el tamaño directo en el DOM (sin volver a construir el
+    // elemento) para no reemplazar el tirador a mitad del gesto -- eso es
+    // lo que hacía que se perdiera el touch en el celular.
+    const wrap = document.querySelectorAll('.mesa-en-canvas')[MESAS.indexOf(m)];
+    if (wrap) {
+      wrap.style.width = m.ancho + 'px';
+      const shape = wrap.querySelector('.mesa-shape');
+      if (shape) { shape.style.width = m.ancho + 'px'; shape.style.height = m.alto + 'px'; }
+    }
   } else if (ARRASTRE.tipo === 'zona') {
     const z = ZONAS.find(x => x.id === ARRASTRE.id);
     z.pos_x = clamp(punto.clientX - rect.left - ARRASTRE.offsetX, 0, SALON.ancho - z.ancho);
@@ -246,7 +263,8 @@ function moverArrastre(e) {
     const z = ZONAS.find(x => x.id === ARRASTRE.id);
     z.ancho = Math.max(70, ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX));
     z.alto = Math.max(50, ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY));
-    renderTodoMesas();
+    const el = document.querySelectorAll('.zona-en-canvas')[ZONAS.indexOf(z)];
+    if (el) { el.style.width = z.ancho + 'px'; el.style.height = z.alto + 'px'; }
   } else if (ARRASTRE.tipo === 'resize-canvas') {
     SALON.ancho = Math.max(680, ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX));
     SALON.alto = Math.max(380, ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY));
@@ -487,8 +505,11 @@ function renderDetalleMesas() {
     const titulo = document.createElement('div');
     titulo.className = 'mesa-detalle-titulo';
     titulo.innerHTML = `${m.es_novios ? '♛ ' : ''}${escaparTexto(m.nombre)}
-      <span class="ir-mesa">Ver en el plano</span><span class="chevron">${colapsado ? '▸' : '▾'}</span>`;
+      <span class="ir-mesa">Ver en el plano</span>
+      <button type="button" class="btn-eliminar-lista" title="Eliminar mesa">🗑</button>
+      <span class="chevron">${colapsado ? '▸' : '▾'}</span>`;
     titulo.querySelector('.ir-mesa').addEventListener('click', (e) => { e.stopPropagation(); irAMesa(m.id); });
+    titulo.querySelector('.btn-eliminar-lista').addEventListener('click', (e) => { e.stopPropagation(); eliminarMesa(m.id); });
     titulo.addEventListener('click', () => { MESAS_COLAPSADAS[m.id] = !colapsado; renderDetalleMesas(); });
     grupo.appendChild(titulo);
 
