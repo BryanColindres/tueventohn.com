@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('p-firmas-foto').value = extras.firmasFotoUrl || '';
     document.getElementById('p-rsvp-foto').value = extras.rsvpFotoUrl || '';
     document.getElementById('p-video-apertura-url').value = extras.videoAperturaUrl || '';
+    document.getElementById('p-musica-url').value = extras.musicaUrl || '';
     renderGaleriaPortal(extras.galeria || []);
   }
 
@@ -377,7 +378,7 @@ async function guardarFotos(){
 }
 
 async function guardarMusica(){
-  await rpc('portal_actualizar_evento', { p_codigo: CODIGO, p_musica_url: valor('p-musica-url') });
+  await rpc('portal_actualizar_musica', { p_codigo: CODIGO, p_url: valor('p-musica-url') });
   mostrarOk('ok-musica');
 }
 
