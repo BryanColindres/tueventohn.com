@@ -49,6 +49,30 @@ async function cargarPlantillas(){
   }
 }
 
+// Checklist por paquete, en orden (0 = Esencial, 1 = Elegante, 2 = Experiencia Completa).
+// Cada paquete incluye todo lo del anterior, más lo que está listado aquí.
+const CARACTERISTICAS = [
+  [
+    'La plantilla que elijas del catálogo',
+    'Música de fondo automática',
+    'Contador regresivo a la boda',
+    'Ubicación con Google Maps y Waze',
+    'Confirmación de asistencia por WhatsApp'
+  ],
+  [
+    'Confirmación de asistencia automatizada, individual o por familia',
+    'Libro de firmas y muro de deseos, moderado por ustedes',
+    'Historia de la pareja estilo Instagram',
+    'Playlist personalizada de Spotify o YouTube'
+  ],
+  [
+    'Portal para editar el contenido de tu invitación cuando quieras, sin escribirnos',
+    'Organizador de mesas: acomoda a tus invitados arrastrando y soltando',
+    'Recordatorios automáticos por WhatsApp a quien no ha confirmado',
+    'Soporte prioritario durante todo el proceso'
+  ]
+];
+
 async function cargarPaquetes(){
   const cont = document.getElementById('precios-grid');
   if (!cont) return;
@@ -59,26 +83,31 @@ async function cargarPaquetes(){
     const paquetes = await res.json();
     if (!paquetes.length) return;
 
-    cont.innerHTML = paquetes.map((p, i) => `
+    cont.innerHTML = paquetes.map((p, i) => {
+      const propias = CARACTERISTICAS[i] || [];
+      const heredado = i > 0 ? `<li class="precio-heredado">Todo lo de ${paquetes[i - 1].nombre}, más:</li>` : '';
+      const items = propias.map(f => `<li><span class="precio-check">✓</span>${f}</li>`).join('');
+      return `
       <div class="precio-card ${i === 1 ? 'destacado' : ''}">
         ${i === 1 ? '<span class="precio-badge">Más elegido</span>' : ''}
         <p class="precio-nombre">${p.nombre}</p>
         <p class="precio-valor">L. ${Number(p.precio).toLocaleString('es-HN')}</p>
-        <p style="color:var(--texto-mid);font-size:.86rem;margin-bottom:1.4rem">${p.descripcion || ''}</p>
+        ${p.descripcion ? `<p style="color:var(--texto-mid);font-size:.86rem;margin-bottom:1rem">${p.descripcion}</p>` : ''}
+        <ul class="precio-lista">${heredado}${items}</ul>
         <a href="https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent('Hola, quiero cotizar el paquete ' + p.nombre)}"
            target="_blank" class="btn ${i === 1 ? 'btn-dorado' : 'btn-outline-claro'}" style="justify-content:center;${i!==1?'color:var(--texto);border-color:rgba(0,0,0,.2)':''}">
            Cotizar por WhatsApp</a>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   } catch (err) { console.error(err); }
 }
 
 const FAQS = [
   { p: "¿Cómo pago mi invitación?", r: "Todo el proceso es por WhatsApp: nos escribes, eliges tu plantilla y paquete, y te enviamos los datos de pago por transferencia bancaria." },
-  { p: "¿Cuánto tarda la entrega?", r: "El tiempo estimado es de 48 horas después de recibir todos tus datos, fotos e historia completos." },
+  { p: "¿Cuánto tarda la entrega?", r: "El tiempo estimado es de 5 dias después de recibir todos tus datos, fotos e historia completos." },
   { p: "¿Puedo cambiar fotos o textos después de recibirla?", r: "Sí, incluimos una ronda de ajustes sin costo antes de la entrega final." },
   { p: "¿Funciona en cualquier celular?", r: "Sí, es un sitio web — funciona en cualquier celular con navegador, sin necesidad de instalar nada." },
-  { p: "¿Puedo pedir una plantilla que no esté en el catálogo?", r: "Sí, podemos platicar tu idea y ver si es posible crear un diseño a la medida." },
+  { p: "¿Puedo pedir una plantilla que no esté en el catálogo?", r: "Sí, podemos platicar tu idea y ver si es posible crear un diseño a la medida con un costo adicional." },
   { p: "¿El link tiene fecha de vencimiento?", r: "No, tu invitación se mantiene activa; si quieres desactivarla después del evento, también podemos hacerlo." }
 ];
 

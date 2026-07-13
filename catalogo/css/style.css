@@ -147,6 +147,11 @@ img{display:block;max-width:100%}
 .precio-nombre{font-family:var(--font-display);font-style:italic;font-size:1.3rem;margin-bottom:.4rem}
 .precio-valor{font-family:var(--font-display);font-size:2.2rem;color:var(--celeste-oscuro);margin-bottom:1.4rem}
 .precio-valor span{font-size:.9rem;color:var(--texto-mid);font-family:var(--font-sans)}
+.precio-lista{list-style:none;flex:1;margin-bottom:1.6rem}
+.precio-lista li{display:flex;align-items:flex-start;gap:.55rem;font-size:.86rem;line-height:1.5;color:var(--texto);padding:.4rem 0;border-top:1px solid rgba(111,190,230,.18)}
+.precio-lista li:first-child{border-top:none}
+.precio-check{color:var(--celeste-oscuro);font-weight:600;flex-shrink:0}
+.precio-heredado{font-style:italic;color:var(--texto-mid);font-size:.8rem;padding-top:.6rem;padding-bottom:.2rem}
 .precio-lista{list-style:none;margin-bottom:1.8rem;flex:1}
 .precio-lista li{font-size:.86rem;color:var(--texto-mid);padding:.5rem 0;border-bottom:1px dotted rgba(30,110,156,.15);display:flex;gap:.5rem}
 .precio-lista li::before{content:'✓';color:var(--celeste-oscuro);font-weight:600}
