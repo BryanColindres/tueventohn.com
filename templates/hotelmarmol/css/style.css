@@ -16,15 +16,13 @@ body{
   color:var(--texto);font-family:var(--font-sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;
   position:relative;
 }
-/* Vetas de mármol sutiles en todo el fondo */
+/* Fondo limpio, con un resplandor muy sutil en las esquinas (nada de vetas
+   ni rayas — antes esto se veía como líneas diagonales, no como mármol) */
 body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:
-    linear-gradient(115deg, transparent 20%, rgba(201,196,184,.35) 21%, transparent 23%),
-    linear-gradient(70deg, transparent 40%, rgba(201,196,184,.25) 41%, transparent 43%),
-    linear-gradient(160deg, transparent 65%, rgba(201,196,184,.3) 66%, transparent 68%),
-    linear-gradient(25deg, transparent 78%, rgba(222,218,206,.4) 79%, transparent 81%);
-  background-size:100% 100%;
+    radial-gradient(ellipse 900px 600px at 8% -5%, rgba(198,161,91,.10), transparent 60%),
+    radial-gradient(ellipse 900px 600px at 95% 105%, rgba(198,161,91,.08), transparent 60%);
 }
 img{display:block;width:100%;height:100%;object-fit:cover}
 a{text-decoration:none;color:inherit}
@@ -150,11 +148,25 @@ a{text-decoration:none;color:inherit}
 
 /* ═══ RSVP — TARJETA LLAVE DE HABITACIÓN ═══ */
 .section-rsvp{padding:5rem 0 4.5rem;text-align:center;background:var(--marmol-crema);border-top:1px solid var(--veta-gris-suave)}
-.keycard{max-width:340px;margin:2rem auto 2.2rem;background:linear-gradient(135deg,#2B2823,#3d3830);border-radius:14px;padding:1.6rem 1.6rem 1.4rem;position:relative;box-shadow:0 20px 40px rgba(43,40,35,.25);text-align:left}
-.keycard::before{content:'';position:absolute;top:1.1rem;left:0;right:0;height:26px;background:repeating-linear-gradient(90deg,#111 0,#111 3px,#3d3830 3px,#3d3830 6px)}
-.keycard-marca{font-family:var(--font-sans);font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--dorado-claro);margin-top:2.6rem}
-.keycard-titulo{font-family:var(--font-display);font-style:italic;font-size:1.3rem;color:#fff;margin-top:.5rem}
-.keycard-chip{position:absolute;top:1.6rem;right:1.6rem;width:26px;height:20px;background:linear-gradient(135deg,var(--dorado-claro),var(--dorado-oscuro));border-radius:3px}
+.keycard{
+  max-width:320px;margin:2rem auto 2.2rem;
+  background:linear-gradient(135deg,#FFFDF9 0%,#F5F0E6 45%,#E9DCC0 100%);
+  border:1px solid var(--dorado);
+  border-radius:16px;
+  padding:1.5rem 1.6rem 1.3rem;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 24px 50px rgba(43,40,35,.18), inset 0 1px 0 rgba(255,255,255,.9);
+  text-align:left;
+}
+.keycard::before{content:'';position:absolute;top:0;right:0;width:130px;height:130px;background:radial-gradient(circle at top right, rgba(198,161,91,.22), transparent 70%);pointer-events:none}
+.keycard-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.keycard-eyebrow{font-family:var(--font-sans);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dorado-oscuro);font-weight:500}
+.keycard-chip{width:30px;height:22px;border-radius:4px;background:linear-gradient(135deg,var(--dorado-claro),var(--dorado-oscuro));border:1px solid var(--dorado-oscuro);position:relative;z-index:1}
+.keycard-nombre{font-family:var(--font-display);font-style:italic;font-weight:500;font-size:clamp(1.3rem,4vw,1.6rem);color:var(--texto);margin:1.9rem 0 1.6rem;position:relative;z-index:1;line-height:1.28}
+.keycard-bottom{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;padding-top:.9rem;border-top:1px solid rgba(140,111,53,.28)}
+.keycard-fecha{font-family:var(--font-sans);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--texto-light)}
+.keycard-vip{font-family:var(--font-sans);font-size:.58rem;letter-spacing:.2em;color:var(--dorado-oscuro);font-weight:600;border:1px solid var(--dorado);padding:.25rem .65rem;border-radius:20px}
 .rsvp-desc{font-family:var(--font-sans);font-size:.96rem;line-height:1.8;color:var(--texto-mid);max-width:440px;margin:0 auto 2rem}
 .rsvp-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
 
@@ -175,25 +187,6 @@ a{text-decoration:none;color:inherit}
 /* ═══ HERO — TARJETA LLAVE DE HOTEL (elemento firma) ═══ */
 .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.6rem;text-align:center;overflow:visible}
 .hero__marco-superior{font-family:var(--font-sans);font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--dorado-oscuro);margin-bottom:2.2rem}
-.keycard{
-  width:min(320px,86vw); aspect-ratio:1.586;
-  background:linear-gradient(135deg,#fff 0%,#F2EFE6 45%,#E7DFC9 100%);
-  border:1px solid var(--dorado);
-  border-radius:14px;
-  position:relative;
-  box-shadow:0 24px 50px rgba(43,40,35,.16), inset 0 1px 0 rgba(255,255,255,.8);
-  padding:1.3rem 1.4rem;
-  display:flex; flex-direction:column; justify-content:space-between;
-  text-align:left;
-}
-.keycard::before{content:'';position:absolute;top:22%;left:0;right:0;height:13%;background:repeating-linear-gradient(90deg,#2B2823,#2B2823 3px,#3a362f 3px,#3a362f 6px)}
-.keycard__top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
-.keycard__hotel{font-family:var(--font-display);font-style:italic;font-size:.95rem;color:var(--texto)}
-.keycard__chip{width:32px;height:24px;border-radius:4px;background:linear-gradient(135deg,var(--dorado-claro),var(--dorado-oscuro));border:1px solid var(--dorado-oscuro)}
-.keycard__label{font-family:var(--font-sans);font-size:.55rem;letter-spacing:.24em;text-transform:uppercase;color:var(--texto-light);margin-top:2.6rem}
-.keycard__names{font-family:var(--font-display);font-style:italic;font-size:clamp(1.3rem,4.4vw,1.7rem);color:var(--texto);margin-top:.2rem;line-height:1.25}
-.keycard__bottom{display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--font-sans);font-size:.6rem;letter-spacing:.12em;color:var(--texto-light);text-transform:uppercase}
-.keycard__bottom b{display:block;font-family:var(--font-display);font-style:italic;font-size:.85rem;color:var(--dorado-oscuro);letter-spacing:0;text-transform:none}
 .hero__lugar-abajo{margin-top:2rem;font-family:var(--font-sans);font-size:.7rem;letter-spacing:.2em;color:var(--texto-mid);text-transform:uppercase}
 
 /* ═══ ITINERARIO — MENÚ TIPO ROOM SERVICE ═══ */

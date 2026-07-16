@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   iniciarVideo();
   pintarHero();
+  pintarKeycard();
   pintarBannerPersonal();
   iniciarCountdown();
   pintarMensajes();
@@ -78,6 +79,15 @@ function pintarHero(){
   document.getElementById('hero-lugar').textContent = C.lugar.nombre;
   document.getElementById('hero-fecha').textContent = C.fechaTexto;
   document.getElementById('hero-photo').innerHTML = C.fotos.hero ? `<img src="${C.fotos.hero}" alt="">` : '';
+}
+
+function pintarKeycard(){
+  const nombreEl = document.getElementById('keycard-nombre');
+  if (nombreEl) {
+    nombreEl.textContent = (C.invitado && C.invitado.nombre) ? C.invitado.nombre : 'Con mucho cariño';
+  }
+  const fechaEl = document.getElementById('keycard-fecha');
+  if (fechaEl) fechaEl.textContent = C.fechaTexto || '';
 }
 
 function pintarMensajes(){
