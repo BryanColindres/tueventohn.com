@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   iniciarCountdown();
   pintarPlacas();
   pintarMensajes();
+  TuBodaBackend.pintarBendicionYVersiculo(C);
   pintarHistoria();
   pintarVideoInterno();
   pintarTimeline();
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   pintarCancion();
   pintarRSVP();
   pintarFooter();
+  TuBodaBackend.pintarVersiculoCierre(C);
   iniciarMusica();
   iniciarReveal();
 
@@ -196,6 +198,7 @@ function pintarUbicacion(){
     document.getElementById('map-foto').innerHTML = `<img src="${C.lugar.foto}" alt="">`;
     document.getElementById('map-foto').classList.remove('oculto');
   }
+  TuBodaBackend.pintarUbicacionRecepcion(C);
 }
 
 function pintarAddons(){

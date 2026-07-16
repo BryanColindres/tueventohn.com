@@ -103,6 +103,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderGaleriaPortal(extras.galeria || []);
   }
 
+  // Bendición, versículos y ceremonia/recepción — RPC aparte para no tocar
+  // portal_obtener_evento ni portal_obtener_extras.
+  try {
+    const extra2 = await rpc('portal_obtener_extra', { p_codigo: CODIGO });
+    if (extra2) {
+      document.getElementById('p-bendicion-texto').value = extra2.bendicionTexto || '';
+      document.getElementById('p-versiculo-historia').value = extra2.versiculoHistoria || '';
+      document.getElementById('p-versiculo-cierre').value = extra2.versiculoCierre || '';
+      document.getElementById('p-mismo-lugar').checked = extra2.mismoLugar !== false;
+      document.getElementById('p-hora-recepcion').value = extra2.horaRecepcion || '';
+      document.getElementById('p-lugar-recepcion-nombre').value = extra2.lugarRecepcionNombre || '';
+      document.getElementById('p-lugar-recepcion-direccion').value = extra2.lugarRecepcionDireccion || '';
+      document.getElementById('p-lugar-recepcion-maps').value = extra2.lugarRecepcionMapsUrl || '';
+      document.getElementById('p-lugar-recepcion-waze').value = extra2.lugarRecepcionWazeUrl || '';
+      toggleRecepcion();
+    }
+  } catch (err) {
+    console.warn('portal_obtener_extra no disponible todavía (¿ya corriste el SQL?):', err);
+  }
+
   historiaItems = datos.historia || [];
   timelineItems = datos.timeline || [];
   mensajesItems = datos.mensajes || [];
@@ -111,6 +131,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   pintarTimeline();
   pintarMensajes();
   pintarDetalles();
+
+  aplicarBloqueosPorModulo(datos.modulosActivos || {});
 
   actualizarProgreso();
   document.getElementById('progreso-wrap').classList.remove('oculto');
@@ -127,8 +149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Swatches de la paleta, ya con los colores cargados.
   [1, 2, 3, 4].forEach(n => actualizarSwatch(`p-paleta-color-${n}`, `p-paleta-swatch-${n}`));
   actualizarSwatch('p-color-evitar', 'p-color-evitar-swatch');
-
-  aplicarBloqueosPorModulo(datos.modulosActivos || {});
 });
 
 // ---------------- BLOQUEAR TARJETAS DE MÓDULOS NO COMPRADOS ----------------
@@ -201,7 +221,7 @@ function aplicarBloqueosPorModulo(modulosActivos){
 
 // ---------------- BARRA DE PROGRESO (cuenta cuántas tarjetas ya tienen algo) ----------------
 function actualizarProgreso(){
-  const tarjetas = [...document.querySelectorAll('.tarjeta:not(.tarjeta-final)')];
+  const tarjetas = [...document.querySelectorAll('.tarjeta:not(.tarjeta-final):not(.tarjeta-bloqueada)')];
   let completas = 0;
   const pendientes = [];
 
@@ -397,7 +417,41 @@ async function guardarFotos(){
     p_codigo: CODIGO,
     p_foto_hero_url: valor('p-foto-hero'), p_foto_footer_url: valor('p-foto-footer')
   });
+  // El versículo de cierre va en la función nueva, junto con las demás
+  // cosas opcionales, para no tocar portal_actualizar_evento.
+  await rpc('portal_actualizar_extra', {
+    p_codigo: CODIGO,
+    p_versiculo_cierre: valor('p-versiculo-cierre')
+  });
   mostrarOk('ok-fotos');
+}
+
+function toggleRecepcion(){
+  const mismo = document.getElementById('p-mismo-lugar').checked;
+  document.getElementById('bloque-recepcion').classList.toggle('oculto', mismo);
+}
+
+async function guardarBendicion(){
+  await rpc('portal_actualizar_extra', {
+    p_codigo: CODIGO,
+    p_bendicion_texto: valor('p-bendicion-texto'),
+    p_versiculo_historia: valor('p-versiculo-historia')
+  });
+  mostrarOk('ok-bendicion');
+}
+
+async function guardarRecepcion(){
+  const mismo = document.getElementById('p-mismo-lugar').checked;
+  await rpc('portal_actualizar_extra', {
+    p_codigo: CODIGO,
+    p_mismo_lugar: mismo,
+    p_hora_recepcion: mismo ? null : (valor('p-hora-recepcion') || null),
+    p_lugar_recepcion_nombre: valor('p-lugar-recepcion-nombre'),
+    p_lugar_recepcion_direccion: valor('p-lugar-recepcion-direccion'),
+    p_lugar_recepcion_maps_url: valor('p-lugar-recepcion-maps'),
+    p_lugar_recepcion_waze_url: valor('p-lugar-recepcion-waze')
+  });
+  mostrarOk('ok-recepcion');
 }
 
 async function guardarMusica(){

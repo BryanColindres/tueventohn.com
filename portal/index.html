@@ -61,6 +61,22 @@
         </div>
         <button class="btn btn-dorado" onclick="guardarUbicacion()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-ubicacion">Guardado</p>
+
+        <hr style="margin:1.4rem 0;border:none;border-top:1px solid #eee">
+        <div class="campo campo-check">
+          <label><input type="checkbox" id="p-mismo-lugar" checked onchange="toggleRecepcion()"> La ceremonia y la recepción son en el mismo lugar</label>
+        </div>
+
+        <div id="bloque-recepcion" class="oculto">
+          <p class="desc">Datos de la recepción (el de arriba se muestra como "Ceremonia").</p>
+          <div class="campo"><label>Hora de la recepción (opcional)</label><input type="time" id="p-hora-recepcion"></div>
+          <div class="campo"><label>Lugar de la recepción</label><input type="text" id="p-lugar-recepcion-nombre"></div>
+          <div class="campo"><label>Dirección</label><input type="text" id="p-lugar-recepcion-direccion"></div>
+          <div class="campo"><label>Link de Google Maps</label><input type="text" id="p-lugar-recepcion-maps" placeholder="https://maps.google.com/..."></div>
+          <div class="campo"><label>Link de Waze (opcional)</label><input type="text" id="p-lugar-recepcion-waze" placeholder="https://waze.com/ul?..."></div>
+          <button class="btn btn-dorado" onclick="guardarRecepcion()">Guardar recepción</button>
+          <p class="mensaje-ok oculto" id="ok-recepcion">Guardado</p>
+        </div>
       </div>
 
       <!-- FOTOS PRINCIPALES -->
@@ -78,6 +94,10 @@
           <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-footer')">
           <input type="hidden" id="p-foto-footer">
           <div class="archivo-actual oculto" id="preview-p-foto-footer"></div>
+        </div>
+        <div class="campo">
+          <label>Versículo o mensaje de cierre (opcional)</label>
+          <textarea id="p-versiculo-cierre" rows="2" placeholder="Aparece justo antes de esta foto de cierre"></textarea>
         </div>
         <button class="btn btn-dorado" onclick="guardarFotos()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-fotos">Guardado</p>
@@ -155,6 +175,16 @@
         <div class="campo"><label>Frase que acompaña al video</label><input type="text" id="p-video-interno-frase"></div>
         <button class="btn btn-dorado" onclick="guardarVideoInterno()">Guardar</button>
         <p class="mensaje-ok oculto" id="ok-video-interno">Guardado</p>
+      </div>
+
+      <!-- BENDICIÓN Y VERSÍCULO (opcional, disponible en cualquier paquete) -->
+      <div class="tarjeta" id="tarjeta-bendicion">
+        <h2>Bendición y versículo</h2>
+        <p class="desc">Opcional. Aparece justo antes de "Nuestra historia" — por ejemplo, con la bendición de sus papás o un versículo.</p>
+        <div class="campo"><label>Mensaje de bendición (opcional)</label><textarea id="p-bendicion-texto" rows="3" placeholder="Ej. Con la bendición de nuestros padres..."></textarea></div>
+        <div class="campo"><label>Versículo (opcional)</label><textarea id="p-versiculo-historia" rows="2" placeholder="Ej. 1 Corintios 13:4-7"></textarea></div>
+        <button class="btn btn-dorado" onclick="guardarBendicion()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-bendicion">Guardado</p>
       </div>
 
       <!-- HISTORIA -->

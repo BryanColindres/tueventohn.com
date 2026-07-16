@@ -87,6 +87,16 @@ async function cargarConfig() {
       return null;
     }
 
+    // Campos nuevos (bendición, versículos, ceremonia/recepción) — RPC aparte
+    // para no tocar get_event_config. Si todavía no corriste el SQL que la
+    // crea, esto simplemente no agrega nada y no rompe el resto.
+    try {
+      const extra = await _rpc("get_event_extra", { p_slug: slug });
+      if (extra) Object.assign(data, extra);
+    } catch (err) {
+      console.warn("get_event_extra no disponible todavía:", err);
+    }
+
     // Si la invitación tiene RSVP Premium y la URL trae un identificador de
     // invitado, se resuelve su nombre para personalizar el banner y (si
     // corresponde) la pantalla de mensaje personalizado.
@@ -295,6 +305,72 @@ function normalizarPlaylistUrl(url) {
   return url;
 }
 
+// ---------------- BENDICIÓN / VERSÍCULOS / RECEPCIÓN (campos opcionales) ----------------
+// Genéricas para las 12 plantillas: solo pintan algo si el cliente llenó el
+// campo. Si está vacío, la sección desaparece sola (no se ve un hueco).
+function pintarBendicionYVersiculo(C){
+  const cont = document.getElementById('section-bendicion');
+  if (!cont) return;
+  if (!C.bendicionTexto && !C.versiculoHistoria) { cont.style.display = 'none'; return; }
+
+  cont.innerHTML = `
+    <div style="max-width:520px;margin:0 auto;text-align:center;padding:2.6rem 2rem">
+      ${C.bendicionTexto ? `<p style="font-size:.95rem;line-height:1.8;color:var(--texto);margin-bottom:${C.versiculoHistoria ? '1.4rem' : '0'}">${C.bendicionTexto}</p>` : ''}
+      ${C.versiculoHistoria ? `<p style="font-style:italic;font-size:.88rem;line-height:1.7;color:var(--texto-mid)">${C.versiculoHistoria}</p>` : ''}
+    </div>`;
+}
+
+function pintarVersiculoCierre(C){
+  const cont = document.getElementById('section-versiculo-cierre');
+  if (!cont) return;
+  if (!C.versiculoCierre) { cont.style.display = 'none'; return; }
+
+  cont.innerHTML = `
+    <div style="max-width:480px;margin:0 auto;text-align:center;padding:2.6rem 2rem 0">
+      <p style="font-style:italic;font-size:.9rem;line-height:1.75;color:var(--texto-mid)">${C.versiculoCierre}</p>
+    </div>`;
+}
+
+// Se llama DESPUÉS de que cada plantilla pinta su propia sección de
+// ubicación (ceremonia). Si el cliente marcó "no es el mismo lugar" y llenó
+// los datos de recepción, agrega un segundo bloque justo debajo, usando
+// solo clases universales (btn / btn-outline) para no depender del CSS
+// específico de cada plantilla.
+function pintarUbicacionRecepcion(C){
+  if (C.mismoLugar !== false) return;
+  if (!C.lugarRecepcion || !C.lugarRecepcion.nombre) return;
+
+  const nombreEl = document.getElementById('ubicacion-nombre');
+  if (!nombreEl) return;
+
+  // Etiqueta la ubicación de arriba como "Ceremonia" para que quede claro
+  // que ahora hay dos lugares.
+  if (!document.getElementById('ubicacion-etiqueta-ceremonia')) {
+    const etiqueta = document.createElement('p');
+    etiqueta.id = 'ubicacion-etiqueta-ceremonia';
+    etiqueta.textContent = 'Ceremonia';
+    etiqueta.style.cssText = 'font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:.4rem;color:var(--texto-mid)';
+    nombreEl.parentElement.insertBefore(etiqueta, nombreEl);
+  }
+
+  const wazeOriginal = document.getElementById('ubicacion-waze');
+  const puntoInsercion = (wazeOriginal || document.getElementById('ubicacion-link'))?.parentElement || nombreEl.parentElement;
+
+  const bloque = document.createElement('div');
+  bloque.id = 'ubicacion-recepcion';
+  bloque.style.cssText = 'margin-top:2.6rem;text-align:center';
+  bloque.innerHTML = `
+    <p style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:.4rem;color:var(--texto-mid)">Recepción</p>
+    <h3 style="font-size:1.2rem;margin-bottom:.4rem;color:var(--texto)">${C.lugarRecepcion.nombre}</h3>
+    ${C.lugarRecepcion.direccion ? `<p style="margin-bottom:1rem;color:var(--texto-mid);font-size:.88rem">${C.lugarRecepcion.direccion}</p>` : ''}
+    <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap">
+      ${C.lugarRecepcion.mapsUrl ? `<a href="${C.lugarRecepcion.mapsUrl}" target="_blank" class="btn btn-outline">Cómo llegar</a>` : ''}
+      ${C.lugarRecepcion.wazeUrl ? `<a href="${C.lugarRecepcion.wazeUrl}" target="_blank" class="btn btn-outline">Waze</a>` : ''}
+    </div>`;
+
+  puntoInsercion.parentElement.insertBefore(bloque, puntoInsercion.nextSibling);
+}
+
 window.TuBodaBackend = {
   cargarConfig,
   enviarFirma,
@@ -313,5 +389,8 @@ window.TuBodaBackend = {
   marcarApertura,
   cargarPersonasParaRSVP,
   confirmarAsistencia,
-  normalizarPlaylistUrl
+  normalizarPlaylistUrl,
+  pintarBendicionYVersiculo,
+  pintarVersiculoCierre,
+  pintarUbicacionRecepcion
 };
