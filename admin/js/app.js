@@ -420,13 +420,37 @@ async function renderEditar(id){
       </label>
     </div>`).join('');
 
-  // pestaña textos
+  // pestaña textos — lee el HTML real de la plantilla de este evento para
+  // mostrar como placeholder lo que YA dice ahí, no un texto genérico mío.
   const textosGuardados = evento.textos || {};
-  document.getElementById('ed-textos-lista').innerHTML = TEXTOS_EDITABLES.map(t => `
+  let defaultsReales = {};
+  if (evento.plantillas?.slug) {
+    try {
+      const html = await (await fetch(`../templates/${evento.plantillas.slug}/index.html`)).text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('[data-texto]').forEach(el => {
+        const clave = el.getAttribute('data-texto');
+        defaultsReales[clave] = (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')
+          ? (el.getAttribute('placeholder') || '') : el.textContent.trim();
+      });
+    } catch (err) {
+      console.warn('No se pudo leer los textos por defecto de la plantilla:', err);
+    }
+  }
+
+  const clavesEnEstaPlantilla = Object.keys(defaultsReales).length
+    ? TEXTOS_EDITABLES.filter(t => defaultsReales.hasOwnProperty(t.clave))
+    : TEXTOS_EDITABLES; // si no se pudo leer la plantilla, muestra todo igual
+
+  document.getElementById('ed-textos-lista').innerHTML = clavesEnEstaPlantilla.map(t => {
+    const porDefecto = (defaultsReales[t.clave] ?? t.porDefecto ?? 'Texto normal de la plantilla')
+      .replace(/"/g, '&quot;');
+    return `
     <div class="campo">
       <label>${t.etiqueta}</label>
-      <input type="text" data-texto-clave="${t.clave}" value="${textosGuardados[t.clave] || ''}" placeholder="${t.porDefecto || 'Texto normal de la plantilla'}">
-    </div>`).join('');
+      <input type="text" data-texto-clave="${t.clave}" value="${textosGuardados[t.clave] || ''}" placeholder="${porDefecto}">
+    </div>`;
+  }).join('');
 
   // tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
