@@ -110,8 +110,8 @@
     <div id="section-bendicion" class="section-bendicion"></div>
     <section class="section-story" id="section-historia">
       <div class="container" style="text-align:center;margin-bottom:1rem">
-        <span class="eyebrow eyebrow--oscuro">Nuestra historia</span>
-        <h2 class="titulo-fiesta titulo-fiesta--oscuro">Antes de la fiesta, esto pasó</h2>
+        <span class="eyebrow eyebrow--oscuro" data-texto="eyebrowHistoria">Nuestra historia</span>
+        <h2 class="titulo-fiesta titulo-fiesta--oscuro" data-texto="tituloHistoria">Antes de la fiesta, esto pasó</h2>
       </div>
       <div id="historia-contenido"></div>
     </section>
@@ -123,21 +123,21 @@
 
     <section class="section-timeline" id="section-timeline">
       <div class="container" style="text-align:center">
-        <span class="eyebrow">Itinerario</span>
-        <h2 class="titulo-fiesta">Se arma la fiesta</h2>
+        <span class="eyebrow" data-texto="eyebrowItinerario">Itinerario</span>
+        <h2 class="titulo-fiesta" data-texto="tituloItinerario">Se arma la fiesta</h2>
       </div>
       <div class="programa" id="timeline-contenido"></div>
     </section>
 
     <section class="section-detalles" id="section-detalles">
       <div style="text-align:center">
-        <span class="eyebrow">Detalles importantes</span>
+        <span class="eyebrow" data-texto="eyebrowDetalles">Detalles importantes</span>
       </div>
       <div class="detalles-grid" id="detalles-grid"></div>
     </section>
 
     <section class="section-vestimenta" id="section-vestimenta">
-      <span class="eyebrow">Código de vestimenta</span>
+      <span class="eyebrow" data-texto="eyebrowVestimenta">Código de vestimenta</span>
       <h2 class="titulo-fiesta" id="vestimenta-titulo">Etiqueta formal</h2>
       <p class="vestimenta-texto" id="vestimenta-texto"></p>
 
@@ -147,21 +147,21 @@
     </section>
 
     <section class="section-map">
-      <span class="eyebrow eyebrow--oscuro">Ubicación</span>
+      <span class="eyebrow eyebrow--oscuro" data-texto="eyebrowUbicacion">Ubicación</span>
       <h2 class="titulo-fiesta titulo-fiesta--oscuro" id="ubicacion-nombre"></h2>
       <div class="map-foto oculto" id="map-foto"></div>
       <div class="map-block">
         <p id="ubicacion-direccion"></p>
-        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-outline--oscuro">Cómo llegar</a>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-outline--oscuro" data-texto="botonComoLlegar">Cómo llegar</a>
           <a id="ubicacion-waze" href="#" target="_blank" class="btn btn-outline oculto">Waze</a>
       </div>
     </section>
 
     <section class="section-regalos" id="section-regalos">
-      <span class="eyebrow">Regalos</span>
-      <h2 class="titulo-fiesta">Tu presencia es nuestro regalo</h2>
+      <span class="eyebrow" data-texto="eyebrowRegalos">Regalos</span>
+      <h2 class="titulo-fiesta" data-texto="tituloRegalos">Tu presencia es nuestro regalo</h2>
       <p class="regalos-texto" id="regalos-texto"></p>
-      <button class="btn btn-outline oculto" id="regalos-boton">Más detalles de cuenta</button>
+      <button class="btn btn-outline oculto" id="regalos-boton" data-texto="botonVerMesaRegalos">Más detalles de cuenta</button>
       <div class="regalos-detalle oculto" id="regalos-detalle"></div>
     </section>
 
@@ -169,8 +169,8 @@
     <section class="section-cancion" id="section-cancion">
       <div class="bokeh-wrap" id="bokeh-cancion"></div>
       <div class="container">
-        <span class="eyebrow">Música</span>
-        <h2 class="titulo-fiesta">Nuestra Playlist</h2>
+        <span class="eyebrow" data-texto="eyebrowCancion">Música</span>
+        <h2 class="titulo-fiesta" data-texto="tituloCancion">Nuestra Playlist</h2>
         <p class="subtitulo" id="cancion-intro">Esa que no puede faltar para que bailes toda la noche</p>
         <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
         <form id="form-cancion" class="form-cancion">
@@ -190,13 +190,13 @@
 
     <section class="section-firmas" id="section-firmas">
       <div class="firmas-foto oculto" id="firmas-foto"></div>
-      <span class="eyebrow eyebrow--oscuro">Libro de firmas</span>
-      <h2 class="titulo-fiesta titulo-fiesta--oscuro">Déjanos un mensaje</h2>
+      <span class="eyebrow eyebrow--oscuro" data-texto="eyebrowLibroFirmas">Libro de firmas</span>
+      <h2 class="titulo-fiesta titulo-fiesta--oscuro" data-texto="tituloLibroFirmas">Déjanos un mensaje</h2>
       <div class="firmas-wrap">
         <form id="form-firma" class="form-firma">
-          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
-          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
-          <button type="submit" class="btn btn-fiesta">Firmar</button>
+          <input type="text" id="firma-nombre" data-texto="placeholderNombreFirma" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" data-texto="placeholderMensajeFirma" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-fiesta" data-texto="botonPublicarFirma">Firmar</button>
         </form>
         <div class="firmas-lista" id="firmas-lista">
           <p class="firmas-vacio">Sé el primero en firmar</p>
@@ -213,8 +213,8 @@
 
     <section class="section-rsvp" id="section-rsvp">
       <div class="rsvp-foto oculto" id="rsvp-foto"></div>
-      <span class="eyebrow">Confirmación</span>
-      <h2 class="titulo-fiesta">¿Vienes a la fiesta?</h2>
+      <span class="eyebrow" data-texto="eyebrowRSVP">Confirmación</span>
+      <h2 class="titulo-fiesta" data-texto="tituloRSVP">¿Vienes a la fiesta?</h2>
       <p class="rsvp-desc">Nos encantaría contar con tu presencia. Confirma antes del <span id="rsvp-fecha-limite">15 de septiembre de 2026</span>.</p>
       <div class="rsvp-btns oculto" id="rsvp-whatsapp">
         <a id="rsvp-novio" href="#" target="_blank" class="btn btn-fiesta">Confirmar con Bryan</a>

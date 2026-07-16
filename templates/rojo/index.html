@@ -96,8 +96,8 @@
     <div id="section-bendicion" class="section-bendicion"></div>
     <section class="section-story" id="section-historia">
       <div class="container" style="text-align:center;margin-bottom:2.4rem">
-        <span class="eyebrow">Nuestra historia</span>
-        <h2 class="titulo-display">Una promesa de amor</h2>
+        <span class="eyebrow" data-texto="eyebrowHistoria">Nuestra historia</span>
+        <h2 class="titulo-display" data-texto="tituloHistoria">Una promesa de amor</h2>
         <div class="linea-corta"></div>
       </div>
       <div id="historia-contenido"></div>
@@ -110,21 +110,21 @@
 
     <section class="section-timeline" id="section-timeline">
       <div class="container" style="text-align:center">
-        <span class="eyebrow">Itinerario</span>
-        <h2 class="titulo-display">El gran día</h2>
+        <span class="eyebrow" data-texto="eyebrowItinerario">Itinerario</span>
+        <h2 class="titulo-display" data-texto="tituloItinerario">El gran día</h2>
       </div>
       <div class="programa" id="timeline-contenido"></div>
     </section>
 
     <section class="section-detalles" id="section-detalles">
       <div style="text-align:center">
-        <span class="eyebrow">Detalles importantes</span>
+        <span class="eyebrow" data-texto="eyebrowDetalles">Detalles importantes</span>
       </div>
       <div class="detalles-grid" id="detalles-grid"></div>
     </section>
 
     <section class="section-vestimenta" id="section-vestimenta">
-      <span class="eyebrow">Código de vestimenta</span>
+      <span class="eyebrow" data-texto="eyebrowVestimenta">Código de vestimenta</span>
       <h2 class="titulo-display" id="vestimenta-titulo">Etiqueta formal</h2>
       <p class="vestimenta-texto" id="vestimenta-texto"></p>
 
@@ -134,13 +134,13 @@
     </section>
 
     <section class="section-map">
-      <span class="eyebrow">Ubicación</span>
+      <span class="eyebrow" data-texto="eyebrowUbicacion">Ubicación</span>
       <h2 class="titulo-display" id="ubicacion-nombre"></h2>
       <div class="linea-corta"></div>
       <div class="map-foto oculto" id="map-foto"></div>
       <div class="map-block">
         <p id="ubicacion-direccion"></p>
-        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-vino">
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-vino" data-texto="botonComoLlegar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           Ir a Google Maps
         </a>
@@ -149,18 +149,18 @@
     </section>
 
     <section class="section-regalos" id="section-regalos">
-      <span class="eyebrow">Regalos</span>
-      <h2 class="titulo-display">Tu presencia es nuestro regalo</h2>
+      <span class="eyebrow" data-texto="eyebrowRegalos">Regalos</span>
+      <h2 class="titulo-display" data-texto="tituloRegalos">Tu presencia es nuestro regalo</h2>
       <p class="regalos-texto" id="regalos-texto"></p>
-      <button class="btn btn-outline oculto" id="regalos-boton">Más detalles de cuenta</button>
+      <button class="btn btn-outline oculto" id="regalos-boton" data-texto="botonVerMesaRegalos">Más detalles de cuenta</button>
       <div class="regalos-detalle oculto" id="regalos-detalle"></div>
     </section>
 
     
     <!-- CANCIÓN / PLAYLIST -->
     <section class="section-cancion" id="section-cancion">
-      <span class="eyebrow">Música</span>
-      <h2 class="titulo-display">Nuestra Playlist</h2>
+      <span class="eyebrow" data-texto="eyebrowCancion">Música</span>
+      <h2 class="titulo-display" data-texto="tituloCancion">Nuestra Playlist</h2>
       <p class="subtitulo" id="cancion-intro"></p>
       <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
       <form class="cancion-form oculto" id="form-cancion">
@@ -180,13 +180,13 @@
 
     <section class="section-firmas" id="section-firmas">
       <div class="firmas-foto oculto" id="firmas-foto"></div>
-      <span class="eyebrow">Libro de firmas</span>
-      <h2 class="titulo-display">Déjanos un mensaje</h2>
+      <span class="eyebrow" data-texto="eyebrowLibroFirmas">Libro de firmas</span>
+      <h2 class="titulo-display" data-texto="tituloLibroFirmas">Déjanos un mensaje</h2>
       <div class="firmas-wrap">
         <form id="form-firma" class="form-firma">
-          <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
-          <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
-          <button type="submit" class="btn btn-vino">Firmar</button>
+          <input type="text" id="firma-nombre" data-texto="placeholderNombreFirma" placeholder="Tu nombre" required>
+          <textarea id="firma-mensaje" data-texto="placeholderMensajeFirma" placeholder="Tu mensaje para los novios..." required></textarea>
+          <button type="submit" class="btn btn-vino" data-texto="botonPublicarFirma">Firmar</button>
         </form>
         <div class="firmas-lista" id="firmas-lista">
           <p class="firmas-vacio">Sé el primero en firmar</p>
@@ -205,8 +205,8 @@
       <div class="rsvp-foto oculto" id="rsvp-foto"></div>
       <span class="forma forma-cuadro rsvp-forma-cuadro"></span>
       <span class="forma forma-circulo rsvp-forma-circulo"></span>
-      <span class="eyebrow">Confirmación</span>
-      <h2 class="titulo-display">¿Vienes?</h2>
+      <span class="eyebrow" data-texto="eyebrowRSVP">Confirmación</span>
+      <h2 class="titulo-display" data-texto="tituloRSVP">¿Vienes?</h2>
       <p class="rsvp-desc">Nos encantaría contar con tu presencia. Por favor confirma antes del <span id="rsvp-fecha-limite">15 de septiembre de 2026</span>.</p>
       <div class="rsvp-btns oculto" id="rsvp-whatsapp">
         <a id="rsvp-novio" href="#" target="_blank" class="btn btn-vino">Confirmar con Bryan</a>

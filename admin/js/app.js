@@ -314,12 +314,14 @@ async function onWizardSiguiente(){
 // Bryan en el panel; los valores por defecto son solo referencia visual
 // (placeholder), el HTML real de cada plantilla puede decir otra cosa.
 const TEXTOS_EDITABLES = [
+  { clave: 'eyebrowHistoria', etiqueta: 'Texto pequeño arriba de "Nuestra Historia"', porDefecto: 'Nuestra historia' },
   { clave: 'tituloHistoria', etiqueta: 'Título de "Nuestra Historia"', porDefecto: 'Nuestra Historia' },
   { clave: 'tituloItinerario', etiqueta: 'Título del itinerario', porDefecto: 'Itinerario' },
   { clave: 'eyebrowItinerario', etiqueta: 'Texto pequeño arriba del itinerario', porDefecto: '' },
+  { clave: 'eyebrowDetalles', etiqueta: 'Texto pequeño arriba de detalles importantes', porDefecto: 'Detalles importantes' },
   { clave: 'tituloDetalles', etiqueta: 'Título de detalles del evento', porDefecto: 'Detalles del Evento' },
   { clave: 'tituloUbicacion', etiqueta: 'Título de ubicación', porDefecto: 'Ubicación' },
-  { clave: 'eyebrowUbicacion', etiqueta: 'Texto pequeño arriba de ubicación', porDefecto: '' },
+  { clave: 'eyebrowUbicacion', etiqueta: 'Texto pequeño arriba de ubicación', porDefecto: 'Ubicación' },
   { clave: 'tituloCountdown', etiqueta: 'Texto del contador regresivo', porDefecto: 'Faltan...' },
   { clave: 'tituloRSVP', etiqueta: 'Título de confirmación de asistencia', porDefecto: 'Confirmar Asistencia' },
   { clave: 'eyebrowRSVP', etiqueta: 'Texto pequeño arriba de la confirmación', porDefecto: '' },

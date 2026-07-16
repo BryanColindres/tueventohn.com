@@ -133,8 +133,8 @@
       <div id="section-bendicion" class="section-bendicion"></div>
       <section class="capitulo" data-cap="historia" id="section-historia">
         <div class="cap-contenido">
-          <span class="eyebrow">Nuestra historia</span>
-          <h2 class="titulo-cap">Cómo empezó todo</h2>
+          <span class="eyebrow" data-texto="eyebrowHistoria">Nuestra historia</span>
+          <h2 class="titulo-cap" data-texto="tituloHistoria">Cómo empezó todo</h2>
           <div id="historia-contenido" class="historia-scroll"></div>
         </div>
       </section>
@@ -170,8 +170,8 @@
       <!-- 5. ITINERARIO -->
       <section class="capitulo" data-cap="itinerario" id="section-timeline">
         <div class="cap-contenido">
-          <span class="eyebrow">Itinerario</span>
-          <h2 class="titulo-cap">El gran día</h2>
+          <span class="eyebrow" data-texto="eyebrowItinerario">Itinerario</span>
+          <h2 class="titulo-cap" data-texto="tituloItinerario">El gran día</h2>
           <div id="timeline-contenido" class="programa-scroll"></div>
         </div>
       </section>
@@ -179,12 +179,12 @@
       <!-- 6. UBICACIÓN -->
       <section class="capitulo" data-cap="ubicacion">
         <div class="cap-contenido cap-centrado">
-          <span class="eyebrow">Ubicación</span>
+          <span class="eyebrow" data-texto="eyebrowUbicacion">Ubicación</span>
           <h2 class="titulo-cap" id="ubicacion-nombre"></h2>
           <div class="map-foto oculto" id="map-foto"></div>
           <p class="cap-texto" id="ubicacion-direccion"></p>
           <div class="map-btns">
-            <a id="ubicacion-link" href="#" target="_blank" class="btn btn-mar">Ir a Google Maps</a>
+            <a id="ubicacion-link" href="#" target="_blank" class="btn btn-mar" data-texto="botonComoLlegar">Ir a Google Maps</a>
             <a id="ubicacion-waze" href="#" target="_blank" class="btn btn-outline-mar oculto">Waze</a>
           </div>
         </div>
@@ -193,7 +193,7 @@
       <!-- 6b. DETALLES IMPORTANTES -->
       <section class="capitulo" data-cap="detalles" id="section-detalles">
         <div class="cap-contenido">
-          <span class="eyebrow">Detalles importantes</span>
+          <span class="eyebrow" data-texto="eyebrowDetalles">Detalles importantes</span>
           <div class="detalles-grid" id="detalles-grid"></div>
         </div>
       </section>
@@ -202,7 +202,7 @@
       <section class="capitulo" data-cap="vestimenta" id="section-vestimenta">
         <svg class="deco deco-nube deco-flotante" style="top:2.2rem;right:1.4rem" viewBox="0 0 100 60"><ellipse cx="30" cy="38" rx="22" ry="16" fill="#fff"/><ellipse cx="55" cy="30" rx="26" ry="20" fill="#fff"/><ellipse cx="78" cy="40" rx="18" ry="14" fill="#fff"/></svg>
         <div class="cap-contenido cap-centrado">
-          <span class="eyebrow">Código de vestimenta</span>
+          <span class="eyebrow" data-texto="eyebrowVestimenta">Código de vestimenta</span>
           <h2 class="titulo-cap" id="vestimenta-titulo"></h2>
           <p class="cap-texto" id="vestimenta-texto"></p>
           <div class="paleta-colores" id="vestimenta-paleta"></div>
@@ -214,10 +214,10 @@
       <!-- 7b. REGALOS -->
       <section class="capitulo" data-cap="regalos" id="section-regalos">
         <div class="cap-contenido cap-centrado">
-          <span class="eyebrow">Regalos</span>
-          <h2 class="titulo-cap">Tu presencia es nuestro regalo</h2>
+          <span class="eyebrow" data-texto="eyebrowRegalos">Regalos</span>
+          <h2 class="titulo-cap" data-texto="tituloRegalos">Tu presencia es nuestro regalo</h2>
           <p class="cap-texto" id="regalos-texto"></p>
-          <button class="btn btn-outline-mar oculto" id="regalos-boton">Más detalles de cuenta</button>
+          <button class="btn btn-outline-mar oculto" id="regalos-boton" data-texto="botonVerMesaRegalos">Más detalles de cuenta</button>
           <div class="regalos-detalle oculto" id="regalos-detalle"></div>
         </div>
       </section>
@@ -225,8 +225,8 @@
       <!-- CANCIÓN / PLAYLIST -->
       <section class="capitulo" data-cap="cancion" id="section-cancion">
         <div class="cap-contenido cap-centrado">
-          <span class="eyebrow">Música</span>
-          <h2 class="titulo-cap">Nuestra Playlist</h2>
+          <span class="eyebrow" data-texto="eyebrowCancion">Música</span>
+          <h2 class="titulo-cap" data-texto="tituloCancion">Nuestra Playlist</h2>
           <p class="cap-texto" id="cancion-intro"></p>
           <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
           <form class="form-firma oculto" id="form-cancion">
@@ -250,12 +250,12 @@
       <section class="capitulo" data-cap="firmas" id="section-firmas">
         <div class="cap-contenido">
           <div class="firmas-foto oculto" id="firmas-foto"></div>
-          <span class="eyebrow">Libro de firmas</span>
-          <h2 class="titulo-cap">Déjanos un mensaje</h2>
+          <span class="eyebrow" data-texto="eyebrowLibroFirmas">Libro de firmas</span>
+          <h2 class="titulo-cap" data-texto="tituloLibroFirmas">Déjanos un mensaje</h2>
           <form id="form-firma" class="form-firma">
-            <input type="text" id="firma-nombre" placeholder="Tu nombre" required>
-            <textarea id="firma-mensaje" placeholder="Tu mensaje para los novios..." required></textarea>
-            <button type="submit" class="btn btn-mar" style="align-self:center">Firmar</button>
+            <input type="text" id="firma-nombre" data-texto="placeholderNombreFirma" placeholder="Tu nombre" required>
+            <textarea id="firma-mensaje" data-texto="placeholderMensajeFirma" placeholder="Tu mensaje para los novios..." required></textarea>
+            <button type="submit" class="btn btn-mar" data-texto="botonPublicarFirma" style="align-self:center">Firmar</button>
           </form>
           <div class="firmas-lista-scroll" id="firmas-lista"><p class="firmas-vacio">Sé el primero en firmar</p></div>
           <div class="firmas-nav oculto" id="firmas-nav"></div>
@@ -273,8 +273,8 @@
         <svg class="deco deco-concha deco-flotante" style="bottom:2.4rem;right:1.4rem;animation-delay:1.4s" viewBox="0 0 64 64"><path d="M32 6 C40 20 48 30 48 42 C48 52 40 58 32 58 C24 58 16 52 16 42 C16 30 24 20 32 6Z" fill="#2CA6A6"/></svg>
         <div class="cap-contenido cap-centrado">
           <div class="rsvp-foto oculto" id="rsvp-foto"></div>
-          <span class="eyebrow">Confirmación</span>
-          <h2 class="titulo-cap">¿Vienes?</h2>
+          <span class="eyebrow" data-texto="eyebrowRSVP">Confirmación</span>
+          <h2 class="titulo-cap" data-texto="tituloRSVP">¿Vienes?</h2>
           <p class="cap-texto">Nos encantaría contar con tu presencia. Confirma antes del <span id="rsvp-fecha-limite">15 de septiembre de 2026</span>.</p>
           <div class="rsvp-btns oculto" id="rsvp-whatsapp">
             <a id="rsvp-novio" href="#" target="_blank" class="btn btn-mar">Confirmar con Bryan</a>

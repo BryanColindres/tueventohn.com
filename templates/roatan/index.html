@@ -103,8 +103,8 @@
     <div id="section-bendicion" class="section-bendicion"></div>
     <section class="section-historia" id="section-historia">
       <div class="container" style="text-align:center;margin-bottom:1rem">
-        <span class="eyebrow">Nuestra historia</span>
-        <h2 class="titulo">La ruta hasta aquí</h2>
+        <span class="eyebrow" data-texto="eyebrowHistoria">Nuestra historia</span>
+        <h2 class="titulo" data-texto="tituloHistoria">La ruta hasta aquí</h2>
       </div>
       <div class="ruta-mapa" id="historia-contenido"></div>
     </section>
@@ -117,8 +117,8 @@
     <!-- ITINERARIO — OLAS REALES -->
     <section class="section-timeline" id="section-timeline">
       <div class="container" style="text-align:center">
-        <span class="eyebrow">Itinerario</span>
-        <h2 class="titulo">La ruta del día, ola por ola</h2>
+        <span class="eyebrow" data-texto="eyebrowItinerario">Itinerario</span>
+        <h2 class="titulo" data-texto="tituloItinerario">La ruta del día, ola por ola</h2>
       </div>
       <div class="olas-wrap">
         <svg class="ola-atras" viewBox="0 0 800 70" preserveAspectRatio="none"><path d="M0 40 Q50 10 100 40 T200 40 T300 40 T400 40 T500 40 T600 40 T700 40 T800 40 T900 40 T1000 40 V70 H0 Z" fill="#1E8A8A" opacity="0.35"/></svg>
@@ -129,13 +129,13 @@
 
     <section class="section-detalles" id="section-detalles">
       <div style="text-align:center">
-        <span class="eyebrow">Detalles importantes</span>
+        <span class="eyebrow" data-texto="eyebrowDetalles">Detalles importantes</span>
       </div>
       <div class="detalles-grid" id="detalles-grid"></div>
     </section>
 
     <section class="section-vestimenta" id="section-vestimenta">
-      <span class="eyebrow">Código de vestimenta</span>
+      <span class="eyebrow" data-texto="eyebrowVestimenta">Código de vestimenta</span>
       <h2 class="titulo" id="vestimenta-titulo">Etiqueta formal</h2>
       <p class="vestimenta-texto" id="vestimenta-texto"></p>
       <div class="vestimenta-paleta oculto" id="vestimenta-paleta"></div>
@@ -144,29 +144,29 @@
     </section>
 
     <section class="section-map">
-      <span class="eyebrow">Ubicación</span>
+      <span class="eyebrow" data-texto="eyebrowUbicacion">Ubicación</span>
       <h2 class="titulo" id="ubicacion-nombre"></h2>
       <div class="map-foto oculto" id="map-foto"></div>
       <div class="map-block">
         <p id="ubicacion-direccion"></p>
-        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-mar">Cómo llegar</a>
+        <a id="ubicacion-link" href="#" target="_blank" class="btn btn-mar" data-texto="botonComoLlegar">Cómo llegar</a>
           <a id="ubicacion-waze" href="#" target="_blank" class="btn btn-outline oculto">Waze</a>
       </div>
     </section>
 
     <section class="section-regalos" id="section-regalos">
-      <span class="eyebrow">Regalos</span>
-      <h2 class="titulo">Tu presencia es nuestro regalo</h2>
+      <span class="eyebrow" data-texto="eyebrowRegalos">Regalos</span>
+      <h2 class="titulo" data-texto="tituloRegalos">Tu presencia es nuestro regalo</h2>
       <p class="regalos-texto" id="regalos-texto"></p>
-      <button class="btn btn-outline oculto" id="regalos-boton">Más detalles de cuenta</button>
+      <button class="btn btn-outline oculto" id="regalos-boton" data-texto="botonVerMesaRegalos">Más detalles de cuenta</button>
       <div class="regalos-detalle oculto" id="regalos-detalle"></div>
     </section>
 
     <!-- GALERÍA — BARCO REAL -->
     <!-- CANCIÓN / PLAYLIST -->
     <section class="section-cancion" id="section-cancion">
-      <span class="eyebrow">Música</span>
-      <h2 class="titulo">Nuestra Playlist</h2>
+      <span class="eyebrow" data-texto="eyebrowCancion">Música</span>
+      <h2 class="titulo" data-texto="tituloCancion">Nuestra Playlist</h2>
       <p class="rsvp-desc" id="cancion-intro"></p>
       <div class="cancion-embed-wrap oculto" id="cancion-embed-wrap"></div>
       <form class="form-firma oculto" id="form-cancion">
@@ -194,8 +194,8 @@
     <!-- SUELTA TU DESEO -->
     <section class="section-deseo" id="section-deseo">
       <div class="firmas-foto oculto" id="firmas-foto"></div>
-      <span class="eyebrow">En vez de un libro de firmas</span>
-      <h2 class="titulo">Suelta tu deseo al mar</h2>
+      <span class="eyebrow" data-texto="eyebrowLibroFirmas">En vez de un libro de firmas</span>
+      <h2 class="titulo" data-texto="tituloLibroFirmas">Suelta tu deseo al mar</h2>
       <p class="subtitulo">Escribe tu deseo en el papel, y míralo entrar a la botella.</p>
 
       <div class="deseo-escena">
@@ -232,8 +232,8 @@
         <rect x="30" y="200" width="40" height="16"/>
         <rect x="38" y="30" width="24" height="10"/>
       </svg>
-      <span class="eyebrow">Confirmación</span>
-      <h2 class="titulo">¿Nos acompañas?</h2>
+      <span class="eyebrow" data-texto="eyebrowRSVP">Confirmación</span>
+      <h2 class="titulo" data-texto="tituloRSVP">¿Nos acompañas?</h2>
       <p class="rsvp-desc">Nos encantaría contar con tu presencia. Confirma antes del <span id="rsvp-fecha-limite">15 de septiembre de 2026</span>.</p>
       <div class="rsvp-btns oculto" id="rsvp-whatsapp">
         <a id="rsvp-novio" href="#" target="_blank" class="btn btn-mar" style="background:#fff;color:var(--turquesa-osc);border-color:#fff">Confirmar con Bryan</a>
