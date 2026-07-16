@@ -140,8 +140,27 @@ const NOMBRES_MODULOS = {
   timeline: 'Itinerario',
   detalles: 'Detalles importantes',
   vestimenta: 'Código de vestimenta',
-  regalos: 'Regalos',
-  firmas: 'Fotos adicionales'
+  regalos: 'Mesa de regalos',
+  firmas: 'Libro de firmas',
+  video: 'Video de apertura',
+  cancion: 'Playlist para la fiesta',
+  galeria: 'Galería'
+};
+
+// Un mensaje distinto por módulo — vende el beneficio concreto, no el nombre técnico.
+const MENSAJES_MODULOS = {
+  musica: 'La música de fondo hace que tu invitación se sienta viva desde el primer segundo — muchos invitados la dejan sonando mientras leen todo.',
+  mensaje_personalizado: 'Un mensaje que aparece con el nombre de cada invitado se siente como si le hubieran escrito a esa persona en particular — es de lo que más se acuerdan.',
+  video_interno: 'Un video corto contando su historia adentro de la invitación es de las cosas que más comentan los invitados después de verla.',
+  historia: 'Contar cómo se conocieron, aunque sea en pocas líneas, es lo que hace que la invitación se sienta como ustedes y no como una plantilla genérica.',
+  timeline: 'El itinerario evita que te escriban preguntando la hora de la ceremonia o de la recepción — ya lo tienen todo ahí, sin preguntarte a ti.',
+  detalles: 'Aquí avisas cosas como parqueo, edad mínima o clima esperado, sin tener que mandarlo por WhatsApp a cada invitado por separado.',
+  vestimenta: 'El código de vestimenta es de las preguntas que más se repiten — ponerlo aquí te ahorra responderla uno por uno.',
+  regalos: 'Poner la mesa de regalos aquí evita la incomodidad de que te pregunten directamente qué quieren de regalo.',
+  firmas: 'La foto que subas aquí es la que ven tus invitados cuando dejan su mensaje en el libro de firmas — vale la pena que sea una que les guste a ambos.',
+  video: 'El video de apertura es lo primero que ven tus invitados al abrir el link — es la primera impresión de toda la invitación.',
+  cancion: 'Compartir tu playlist deja que tus invitados agreguen sus canciones favoritas antes de la fiesta — así ya sabes qué esperan escuchar.',
+  galeria: 'Una galería con fotos de ustedes como pareja hace que la invitación se sienta mucho más personal antes de que confirmen asistencia.'
 };
 
 function aplicarBloqueosPorModulo(modulosActivos){
@@ -154,7 +173,10 @@ function aplicarBloqueosPorModulo(modulosActivos){
     'tarjeta-detalles': 'detalles',
     'tarjeta-vestimenta': 'vestimenta',
     'tarjeta-regalos': 'regalos',
-    'tarjeta-fotos-decorativas': 'firmas'
+    'tarjeta-fotos-decorativas': 'firmas',
+    'tarjeta-video-apertura': 'video',
+    'tarjeta-playlist': 'cancion',
+    'tarjeta-galeria': 'galeria'
   };
 
   Object.entries(mapaTarjetas).forEach(([idTarjeta, slugModulo]) => {
@@ -164,12 +186,13 @@ function aplicarBloqueosPorModulo(modulosActivos){
     if (!tarjeta) return;
     const titulo = tarjeta.querySelector('h2').outerHTML;
     const nombreBonito = NOMBRES_MODULOS[slugModulo];
+    const mensaje = MENSAJES_MODULOS[slugModulo] || 'Este módulo no está incluido en tu paquete actual — escríbenos y te decimos cómo agregarlo.';
 
     tarjeta.classList.add('tarjeta-bloqueada');
     tarjeta.innerHTML = `
       ${titulo}
       <div class="bloqueo-mensaje">
-        <p>Este módulo no está incluido en tu paquete actual. Es una excelente forma de hacer tu invitación aún más especial — escríbenos y te decimos cómo agregarlo.</p>
+        <p>${mensaje}</p>
         <a href="https://wa.me/50431626792?text=${encodeURIComponent('Hola, quiero agregar el módulo de ' + nombreBonito + ' a mi invitación')}" target="_blank" class="btn btn-dorado btn-chico">Quiero agregarlo</a>
       </div>
     `;

@@ -102,6 +102,19 @@ function pintarHistoria(){
   if ((C.modules && C.modules.historia === false) || !C.historia || !C.historia.length) { seccion.style.display = 'none'; return; }
 
   const slides = C.historia;
+  const modoInstagram = !!(C.modules && C.modules.historia_instagram);
+
+  if (!modoInstagram) {
+    cont.innerHTML = slides.map(h => `
+      <div class="historia-item reveal">
+        <div class="historia-item__foto"><img src="${h.foto}" alt="${h.titulo || ''}"></div>
+        <div class="historia-item__texto">
+          ${h.titulo ? `<h3>${h.titulo}</h3>` : ''}
+          <p>${h.texto}</p>
+        </div>
+      </div>`).join('');
+    return;
+  }
   cont.innerHTML = `
     <div class="story" id="story">
       <div class="story-bars" id="story-bars">

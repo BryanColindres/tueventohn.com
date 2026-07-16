@@ -82,6 +82,10 @@ function enrutar(){
     document.getElementById('vista-reportes').classList.remove('oculto');
     document.querySelector('[data-vista="reportes"]')?.classList.add('activo');
     renderReportes();
+  } else if (ruta === 'paquetes') {
+    document.getElementById('vista-paquetes').classList.remove('oculto');
+    document.querySelector('[data-vista="paquetes"]')?.classList.add('activo');
+    renderPaquetesVista();
   } else if (ruta === 'crear') {
     document.getElementById('vista-crear').classList.remove('oculto');
     document.querySelector('[data-vista="crear"]')?.classList.add('activo');
@@ -208,7 +212,8 @@ async function pintarWizardAddons(){
   cont.innerHTML = '<p style="color:var(--texto-mid)">Cargando...</p>';
 
   const paqueteElegido = estado.paquetes.find(p => p.id === estado.wizard.paqueteId);
-  const esPremium = paqueteElegido && paqueteElegido.nombre === 'Premium';
+  const ordenMaximo = Math.max(...estado.paquetes.map(p => p.orden));
+  const esPremium = paqueteElegido && paqueteElegido.orden === ordenMaximo;
 
   const incluidosEnPaquete = await apiGet('paquete_modulo', `paquete_id=eq.${estado.wizard.paqueteId}&select=modulo_id`);
   const idsIncluidos = new Set(incluidosEnPaquete.map(i => i.modulo_id));
@@ -288,9 +293,10 @@ async function onWizardSiguiente(){
 
     // activar módulos del paquete elegido
     const paqueteElegido = estado.paquetes.find(p => p.id === w.paqueteId);
+    const ordenMaximo = Math.max(...estado.paquetes.map(p => p.orden));
     const modulosPaquete = await apiGet('paquete_modulo', `paquete_id=eq.${w.paqueteId}&select=modulo_id`);
-    const idsActivar = (paqueteElegido && paqueteElegido.nombre === 'Premium')
-      ? new Set(w.addonsExtra) // en Premium, lo que quede marcado en el paso 4 es la lista final (si desmarcan algo, se respeta)
+    const idsActivar = (paqueteElegido && paqueteElegido.orden === ordenMaximo)
+      ? new Set(w.addonsExtra) // en el paquete tope, lo que quede marcado en el paso 4 es la lista final (si desmarcan algo, se respeta)
       : new Set([...modulosPaquete.map(m => m.modulo_id), ...w.addonsExtra]);
     const filasEventoModulo = [...idsActivar].map(modulo_id => ({ evento_id: evento.id, modulo_id, activo: true }));
     if (filasEventoModulo.length) await apiPost('evento_modulo', filasEventoModulo);
@@ -587,7 +593,114 @@ async function duplicarEvento(eventoId){
   }
 }
 
-// ---------------- COPIAR AL PORTAPAPELES (con respaldo) ----------------
+// ---------------- PAQUETES ----------------
+async function renderPaquetesVista(){
+  const cont = document.getElementById('paquetes-lista');
+  cont.innerHTML = '<p style="color:var(--texto-mid)">Cargando...</p>';
+
+  // Siempre trae todo fresco (para reflejar cambios recientes de otros lados)
+  const [paquetes, modulos, relaciones] = await Promise.all([
+    apiGet('paquetes', 'select=*&order=orden.asc'),
+    apiGet('modulos', 'select=*&order=nombre.asc'),
+    apiGet('paquete_modulo', 'select=paquete_id,modulo_id')
+  ]);
+  estado.paquetes = paquetes;
+  estado.modulos = modulos;
+
+  const incluidosPorPaquete = {};
+  relaciones.forEach(r => {
+    if (!incluidosPorPaquete[r.paquete_id]) incluidosPorPaquete[r.paquete_id] = new Set();
+    incluidosPorPaquete[r.paquete_id].add(r.modulo_id);
+  });
+
+  cont.innerHTML = paquetes.map(p => {
+    const incluidos = incluidosPorPaquete[p.id] || new Set();
+    return `
+    <div class="paquete-card" data-paquete="${p.id}">
+      <div class="paquete-head">
+        <div class="form-grid">
+          <div class="campo"><label>Nombre</label><input type="text" data-campo="nombre" value="${p.nombre || ''}"></div>
+          <div class="campo"><label>Precio (L.)</label><input type="number" data-campo="precio" value="${p.precio}"></div>
+          <div class="campo" style="grid-column:1/-1"><label>Descripción corta (aparece en la web)</label><input type="text" data-campo="descripcion" value="${p.descripcion || ''}"></div>
+        </div>
+        <button class="btn btn-dorado" onclick="guardarPaquete('${p.id}')">Guardar</button>
+      </div>
+
+      <p class="paquete-modulos-titulo">Qué incluye este paquete</p>
+      <div>
+        ${modulos.map(m => `
+          <div class="modulo-row">
+            <div class="info"><p class="nombre">${m.nombre}</p><p class="precio">L. ${Number(m.precio).toLocaleString('es-HN')} · ${m.categoria || 'sin categoría'}</p></div>
+            <label class="switch">
+              <input type="checkbox" onchange="togglePaqueteModulo('${p.id}','${m.id}',this.checked)" ${incluidos.has(m.id) ? 'checked' : ''}>
+              <span class="slider"></span>
+            </label>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('') + `
+    <div class="paquete-card">
+      <p class="paquete-modulos-titulo" style="margin-top:0">Crear un módulo nuevo</p>
+      <p style="color:var(--texto-mid);font-size:.82rem;margin-bottom:1rem">Úsalo cuando quieras vender algo que hoy no existe como opción (ej. un video extra, un estilo distinto de una sección). Después aparece arriba en todos los paquetes para que decidas dónde incluirlo.</p>
+      <div class="paquete-nuevo-modulo">
+        <div class="campo"><label>Nombre</label><input type="text" id="nuevo-modulo-nombre" placeholder="Ej. Historia estilo Instagram"></div>
+        <div class="campo"><label>Slug (usado en el código, sin espacios)</label><input type="text" id="nuevo-modulo-slug" placeholder="Ej. historia_instagram"></div>
+        <div class="campo"><label>Precio si se agrega suelto (L.)</label><input type="number" id="nuevo-modulo-precio" value="0"></div>
+        <div class="campo"><label>Categoría</label><input type="text" id="nuevo-modulo-categoria" placeholder="Ej. contenido"></div>
+        <button class="btn btn-dorado" onclick="crearModulo()">Crear módulo</button>
+      </div>
+    </div>`;
+}
+
+async function guardarPaquete(paqueteId){
+  const card = document.querySelector(`.paquete-card[data-paquete="${paqueteId}"]`);
+  const nombre = card.querySelector('[data-campo="nombre"]').value.trim();
+  const precio = Number(card.querySelector('[data-campo="precio"]').value);
+  const descripcion = card.querySelector('[data-campo="descripcion"]').value.trim();
+  if (!nombre || !precio) return mostrarToast('Nombre y precio son obligatorios');
+
+  try {
+    await apiPatch('paquetes', `id=eq.${paqueteId}`, { nombre, precio, descripcion });
+    mostrarToast('Paquete actualizado');
+    estado.paquetes = await apiGet('paquetes', 'select=*&order=orden.asc');
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Error al guardar el paquete');
+  }
+}
+
+window.togglePaqueteModulo = async function(paqueteId, moduloId, incluido){
+  try {
+    if (incluido) {
+      await apiPost('paquete_modulo', [{ paquete_id: paqueteId, modulo_id: moduloId }]);
+    } else {
+      await apiDelete('paquete_modulo', `paquete_id=eq.${paqueteId}&modulo_id=eq.${moduloId}`);
+    }
+    mostrarToast(incluido ? 'Agregado al paquete' : 'Quitado del paquete');
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Error al actualizar el módulo — revisa que no esté duplicado');
+  }
+};
+
+async function crearModulo(){
+  const nombre = document.getElementById('nuevo-modulo-nombre').value.trim();
+  const slug = document.getElementById('nuevo-modulo-slug').value.trim();
+  const precio = Number(document.getElementById('nuevo-modulo-precio').value) || 0;
+  const categoria = document.getElementById('nuevo-modulo-categoria').value.trim();
+  if (!nombre || !slug) return mostrarToast('Nombre y slug son obligatorios');
+
+  try {
+    await apiPost('modulos', [{ nombre, slug, precio, categoria }]);
+    mostrarToast('Módulo creado');
+    renderPaquetesVista();
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Error al crear el módulo — revisa que el slug no esté repetido');
+  }
+}
+
+
 function copiarLink(idInput){
   const input = document.getElementById(idInput);
   input.select();

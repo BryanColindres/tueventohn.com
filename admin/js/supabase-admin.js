@@ -75,6 +75,18 @@ async function apiPatch(tabla, filtro, cambios){
   return res.json();
 }
 
+async function apiDelete(tabla, filtro){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?${filtro}`, {
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${Auth.token || SUPABASE_ANON_KEY}`
+    }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return true;
+}
+
 async function apiRpc(nombre, parametros){
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombre}`, {
     method: 'POST',

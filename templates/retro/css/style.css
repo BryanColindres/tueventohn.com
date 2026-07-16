@@ -22,6 +22,13 @@ a{text-decoration:none;color:inherit}
 .reveal{opacity:0;transform:translateY(24px) rotate(-1deg);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .reveal.visible{opacity:1;transform:translateY(0) rotate(0)}
 
+.historia-item{display:flex;align-items:center;gap:2.2rem;max-width:720px;margin:0 auto 2.6rem;padding:0 2rem}
+.historia-item:nth-child(even){flex-direction:row-reverse}
+.historia-item__foto{width:140px;height:180px;flex-shrink:0;border-radius:4px;overflow:hidden;border:4px solid #fff;box-shadow:0 8px 0 var(--mostaza)}
+.historia-item__texto h3{font-family:var(--font-display);font-size:1.2rem;color:var(--cafe);margin-bottom:.5rem}
+.historia-item__texto p{font-family:var(--font-cuerpo);font-size:.9rem;line-height:1.75;color:var(--texto-mid)}
+@media(max-width:600px){.historia-item{flex-direction:column !important;text-align:center;gap:1.2rem}}
+
 .eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--naranja);margin-bottom:.8rem;display:block}
 .titulo-retro{font-family:var(--font-display);font-size:clamp(1.8rem,4.6vw,2.6rem);color:var(--cafe);margin-bottom:1rem}
 .subtitulo{font-family:var(--font-mono);font-size:.88rem;color:var(--texto-mid)}

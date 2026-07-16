@@ -107,6 +107,13 @@ input,select,textarea{font-family:var(--font)}
 .switch input:checked + .slider{background:var(--verde)}
 .switch input:checked + .slider::before{transform:translateX(18px)}
 
+.paquete-card{background:var(--gris-osc);border:1px solid var(--gris-borde);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.4rem}
+.paquete-card .paquete-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.paquete-card .paquete-head .form-grid{flex:1;min-width:260px}
+.paquete-modulos-titulo{font-size:.8rem;color:var(--texto-mid);margin:1rem 0 .4rem;text-transform:uppercase;letter-spacing:.03em}
+.paquete-nuevo-modulo{display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;margin-top:1.6rem;padding-top:1.2rem;border-top:1px dashed var(--gris-borde)}
+.paquete-nuevo-modulo .campo{margin-bottom:0;flex:1;min-width:140px}
+
 .estado-barra{display:flex;align-items:center;gap:.6rem;margin-bottom:1.6rem;flex-wrap:wrap}
 .estado-pill{padding:.4rem 1rem;border-radius:20px;font-size:.8rem;font-weight:600;color:#fff}
 
