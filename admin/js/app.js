@@ -309,7 +309,44 @@ async function onWizardSiguiente(){
   }
 }
 
-// ---------------- EDITAR EVENTO ----------------
+// Mismo diccionario que trae shared/js/textos.js — se repite acá porque el
+// admin es un contexto aparte (no carga las plantillas). Etiqueta = qué ve
+// Bryan en el panel; los valores por defecto son solo referencia visual
+// (placeholder), el HTML real de cada plantilla puede decir otra cosa.
+const TEXTOS_EDITABLES = [
+  { clave: 'tituloHistoria', etiqueta: 'Título de "Nuestra Historia"', porDefecto: 'Nuestra Historia' },
+  { clave: 'tituloItinerario', etiqueta: 'Título del itinerario', porDefecto: 'Itinerario' },
+  { clave: 'eyebrowItinerario', etiqueta: 'Texto pequeño arriba del itinerario', porDefecto: '' },
+  { clave: 'tituloDetalles', etiqueta: 'Título de detalles del evento', porDefecto: 'Detalles del Evento' },
+  { clave: 'tituloUbicacion', etiqueta: 'Título de ubicación', porDefecto: 'Ubicación' },
+  { clave: 'eyebrowUbicacion', etiqueta: 'Texto pequeño arriba de ubicación', porDefecto: '' },
+  { clave: 'tituloCountdown', etiqueta: 'Texto del contador regresivo', porDefecto: 'Faltan...' },
+  { clave: 'tituloRSVP', etiqueta: 'Título de confirmación de asistencia', porDefecto: 'Confirmar Asistencia' },
+  { clave: 'eyebrowRSVP', etiqueta: 'Texto pequeño arriba de la confirmación', porDefecto: '' },
+  { clave: 'botonRSVPEntrada', etiqueta: 'Texto del botón que abre el formulario', porDefecto: 'Confirmar asistencia' },
+  { clave: 'botonRSVP', etiqueta: 'Texto del botón para enviar la confirmación', porDefecto: 'Enviar Confirmación' },
+  { clave: 'preguntaAsiste', etiqueta: '¿Asistirás? (pregunta del formulario)', porDefecto: '¿Asistirás?' },
+  { clave: 'opcionSiAsiste', etiqueta: 'Opción "Sí asiste"', porDefecto: 'Sí, ahí estaré' },
+  { clave: 'opcionNoAsiste', etiqueta: 'Opción "No asiste"', porDefecto: 'No podré asistir' },
+  { clave: 'mensajeRSVPGracias', etiqueta: 'Mensaje de agradecimiento tras confirmar', porDefecto: 'Gracias por confirmar tu asistencia. ¡Te esperamos con mucho cariño!' },
+  { clave: 'tituloRegalos', etiqueta: 'Título de mesa de regalos', porDefecto: 'Mesa de Regalos' },
+  { clave: 'eyebrowRegalos', etiqueta: 'Texto pequeño arriba de regalos', porDefecto: '' },
+  { clave: 'botonVerMesaRegalos', etiqueta: 'Texto del botón de mesa de regalos', porDefecto: 'Ver Mesa de Regalos' },
+  { clave: 'tituloCancion', etiqueta: 'Título de la playlist', porDefecto: 'Nuestra Playlist' },
+  { clave: 'eyebrowCancion', etiqueta: 'Texto pequeño arriba de la playlist', porDefecto: '' },
+  { clave: 'tituloLibroFirmas', etiqueta: 'Título del libro de firmas', porDefecto: 'Libro de Firmas' },
+  { clave: 'eyebrowLibroFirmas', etiqueta: 'Texto pequeño arriba del libro de firmas', porDefecto: '' },
+  { clave: 'introLibroFirmas', etiqueta: 'Texto de introducción del libro de firmas', porDefecto: 'Deja un mensaje para los novios. Los mensajes aprobados aparecerán aquí para que todos los lean.' },
+  { clave: 'placeholderNombreFirma', etiqueta: 'Placeholder del campo nombre (libro de firmas)', porDefecto: 'Tu nombre' },
+  { clave: 'placeholderMensajeFirma', etiqueta: 'Placeholder del campo mensaje (libro de firmas)', porDefecto: 'Escribe tu mensaje para los novios...' },
+  { clave: 'botonPublicarFirma', etiqueta: 'Texto del botón publicar firma', porDefecto: 'Publicar Mensaje' },
+  { clave: 'etiquetaEnRevision', etiqueta: 'Etiqueta "en revisión"', porDefecto: 'En revisión' },
+  { clave: 'eyebrowVestimenta', etiqueta: 'Texto pequeño arriba de vestimenta', porDefecto: '' },
+  { clave: 'botonComoLlegar', etiqueta: 'Texto del botón "Cómo llegar"', porDefecto: 'Cómo Llegar' },
+  { clave: 'botonAgregarCalendario', etiqueta: 'Texto del botón agregar al calendario', porDefecto: 'Agregar al Calendario' }
+];
+
+
 async function renderEditar(id){
   estado.eventoActualId = id;
   const [evento] = await apiGet('eventos', `id=eq.${id}&select=*,clientes(*),estados(*),plantillas(slug)`);
@@ -383,6 +420,14 @@ async function renderEditar(id){
       </label>
     </div>`).join('');
 
+  // pestaña textos
+  const textosGuardados = evento.textos || {};
+  document.getElementById('ed-textos-lista').innerHTML = TEXTOS_EDITABLES.map(t => `
+    <div class="campo">
+      <label>${t.etiqueta}</label>
+      <input type="text" data-texto-clave="${t.clave}" value="${textosGuardados[t.clave] || ''}" placeholder="${t.porDefecto || 'Texto normal de la plantilla'}">
+    </div>`).join('');
+
   // tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.onclick = () => {
@@ -408,6 +453,12 @@ async function guardarEdicion(eventoId, clienteId){
       notas: document.getElementById('ed-cliente-notas').value
     });
 
+    // textos (solo se guardan las claves que sí tienen algo escrito)
+    const textos = {};
+    document.querySelectorAll('#ed-textos-lista [data-texto-clave]').forEach(input => {
+      if (input.value.trim()) textos[input.dataset.textoClave] = input.value.trim();
+    });
+
     await apiPatch('eventos', `id=eq.${eventoId}`, {
       novio_a_nombre: document.getElementById('ed-novio-a-nombre').value,
       novio_a_apellido: document.getElementById('ed-novio-a-apellido').value,
@@ -421,7 +472,8 @@ async function guardarEdicion(eventoId, clienteId){
       lugar_direccion: document.getElementById('ed-lugar-direccion').value,
       lugar_maps_url: document.getElementById('ed-lugar-maps').value,
       foto_hero_url: document.getElementById('ed-foto-hero').value,
-      nombre_evento: `${document.getElementById('ed-novio-a-nombre').value} & ${document.getElementById('ed-novio-b-nombre').value}`
+      nombre_evento: `${document.getElementById('ed-novio-a-nombre').value} & ${document.getElementById('ed-novio-b-nombre').value}`,
+      textos
     });
 
     // módulos
