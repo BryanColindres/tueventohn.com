@@ -312,7 +312,7 @@ async function onWizardSiguiente(){
 // ---------------- EDITAR EVENTO ----------------
 async function renderEditar(id){
   estado.eventoActualId = id;
-  const [evento] = await apiGet('eventos', `id=eq.${id}&select=*,clientes(*),estados(*)`);
+  const [evento] = await apiGet('eventos', `id=eq.${id}&select=*,clientes(*),estados(*),plantillas(slug)`);
   if (!evento) { mostrarToast('Invitación no encontrada'); location.hash = '#invitaciones'; return; }
 
   document.getElementById('editar-titulo').textContent = evento.nombre_evento || 'Editar invitación';
@@ -323,15 +323,25 @@ async function renderEditar(id){
   const baseUrl = window.location.origin + window.location.pathname.replace(/admin\/.*$/, '');
   const linkDatos = `${baseUrl}portal/index.html?codigo=${evento.codigo_portal}`;
   const linkInvitados = `${baseUrl}portal/invitados.html?codigo=${evento.codigo_portal}`;
+  const linkInvitacion = evento.plantillas?.slug
+    ? `${baseUrl}templates/${evento.plantillas.slug}/index.html?evento=${evento.slug_publico}`
+    : null;
 
   document.getElementById('editar-portal-box').innerHTML = `
     <div style="width:100%">
-      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link para que llenen sus datos</p>
+      ${linkInvitacion ? `
+      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link de la invitación (para mandarle a todos los invitados — es el mismo para todos, sin nombre personalizado)</p>
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+        <input type="text" readonly value="${linkInvitacion}" id="input-link-invitacion" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
+        <button class="btn btn-fantasma" onclick="copiarLink('input-link-invitacion')">Copiar</button>
+      </div>` : `
+      <p style="color:#D8A94A;font-size:.78rem;margin-bottom:1rem">⚠ Todavía no se puede armar el link de la invitación — falta asignar la plantilla.</p>`}
+      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link para que llenen sus datos (portal, es para la pareja)</p>
       <div style="display:flex;gap:.5rem;margin-bottom:1rem">
         <input type="text" readonly value="${linkDatos}" id="input-link-datos" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
         <button class="btn btn-fantasma" onclick="copiarLink('input-link-datos')">Copiar</button>
       </div>
-      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link del Panel del Organizador (invitados, dashboard, mesas)</p>
+      <p style="color:var(--texto-mid);font-size:.78rem;margin-bottom:.3rem">Link del Panel del Organizador (invitados, dashboard, mesas — solo paquetes con RSVP automatizado)</p>
       <div style="display:flex;gap:.5rem">
         <input type="text" readonly value="${linkInvitados}" id="input-link-invitados" style="flex:1;padding:.6rem .8rem;background:var(--gris-mid);border:1px solid var(--gris-borde);border-radius:8px;color:var(--blanco);font-size:.8rem">
         <button class="btn btn-fantasma" onclick="copiarLink('input-link-invitados')">Copiar</button>
