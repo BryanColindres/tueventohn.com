@@ -35,6 +35,26 @@ window.CONFIG_DEMO = {
     foto: "../../assets/demo/img/preboda10.jpg"
   },
 
+  // Bendición y versículo antes de "Nuestra historia" — opcional, disponible
+  // en cualquier paquete. En el demo van llenos para que se vea completo.
+  bendicionTexto: "Con la bendición de nuestros padres y la certeza de que Dios ha guiado cada paso de este camino, los invitamos a acompañarnos en este día.",
+  versiculoHistoria: "\"El amor todo lo sufre, todo lo cree, todo lo espera, todo lo soporta.\" — 1 Corintios 13:7",
+
+  // Versículo o mensaje justo antes de la foto de cierre.
+  versiculoCierre: "\"Y ahora permanecen la fe, la esperanza y el amor, estos tres; pero el mayor de ellos es el amor.\" — 1 Corintios 13:13",
+
+  // Ceremonia y recepción en lugares distintos — en el demo mostramos el
+  // caso de dos lugares para que se vea la funcionalidad completa. Si el
+  // cliente real marca "mismo lugar", esto se ignora y solo se usa `lugar`.
+  mismoLugar: false,
+  horaRecepcion: "7:30 PM",
+  lugarRecepcion: {
+    nombre: "Salón Jardín Los Almendros",
+    direccion: "Km 2 carretera a Valle de Ángeles, Honduras",
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Salon+Jardin+Los+Almendros+Valle+de+Angeles",
+    wazeUrl: "https://waze.com/ul?q=Salon%20Jardin%20Los%20Almendros%20Valle%20de%20Angeles&navigate=yes"
+  },
+
   fotos: { hero: "../../assets/demo/img/hero.jpg", heroA: "../../assets/demo/img/hero.jpg", heroB: "../../assets/demo/img/preboda6.jpg", footer: "../../assets/demo/img/novios.jpg" },
 
   video: "../../assets/demo/video-intro.mp4",
@@ -112,7 +132,7 @@ window.CONFIG_DEMO = {
     countdown: true, musica: true, mapa: true, historia: true, mensajes: true,
     timeline: true, galeria: true, firmas: true, rsvp: true, rsvp_premium: true,
     video: true, cancion: true, detalles: true, regalos: true, vestimenta: true,
-    mensaje_personalizado: true, video_interno: true
+    mensaje_personalizado: true, video_interno: true, historia_instagram: true
   },
 
   // Cómo se muestra la sección de canción (depende del paquete real del cliente;
