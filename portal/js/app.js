@@ -32,6 +32,8 @@ async function rpc(nombre, parametros){
   return data;
 }
 
+let LIMITE_GALERIA = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   CODIGO = params.get('codigo');
@@ -100,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('p-rsvp-foto').value = extras.rsvpFotoUrl || '';
     document.getElementById('p-video-apertura-url').value = extras.videoAperturaUrl || '';
     document.getElementById('p-musica-url').value = extras.musicaUrl || '';
-    renderGaleriaPortal(extras.galeria || []);
   }
 
   // Bendición, versículos y ceremonia/recepción — RPC aparte para no tocar
@@ -117,11 +118,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('p-lugar-recepcion-direccion').value = extra2.lugarRecepcionDireccion || '';
       document.getElementById('p-lugar-recepcion-maps').value = extra2.lugarRecepcionMapsUrl || '';
       document.getElementById('p-lugar-recepcion-waze').value = extra2.lugarRecepcionWazeUrl || '';
+      LIMITE_GALERIA = extra2.limiteGaleria || null;
       toggleRecepcion();
     }
   } catch (err) {
     console.warn('portal_obtener_extra no disponible todavía (¿ya corriste el SQL?):', err);
   }
+
+  // Pinta la galería ya con LIMITE_GALERIA definido, para que el contador
+  // "x/N fotos" salga bien desde el primer render.
+  if (extras && extras.ok) renderGaleriaPortal(extras.galeria || []);
 
   historiaItems = datos.historia || [];
   timelineItems = datos.timeline || [];
@@ -133,6 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   pintarDetalles();
 
   aplicarBloqueosPorModulo(datos.modulosActivos || {});
+  marcarTarjetasGuardadasAlCargar();
 
   actualizarProgreso();
   document.getElementById('progreso-wrap').classList.remove('oculto');
@@ -273,7 +280,8 @@ function mostrarError(){
 function mostrarOk(idBoton){
   const el = document.getElementById(idBoton);
   el.classList.remove('oculto');
-  setTimeout(() => el.classList.add('oculto'), 4000);
+  // Ya NO se oculta solo — se queda mientras no haya cambios sin guardar
+  // (antes desaparecía a los 4 segundos y parecía que nunca se había guardado).
 
   const tarjeta = el.closest('.tarjeta');
   if (tarjeta) {
@@ -282,6 +290,19 @@ function mostrarOk(idBoton){
     if (aviso) aviso.remove();
   }
   actualizarProgreso();
+}
+
+// Al abrir el portal, si una tarjeta ya tiene datos guardados, mostramos su
+// "✓ Guardado" desde el inicio — antes solo aparecía justo después de tocar
+// el botón, y al recargar la página parecía que nada se había guardado.
+function marcarTarjetasGuardadasAlCargar(){
+  document.querySelectorAll('.tarjeta:not(.tarjeta-final)').forEach(tarjeta => {
+    const campos = tarjeta.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="hidden"], textarea');
+    const tieneAlgo = [...campos].some(c => c.value && c.value.trim());
+    if (!tieneAlgo) return;
+    const ok = tarjeta.querySelector('.mensaje-ok');
+    if (ok) ok.classList.remove('oculto');
+  });
 }
 
 function valor(id){ return document.getElementById(id).value; }
@@ -299,6 +320,8 @@ function activarAvisoDeCambios(){
 function marcarTarjetaSinGuardar(tarjeta){
   if (tarjeta.classList.contains('tarjeta-sin-guardar')) return;
   tarjeta.classList.add('tarjeta-sin-guardar');
+  const ok = tarjeta.querySelector('.mensaje-ok');
+  if (ok) ok.classList.add('oculto');
   const h2 = tarjeta.querySelector('h2');
   if (h2 && !tarjeta.querySelector('.aviso-sin-guardar')) {
     const aviso = document.createElement('span');
@@ -340,18 +363,19 @@ function actualizarSwatch(idColor, idSwatch){
 // Un <input type="file"> nunca puede "recordar" lo que ya subiste (por
 // seguridad del navegador) -- por eso, junto a cada uno, se muestra esto
 // aparte, leyendo el link guardado.
-function refrescarPreview(idCampo, tipo){
+function refrescarPreview(idCampo, tipo, reciente){
   const cont = document.getElementById(`preview-${idCampo}`);
   if (!cont) return;
   const url = valor(idCampo);
   if (!url) { cont.classList.add('oculto'); cont.innerHTML = ''; return; }
   cont.classList.remove('oculto');
+  const etiqueta = reciente ? '✓ Subido — dale "Guardar" para confirmarlo' : '✓ Este es el que ya tienes guardado';
   if (tipo === 'image') {
-    cont.innerHTML = `<img src="${url}" alt="" class="preview-img"><span class="preview-label">✓ Ya subiste esto</span>`;
+    cont.innerHTML = `<img src="${url}" alt="" class="preview-img"><span class="preview-label">${etiqueta}</span>`;
   } else if (tipo === 'audio') {
-    cont.innerHTML = `<audio controls src="${url}" class="preview-audio"></audio><span class="preview-label">✓ Ya subiste esto</span>`;
+    cont.innerHTML = `<audio controls src="${url}" class="preview-audio"></audio><span class="preview-label">${etiqueta}</span>`;
   } else if (tipo === 'video') {
-    cont.innerHTML = `<video controls src="${url}" class="preview-video"></video><span class="preview-label">✓ Ya subiste esto</span>`;
+    cont.innerHTML = `<video controls src="${url}" class="preview-video"></video><span class="preview-label">${etiqueta}</span>`;
   } else {
     cont.innerHTML = `<a href="${url}" target="_blank" class="preview-label">✓ Ver archivo actual</a>`;
   }
@@ -364,7 +388,7 @@ async function subirFotoSimple(e, idDestino){
   const url = await subirArchivoCloudinary(archivo, esVideo ? 'video' : 'image');
   if (url) {
     document.getElementById(idDestino).value = url;
-    refrescarPreview(idDestino, esVideo ? 'video' : 'image');
+    refrescarPreview(idDestino, esVideo ? 'video' : 'image', true);
   }
 }
 
@@ -374,7 +398,7 @@ async function subirAudioSimple(e, idDestino){
   const url = await subirArchivoCloudinary(archivo, 'video'); // Cloudinary sube audio bajo el recurso "video"
   if (url) {
     document.getElementById(idDestino).value = url;
-    refrescarPreview(idDestino, 'audio');
+    refrescarPreview(idDestino, 'audio', true);
   }
 }
 
@@ -385,7 +409,7 @@ async function subirMensajePersonalizado(e){
   const url = await subirArchivoCloudinary(archivo, 'video');
   if (url) {
     document.getElementById('p-mensaje-url').value = url;
-    refrescarPreview('p-mensaje-url', esVideo ? 'video' : 'audio');
+    refrescarPreview('p-mensaje-url', esVideo ? 'video' : 'audio', true);
   }
 }
 
@@ -548,7 +572,7 @@ async function subirVideoApertura(e){
   const url = await subirArchivoCloudinary(archivo, 'video');
   if (url) {
     document.getElementById('p-video-apertura-url').value = url;
-    refrescarPreview('p-video-apertura-url', 'video');
+    refrescarPreview('p-video-apertura-url', 'video', true);
   }
 }
 
@@ -561,6 +585,11 @@ async function guardarVideoApertura(){
 async function subirFotoGaleriaCliente(e){
   const archivo = e.target.files[0];
   if (!archivo) return;
+  if (LIMITE_GALERIA && galeriaCantidadActual >= LIMITE_GALERIA) {
+    alert(`Tu paquete permite hasta ${LIMITE_GALERIA} fotos en la galería. Elimina alguna para subir otra, o escríbenos para ampliar el límite.`);
+    e.target.value = '';
+    return;
+  }
   const url = await subirArchivoCloudinary(archivo, 'image');
   if (!url) return;
   const res = await rpc('portal_agregar_foto_galeria', { p_codigo: CODIGO, p_url: url });
@@ -571,15 +600,29 @@ async function subirFotoGaleriaCliente(e){
   e.target.value = '';
 }
 
+let galeriaCantidadActual = 0;
+
 function renderGaleriaPortal(fotos){
+  galeriaCantidadActual = fotos.length;
   const cont = document.getElementById('galeria-lista');
+  const contador = document.getElementById('galeria-contador');
+  const inputArchivo = document.getElementById('p-galeria-input');
+
+  if (contador) {
+    contador.textContent = LIMITE_GALERIA
+      ? `${fotos.length} de ${LIMITE_GALERIA} fotos`
+      : `${fotos.length} fotos`;
+  }
+  const enLimite = LIMITE_GALERIA && fotos.length >= LIMITE_GALERIA;
+  if (inputArchivo) inputArchivo.disabled = !!enLimite;
+
   if (!fotos.length) { cont.innerHTML = '<p class="desc">Todavía no has agregado fotos.</p>'; return; }
   cont.innerHTML = fotos.map(f => `
     <div class="galeria-item-portal">
       <img src="${f.url}" alt="">
       <button type="button" class="galeria-eliminar" onclick="eliminarFotoGaleriaCliente('${f.id}')" title="Eliminar">✕</button>
     </div>
-  `).join('');
+  `).join('') + (enLimite ? '<p class="desc" style="grid-column:1/-1;color:#B8862F">Llegaste al límite de fotos de tu paquete.</p>' : '');
 }
 
 async function eliminarFotoGaleriaCliente(id){
@@ -597,7 +640,11 @@ function pintarHistoria(){
       <button class="quitar" onclick="quitarHistoria(${i})">✕</button>
       <div class="campo"><label>Título</label><input type="text" value="${h.titulo || ''}" oninput="historiaItems[${i}].titulo=this.value"></div>
       <div class="campo"><label>Texto</label><textarea oninput="historiaItems[${i}].texto=this.value">${h.texto || ''}</textarea></div>
-      <div class="campo"><label>Foto</label><input type="file" accept="image/*" onchange="subirFotoHistoria(event, ${i})"></div>
+      <div class="campo">
+        <label>Foto</label>
+        <input type="file" accept="image/*" onchange="subirFotoHistoria(event, ${i})">
+        ${h.foto ? `<div class="archivo-actual"><img src="${h.foto}" alt="" class="preview-img"><span class="preview-label">✓ Esta foto ya está cargada — dale "Guardar" abajo para confirmar todo el bloque</span></div>` : ''}
+      </div>
     </div>`).join('');
 }
 function agregarHistoria(){ historiaItems.push({ titulo: '', texto: '', foto: '' }); pintarHistoria(); }
@@ -606,7 +653,10 @@ async function subirFotoHistoria(e, i){
   const archivo = e.target.files[0];
   if (!archivo) return;
   const url = await subirArchivoCloudinary(archivo, 'image');
-  if (url) historiaItems[i].foto = url;
+  if (url) {
+    historiaItems[i].foto = url;
+    pintarHistoria(); // repinta para que se vea el preview y no parezca que se perdió
+  }
 }
 async function guardarHistoria(){
   await rpc('portal_guardar_historia', { p_codigo: CODIGO, p_items: historiaItems });

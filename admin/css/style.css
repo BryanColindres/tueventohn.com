@@ -113,6 +113,7 @@ input,select,textarea{font-family:var(--font)}
 .paquete-modulos-titulo{font-size:.8rem;color:var(--texto-mid);margin:1rem 0 .4rem;text-transform:uppercase;letter-spacing:.03em}
 .paquete-nuevo-modulo{display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;margin-top:1.6rem;padding-top:1.2rem;border-top:1px dashed var(--gris-borde)}
 .paquete-nuevo-modulo .campo{margin-bottom:0;flex:1;min-width:140px}
+.limite-modulo{width:90px;padding:.4rem .6rem;border:1px solid var(--gris-borde);border-radius:8px;font-size:.8rem;margin-right:.8rem;background:var(--gris-osc);color:var(--texto)}
 
 .estado-barra{display:flex;align-items:center;gap:.6rem;margin-bottom:1.6rem;flex-wrap:wrap}
 .estado-pill{padding:.4rem 1rem;border-radius:20px;font-size:.8rem;font-weight:600;color:#fff}

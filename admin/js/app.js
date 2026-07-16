@@ -602,15 +602,17 @@ async function renderPaquetesVista(){
   const [paquetes, modulos, relaciones] = await Promise.all([
     apiGet('paquetes', 'select=*&order=orden.asc'),
     apiGet('modulos', 'select=*&order=nombre.asc'),
-    apiGet('paquete_modulo', 'select=paquete_id,modulo_id')
+    apiGet('paquete_modulo', 'select=paquete_id,modulo_id,limite')
   ]);
   estado.paquetes = paquetes;
   estado.modulos = modulos;
 
   const incluidosPorPaquete = {};
+  const limitesPorPaquete = {};
   relaciones.forEach(r => {
     if (!incluidosPorPaquete[r.paquete_id]) incluidosPorPaquete[r.paquete_id] = new Set();
     incluidosPorPaquete[r.paquete_id].add(r.modulo_id);
+    limitesPorPaquete[`${r.paquete_id}:${r.modulo_id}`] = r.limite;
   });
 
   cont.innerHTML = paquetes.map(p => {
@@ -628,14 +630,22 @@ async function renderPaquetesVista(){
 
       <p class="paquete-modulos-titulo">Qué incluye este paquete</p>
       <div>
-        ${modulos.map(m => `
+        ${modulos.map(m => {
+          const marcado = incluidos.has(m.id);
+          const limite = limitesPorPaquete[`${p.id}:${m.id}`];
+          return `
           <div class="modulo-row">
             <div class="info"><p class="nombre">${m.nombre}</p><p class="precio">L. ${Number(m.precio).toLocaleString('es-HN')} · ${m.categoria || 'sin categoría'}</p></div>
+            <input type="number" min="0" placeholder="sin límite" value="${limite ?? ''}"
+              class="limite-modulo ${marcado ? '' : 'oculto'}"
+              title="Límite para este módulo en este paquete (ej. cantidad de fotos). Vacío = sin límite."
+              onchange="guardarLimiteModulo('${p.id}','${m.id}',this.value)">
             <label class="switch">
-              <input type="checkbox" onchange="togglePaqueteModulo('${p.id}','${m.id}',this.checked)" ${incluidos.has(m.id) ? 'checked' : ''}>
+              <input type="checkbox" onchange="togglePaqueteModulo('${p.id}','${m.id}',this.checked)" ${marcado ? 'checked' : ''}>
               <span class="slider"></span>
             </label>
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>
     </div>`;
   }).join('') + `
@@ -677,9 +687,24 @@ window.togglePaqueteModulo = async function(paqueteId, moduloId, incluido){
       await apiDelete('paquete_modulo', `paquete_id=eq.${paqueteId}&modulo_id=eq.${moduloId}`);
     }
     mostrarToast(incluido ? 'Agregado al paquete' : 'Quitado del paquete');
+    // Muestra/oculta el input de límite de esa misma fila sin recargar todo.
+    const checkbox = document.querySelector(`.paquete-card[data-paquete="${paqueteId}"] input[type="checkbox"][onchange*="${moduloId}"]`);
+    const limiteInput = checkbox?.closest('.modulo-row')?.querySelector('.limite-modulo');
+    if (limiteInput) limiteInput.classList.toggle('oculto', !incluido);
   } catch (err) {
     console.error(err);
     mostrarToast('Error al actualizar el módulo — revisa que no esté duplicado');
+  }
+};
+
+window.guardarLimiteModulo = async function(paqueteId, moduloId, valor){
+  const limite = valor === '' ? null : Number(valor);
+  try {
+    await apiPatch('paquete_modulo', `paquete_id=eq.${paqueteId}&modulo_id=eq.${moduloId}`, { limite });
+    mostrarToast(limite === null ? 'Sin límite' : `Límite: ${limite}`);
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Error al guardar el límite');
   }
 };
 

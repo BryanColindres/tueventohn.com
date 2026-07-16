@@ -321,9 +321,10 @@
       <div class="tarjeta" id="tarjeta-galeria">
         <h2><span class="num">16</span> Galería</h2>
         <p class="desc">Fotos de ustedes que se muestran en la invitación (no es donde suben fotos los invitados — eso es aparte).</p>
+        <p class="desc" id="galeria-contador" style="font-weight:600;color:var(--azul-profundo)"></p>
         <div class="campo">
           <label>Agregar foto</label>
-          <input type="file" accept="image/*" onchange="subirFotoGaleriaCliente(event)">
+          <input type="file" accept="image/*" id="p-galeria-input" onchange="subirFotoGaleriaCliente(event)">
         </div>
         <div id="galeria-lista" class="galeria-lista-portal"></div>
       </div>
