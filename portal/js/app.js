@@ -228,15 +228,30 @@ function aplicarBloqueosPorModulo(modulosActivos){
 
 // ---------------- BARRA DE PROGRESO (cuenta cuántas tarjetas ya tienen algo) ----------------
 function actualizarProgreso(){
-  const tarjetas = [...document.querySelectorAll('.tarjeta:not(.tarjeta-final):not(.tarjeta-bloqueada)')];
+  const tarjetas = [...document.querySelectorAll('.tarjeta:not(.tarjeta-final):not(.tarjeta-bloqueada)')]
+    // Las tarjetas opcionales/bonus (sin número, o con "(opcional)" en el título)
+    // no cuentan para el % ni aparecen nunca en "Todavía te falta".
+    .filter(tarjeta => {
+      const h2 = tarjeta.querySelector('h2');
+      if (!h2) return false;
+      if (!h2.querySelector('.num')) return false;
+      if (/\(opcional\)/i.test(h2.textContent)) return false;
+      return true;
+    });
   let completas = 0;
   const pendientes = [];
 
   tarjetas.forEach(tarjeta => {
-    const campos = tarjeta.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="hidden"], input[type="color"]:checked, textarea');
-    const tieneAlgo = [...campos].some(c => c.value && c.value.trim());
     const h2 = tarjeta.querySelector('h2');
     const titulo = h2 ? h2.textContent.trim() : '';
+    let tieneAlgo;
+    if (tarjeta.id === 'tarjeta-galeria') {
+      // La galería no guarda su estado en un input — son fotos ya subidas a Cloudinary.
+      tieneAlgo = galeriaCantidadActual > 0;
+    } else {
+      const campos = tarjeta.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="hidden"], input[type="color"]:checked, textarea');
+      tieneAlgo = [...campos].some(c => c.value && c.value.trim());
+    }
     if (tieneAlgo) {
       completas++;
     } else if (h2) {
@@ -415,7 +430,7 @@ async function subirMensajePersonalizado(e){
 
 // ---------------- GUARDAR CADA BLOQUE ----------------
 async function guardarDatosPrincipales(){
-  await rpc('portal_actualizar_evento', {
+  const __r1_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_novio_a_nombre: valor('p-novio-a-nombre'), p_novio_a_apellido: valor('p-novio-a-apellido'),
     p_novio_b_nombre: valor('p-novio-b-nombre'), p_novio_b_apellido: valor('p-novio-b-apellido'),
@@ -423,30 +438,38 @@ async function guardarDatosPrincipales(){
     p_fecha: valor('p-fecha') || null, p_hora: valor('p-hora') || null,
     p_fecha_limite_confirmacion: valor('p-fecha-limite') || null
   });
+  if (__r1_1?.error) return;
+  
   mostrarOk('ok-datos');
 }
 
 async function guardarUbicacion(){
-  await rpc('portal_actualizar_evento', {
+  const __r2_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_lugar_nombre: valor('p-lugar-nombre'), p_lugar_direccion: valor('p-lugar-direccion'),
     p_lugar_maps_url: valor('p-lugar-maps'), p_lugar_waze_url: valor('p-lugar-waze'),
     p_lugar_foto_url: valor('p-lugar-foto')
   });
+  if (__r2_1?.error) return;
+  
   mostrarOk('ok-ubicacion');
 }
 
 async function guardarFotos(){
-  await rpc('portal_actualizar_evento', {
+  const __r3_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_foto_hero_url: valor('p-foto-hero'), p_foto_footer_url: valor('p-foto-footer')
   });
+  if (__r3_1?.error) return;
+  
   // El versículo de cierre va en la función nueva, junto con las demás
   // cosas opcionales, para no tocar portal_actualizar_evento.
-  await rpc('portal_actualizar_extra', {
+  const __r3_2 = await rpc('portal_actualizar_extra', {
     p_codigo: CODIGO,
     p_versiculo_cierre: valor('p-versiculo-cierre')
   });
+  if (__r3_2?.error) return;
+  
   mostrarOk('ok-fotos');
 }
 
@@ -456,17 +479,19 @@ function toggleRecepcion(){
 }
 
 async function guardarBendicion(){
-  await rpc('portal_actualizar_extra', {
+  const __r4_1 = await rpc('portal_actualizar_extra', {
     p_codigo: CODIGO,
     p_bendicion_texto: valor('p-bendicion-texto'),
     p_versiculo_historia: valor('p-versiculo-historia')
   });
+  if (__r4_1?.error) return;
+  
   mostrarOk('ok-bendicion');
 }
 
 async function guardarRecepcion(){
   const mismo = document.getElementById('p-mismo-lugar').checked;
-  await rpc('portal_actualizar_extra', {
+  const __r5_1 = await rpc('portal_actualizar_extra', {
     p_codigo: CODIGO,
     p_mismo_lugar: mismo,
     p_hora_recepcion: mismo ? null : (valor('p-hora-recepcion') || null),
@@ -475,55 +500,69 @@ async function guardarRecepcion(){
     p_lugar_recepcion_maps_url: valor('p-lugar-recepcion-maps'),
     p_lugar_recepcion_waze_url: valor('p-lugar-recepcion-waze')
   });
+  if (__r5_1?.error) return;
+  
   mostrarOk('ok-recepcion');
 }
 
 async function guardarMusica(){
-  await rpc('portal_actualizar_musica', { p_codigo: CODIGO, p_url: valor('p-musica-url') });
+  const __r6_1 = await rpc('portal_actualizar_musica', { p_codigo: CODIGO, p_url: valor('p-musica-url') });
+  if (__r6_1?.error) return;
+  
   mostrarOk('ok-musica');
 }
 
 async function guardarMensajePersonalizado(){
-  await rpc('portal_actualizar_evento', {
+  const __r7_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_mensaje_personalizado_tipo: valor('p-mensaje-tipo'),
     p_mensaje_personalizado_url: valor('p-mensaje-url')
   });
+  if (__r7_1?.error) return;
+  
   mostrarOk('ok-mensaje');
 }
 
 async function guardarVideoInterno(){
-  await rpc('portal_actualizar_evento', {
+  const __r8_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_video_interno_url: valor('p-video-interno-url'),
     p_video_interno_frase: valor('p-video-interno-frase')
   });
+  if (__r8_1?.error) return;
+  
   mostrarOk('ok-video-interno');
 }
 
 async function guardarVestimenta(){
-  await rpc('portal_actualizar_evento', {
+  const __r9_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_vestimenta_texto: valor('p-vestimenta-texto'),
     p_vestimenta_boton_url: valor('p-vestimenta-boton')
   });
+  if (__r9_1?.error) return;
+  
   mostrarOk('ok-vestimenta');
 }
 
 async function guardarRegalos(){
-  await rpc('portal_actualizar_evento', {
+  const __r10_1 = await rpc('portal_actualizar_evento', {
     p_codigo: CODIGO,
     p_regalos_texto: valor('p-regalos-texto'),
     p_regalos_cuenta_texto: valor('p-regalos-cuenta')
   });
+  if (__r10_1?.error) return;
+  
   mostrarOk('ok-regalos');
 }
 
 async function guardarPlaylist(){
-  await rpc('portal_actualizar_playlist', {
+  const __r11_1 = await rpc('portal_actualizar_playlist', {
     p_codigo: CODIGO,
     p_cancion_embed_url: valor('p-playlist-url')
   });
+  if (__r11_1?.error) return;
+  
   mostrarOk('ok-playlist');
 }
 
@@ -541,28 +580,34 @@ async function guardarPaleta(){
     .filter(Boolean);
   const colorEvitar = leerColorFila('p-color-evitar', 'p-color-evitar-incluir', 'p-color-evitar-nombre');
 
-  await rpc('portal_actualizar_vestimenta_paleta', {
+  const __r12_1 = await rpc('portal_actualizar_vestimenta_paleta', {
     p_codigo: CODIGO,
     p_paleta: paleta,
     p_color_evitar: colorEvitar
   });
+  if (__r12_1?.error) return;
+  
   mostrarOk('ok-paleta');
 }
 
 async function guardarFotoHeroB(){
-  await rpc('portal_actualizar_foto_hero_b', {
+  const __r13_1 = await rpc('portal_actualizar_foto_hero_b', {
     p_codigo: CODIGO,
     p_url: valor('p-foto-hero-b')
   });
+  if (__r13_1?.error) return;
+  
   mostrarOk('ok-foto-hero-b');
 }
 
 async function guardarFotosDecorativas(){
-  await rpc('portal_actualizar_fotos_decorativas', {
+  const __r14_1 = await rpc('portal_actualizar_fotos_decorativas', {
     p_codigo: CODIGO,
     p_firmas_foto_url: valor('p-firmas-foto'),
     p_rsvp_foto_url: valor('p-rsvp-foto')
   });
+  if (__r14_1?.error) return;
+  
   mostrarOk('ok-fotos-decorativas');
 }
 
@@ -577,7 +622,9 @@ async function subirVideoApertura(e){
 }
 
 async function guardarVideoApertura(){
-  await rpc('portal_actualizar_video_apertura', { p_codigo: CODIGO, p_url: valor('p-video-apertura-url') });
+  const __r15_1 = await rpc('portal_actualizar_video_apertura', { p_codigo: CODIGO, p_url: valor('p-video-apertura-url') });
+  if (__r15_1?.error) return;
+  
   mostrarOk('ok-video-apertura');
 }
 
@@ -678,7 +725,9 @@ async function subirFotoHistoria(e, i){
   }
 }
 async function guardarHistoria(){
-  await rpc('portal_guardar_historia', { p_codigo: CODIGO, p_items: historiaItems });
+  const __r16_1 = await rpc('portal_guardar_historia', { p_codigo: CODIGO, p_items: historiaItems });
+  if (__r16_1?.error) return;
+  
   historiaItems.forEach(h => { h.fotoGuardada = !!h.foto; });
   pintarHistoria(); // para que las fotos ya digan "guardada" en vez de "dale Guardar"
   mostrarOk('ok-historia');
@@ -855,7 +904,9 @@ function pintarTimeline(){
 function agregarTimeline(){ timelineItems.push({ hora: '', titulo: '', icono: '' }); pintarTimeline(); }
 function quitarTimeline(i){ timelineItems.splice(i, 1); pintarTimeline(); }
 async function guardarTimeline(){
-  await rpc('portal_guardar_timeline', { p_codigo: CODIGO, p_items: timelineItems });
+  const __r17_1 = await rpc('portal_guardar_timeline', { p_codigo: CODIGO, p_items: timelineItems });
+  if (__r17_1?.error) return;
+  
   mostrarOk('ok-timeline');
 }
 
@@ -915,7 +966,9 @@ function pintarDetalles(){
 function agregarDetalle(){ detallesItems.push({ icono: 'general', titulo: '', texto: '' }); pintarDetalles(); }
 function quitarDetalle(i){ detallesItems.splice(i, 1); pintarDetalles(); }
 async function guardarDetalles(){
-  await rpc('portal_guardar_detalles', { p_codigo: CODIGO, p_items: detallesItems });
+  const __r18_1 = await rpc('portal_guardar_detalles', { p_codigo: CODIGO, p_items: detallesItems });
+  if (__r18_1?.error) return;
+  
   mostrarOk('ok-detalles');
 }
 
@@ -931,7 +984,9 @@ function pintarMensajes(){
 function agregarMensaje(){ mensajesItems.push({ texto: '', referencia: '' }); pintarMensajes(); }
 function quitarMensaje(i){ mensajesItems.splice(i, 1); pintarMensajes(); }
 async function guardarMensajes(){
-  await rpc('portal_guardar_mensajes', { p_codigo: CODIGO, p_items: mensajesItems });
+  const __r19_1 = await rpc('portal_guardar_mensajes', { p_codigo: CODIGO, p_items: mensajesItems });
+  if (__r19_1?.error) return;
+  
   mostrarOk('ok-mensajes');
 }
 
