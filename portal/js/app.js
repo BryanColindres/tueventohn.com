@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // "x/N fotos" salga bien desde el primer render.
   if (extras && extras.ok) renderGaleriaPortal(extras.galeria || []);
 
-  historiaItems = datos.historia || [];
+  historiaItems = (datos.historia || []).map(h => ({ ...h, fotoGuardada: !!h.foto }));
   timelineItems = datos.timeline || [];
   mensajesItems = datos.mensajes || [];
   detallesItems = datos.detallesImportantes || [];
@@ -583,20 +583,38 @@ async function guardarVideoApertura(){
 
 // ---------------- GALERÍA ----------------
 async function subirFotoGaleriaCliente(e){
-  const archivo = e.target.files[0];
-  if (!archivo) return;
-  if (LIMITE_GALERIA && galeriaCantidadActual >= LIMITE_GALERIA) {
-    alert(`Tu paquete permite hasta ${LIMITE_GALERIA} fotos en la galería. Elimina alguna para subir otra, o escríbenos para ampliar el límite.`);
-    e.target.value = '';
-    return;
+  const archivos = [...e.target.files];
+  if (!archivos.length) return;
+
+  const tarjeta = document.getElementById('tarjeta-galeria');
+  const espacioDisponible = LIMITE_GALERIA ? Math.max(0, LIMITE_GALERIA - galeriaCantidadActual) : archivos.length;
+
+  if (LIMITE_GALERIA && archivos.length > espacioDisponible) {
+    if (espacioDisponible === 0) {
+      alert(`Tu paquete permite hasta ${LIMITE_GALERIA} fotos en la galería. Elimina alguna para subir otra, o escríbenos para ampliar el límite.`);
+      e.target.value = '';
+      return;
+    }
+    alert(`Solo te quedan ${espacioDisponible} espacio(s) disponibles — vamos a subir las primeras ${espacioDisponible} que elegiste.`);
   }
-  const url = await subirArchivoCloudinary(archivo, 'image');
-  if (!url) return;
-  const res = await rpc('portal_agregar_foto_galeria', { p_codigo: CODIGO, p_url: url });
-  if (res && res.ok) {
-    const extras = await rpc('portal_obtener_extras', { p_codigo: CODIGO });
-    if (extras && extras.ok) renderGaleriaPortal(extras.galeria || []);
+
+  const aSubir = archivos.slice(0, espacioDisponible);
+  for (const archivo of aSubir) {
+    const url = await subirArchivoCloudinary(archivo, 'image');
+    if (!url) continue;
+    await rpc('portal_agregar_foto_galeria', { p_codigo: CODIGO, p_url: url });
   }
+
+  const extras = await rpc('portal_obtener_extras', { p_codigo: CODIGO });
+  if (extras && extras.ok) renderGaleriaPortal(extras.galeria || []);
+
+  // Cada foto ya se guardó sola en la base — esta tarjeta nunca tiene "cambios
+  // sin guardar" pendientes, así que no lo dejamos marcado en amarillo.
+  if (tarjeta) {
+    tarjeta.classList.remove('tarjeta-sin-guardar');
+    tarjeta.querySelector('.aviso-sin-guardar')?.remove();
+  }
+
   e.target.value = '';
 }
 
@@ -643,11 +661,11 @@ function pintarHistoria(){
       <div class="campo">
         <label>Foto</label>
         <input type="file" accept="image/*" onchange="subirFotoHistoria(event, ${i})">
-        ${h.foto ? `<div class="archivo-actual"><img src="${h.foto}" alt="" class="preview-img"><span class="preview-label">✓ Esta foto ya está cargada — dale "Guardar" abajo para confirmar todo el bloque</span></div>` : ''}
+        ${h.foto ? `<div class="archivo-actual"><img src="${h.foto}" alt="" class="preview-img"><span class="preview-label">${h.fotoGuardada ? '✓ Esta foto ya está guardada' : '✓ Subida — dale "Guardar" abajo para confirmarla'}</span></div>` : ''}
       </div>
     </div>`).join('');
 }
-function agregarHistoria(){ historiaItems.push({ titulo: '', texto: '', foto: '' }); pintarHistoria(); }
+function agregarHistoria(){ historiaItems.push({ titulo: '', texto: '', foto: '', fotoGuardada: false }); pintarHistoria(); }
 function quitarHistoria(i){ historiaItems.splice(i, 1); pintarHistoria(); }
 async function subirFotoHistoria(e, i){
   const archivo = e.target.files[0];
@@ -655,11 +673,14 @@ async function subirFotoHistoria(e, i){
   const url = await subirArchivoCloudinary(archivo, 'image');
   if (url) {
     historiaItems[i].foto = url;
+    historiaItems[i].fotoGuardada = false; // recién subida, todavía no se guardó el bloque
     pintarHistoria(); // repinta para que se vea el preview y no parezca que se perdió
   }
 }
 async function guardarHistoria(){
   await rpc('portal_guardar_historia', { p_codigo: CODIGO, p_items: historiaItems });
+  historiaItems.forEach(h => { h.fotoGuardada = !!h.foto; });
+  pintarHistoria(); // para que las fotos ya digan "guardada" en vez de "dale Guardar"
   mostrarOk('ok-historia');
 }
 
