@@ -129,7 +129,9 @@
 .selector-icono-vacio{color:var(--texto-mid);font-style:italic}
 .selector-icono-cambiar{margin-left:auto;font-size:.72rem;color:var(--celeste-oscuro);flex-shrink:0}
 
-.modal-caja-ancha{width:620px}
+.modal-caja-ancha{width:620px;max-height:85vh;display:flex;flex-direction:column;padding-bottom:1.7rem}
+.picker-icono-scroll{overflow-y:auto;flex:1 1 auto;min-height:0;margin-right:-.4rem;padding-right:.4rem}
+.modal-caja-ancha > .btn{margin-top:1rem;flex-shrink:0}
 .picker-icono-grupo{margin-bottom:1.1rem}
 .picker-icono-grupo:last-child{margin-bottom:0}
 .picker-icono-grupo h4{font-family:var(--font-display);font-style:italic;font-size:.95rem;color:var(--azul-profundo);margin:0 0 .55rem}
