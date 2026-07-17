@@ -119,6 +119,33 @@
 .proximamente{background:#fff;border:1px dashed var(--celeste);border-radius:18px;padding:3.5rem 2rem;text-align:center;color:var(--texto-mid)}
 .proximamente h3{font-family:var(--font-display);font-style:italic;color:var(--azul-profundo);margin:0 0 .5rem}
 
+/* ---- selector visual de íconos (itinerario) ---- */
+.selector-icono{display:flex;align-items:center;gap:.6rem;width:100%;padding:.6rem .9rem;border:1px solid var(--borde);
+  border-radius:10px;background:var(--celeste-nube);font-family:var(--font);font-size:.85rem;color:var(--texto);
+  cursor:pointer;text-align:left}
+.selector-icono:hover{border-color:var(--celeste-oscuro)}
+.selector-icono-svg{width:30px;height:30px;flex-shrink:0;color:var(--celeste-oscuro)}
+.selector-icono-svg svg{width:100%;height:100%}
+.selector-icono-vacio{color:var(--texto-mid);font-style:italic}
+.selector-icono-cambiar{margin-left:auto;font-size:.72rem;color:var(--celeste-oscuro);flex-shrink:0}
+
+.modal-caja-ancha{width:620px}
+.picker-icono-grupo{margin-bottom:1.1rem}
+.picker-icono-grupo:last-child{margin-bottom:0}
+.picker-icono-grupo h4{font-family:var(--font-display);font-style:italic;font-size:.95rem;color:var(--azul-profundo);margin:0 0 .55rem}
+.picker-icono-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:.6rem}
+.picker-icono-op{display:flex;flex-direction:column;align-items:center;gap:.45rem;padding:.8rem .4rem;
+  border:1px solid var(--borde);border-radius:12px;background:#fff;cursor:pointer;font-family:var(--font)}
+.picker-icono-op:hover{border-color:var(--celeste-oscuro);background:var(--celeste-nube)}
+.picker-icono-op.activo{border-color:var(--celeste-oscuro);background:var(--celeste-claro)}
+.picker-icono-svg{width:36px;height:36px;color:var(--celeste-oscuro)}
+.picker-icono-svg svg{width:100%;height:100%}
+.picker-icono-nombre{font-size:.68rem;color:var(--texto-mid);text-align:center;line-height:1.15}
+@media (max-width:640px){
+  .modal-caja-ancha{width:100%}
+  .picker-icono-grid{grid-template-columns:repeat(auto-fill,minmax(78px,1fr))}
+}
+
 /* ============================================================ MESAS ==== */
 .mesas-toolbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
 .menu-flotante{position:absolute;top:110%;left:0;background:#fff;border:1px solid var(--borde);border-radius:10px;
