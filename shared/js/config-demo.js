@@ -58,10 +58,10 @@ window.CONFIG_DEMO = {
   fotos: { hero: "../../assets/demo/img/hero.jpg", heroA: "../../assets/demo/img/hero.jpg", heroB: "../../assets/demo/img/preboda6.jpg", footer: "../../assets/demo/img/novios.jpg" },
 
   video: "../../assets/demo/video-intro.mp4",
-  videoDelay: 1.5,
+  videoDelay: 1.0,
   musicaUrl: "../../assets/demo/musica.mp3",
 
-  mensajePersonalizado: { tipo: "audio", url: "../../assets/demo/musica.mp3" },
+  mensajePersonalizado: { tipo: "audio", url: "../../assets/demo/mensaje.mp3" },
 
   mensajes: [
     { texto: "El amor es paciente, el amor es bondadoso. No es envidioso, no se jacta, no se envanece.", referencia: "1 Corintios 13:4" }
@@ -77,7 +77,7 @@ window.CONFIG_DEMO = {
     { titulo: "La propuesta", texto: "El amor quedó sellado con un sí que llenó de lágrimas y sonrisas nuestro camino hacia el altar.", foto: "../../assets/demo/img/propuesta.jpg" }
   ],
 
-  videoInterno: { url: "../../assets/demo/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
+  videoInterno: { url: "../../assets/demo/video-interno.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
 
   timeline: [
     { hora: "5:30 PM", titulo: "Llegada de invitados" },
