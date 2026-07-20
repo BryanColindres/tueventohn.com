@@ -457,6 +457,20 @@ function pintarVersiculoCierre(C){
     </div>`;
 }
 
+// Foto libre entre el itinerario y los detalles importantes — disponible en
+// todos los paquetes (no depende de C.modules). Si no la subieron, la
+// sección desaparece sola, igual que la bendición.
+function pintarFotoIntermedia(C){
+  const cont = document.getElementById('section-foto-intermedia');
+  if (!cont) return;
+  if (!C.fotoIntermediaUrl) { cont.style.display = 'none'; return; }
+
+  cont.innerHTML = `
+    <div style="max-width:560px;margin:0 auto;padding:1.2rem 2rem 2.6rem">
+      <img src="${C.fotoIntermediaUrl}" alt="" style="width:100%;display:block;border-radius:14px;object-fit:cover">
+    </div>`;
+}
+
 // Se llama DESPUÉS de que cada plantilla pinta su propia sección de
 // ubicación (ceremonia). Si el cliente marcó "no es el mismo lugar" y llenó
 // los datos de recepción, agrega un segundo bloque justo debajo, usando
@@ -518,5 +532,6 @@ window.TuBodaBackend = {
   normalizarPlaylistUrl,
   pintarBendicionYVersiculo,
   pintarVersiculoCierre,
+  pintarFotoIntermedia,
   pintarUbicacionRecepcion
 };

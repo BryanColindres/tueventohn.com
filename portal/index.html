@@ -210,6 +210,20 @@
         <p class="mensaje-ok oculto" id="ok-timeline">Guardado</p>
       </div>
 
+      <!-- FOTO ENTRE ITINERARIO Y DETALLES (opcional, en todos los paquetes) -->
+      <div class="tarjeta" id="tarjeta-foto-intermedia">
+        <h2>Foto (opcional)</h2>
+        <p class="desc">Aparece entre el itinerario y los detalles importantes. Cualquier foto que quieran mostrar ahí va — no tiene que ser nada específico.</p>
+        <div class="campo">
+          <label>Foto</label>
+          <input type="file" accept="image/*" onchange="subirFotoSimple(event, 'p-foto-intermedia')">
+          <input type="hidden" id="p-foto-intermedia">
+          <div class="archivo-actual oculto" id="preview-p-foto-intermedia"></div>
+        </div>
+        <button class="btn btn-dorado" onclick="guardarFotoIntermedia()">Guardar</button>
+        <p class="mensaje-ok oculto" id="ok-foto-intermedia">Guardado</p>
+      </div>
+
       <!-- DETALLES IMPORTANTES -->
       <div class="tarjeta" id="tarjeta-detalles">
         <h2><span class="num">10</span> Detalles importantes</h2>

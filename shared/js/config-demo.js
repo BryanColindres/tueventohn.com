@@ -118,6 +118,7 @@ window.CONFIG_DEMO = {
 
   rsvpFotoUrl: "../../assets/demo/img/preboda8.jpg",
   firmasFotoUrl: "../../assets/demo/img/preboda9.jpg",
+  fotoIntermediaUrl: "../../assets/demo/img/preboda10.jpg",
 
   // Vista previa del RSVP cuando no hay ?id= real en la URL (ej. catálogo).
   // Representa UNA familia de ejemplo -- solo personas individuales, nunca

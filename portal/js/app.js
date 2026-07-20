@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('p-lugar-recepcion-direccion').value = extra2.lugarRecepcionDireccion || '';
       document.getElementById('p-lugar-recepcion-maps').value = extra2.lugarRecepcionMapsUrl || '';
       document.getElementById('p-lugar-recepcion-waze').value = extra2.lugarRecepcionWazeUrl || '';
+      document.getElementById('p-foto-intermedia').value = extra2.fotoIntermediaUrl || '';
       LIMITE_GALERIA = extra2.limiteGaleria || null;
       toggleRecepcion();
     }
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   activarAvisoDeCambios();
 
   // Vistas previas de todo lo que ya esté subido (fotos, audio, video).
-  ['p-lugar-foto', 'p-foto-hero', 'p-foto-footer', 'p-foto-hero-b', 'p-firmas-foto', 'p-rsvp-foto']
+  ['p-lugar-foto', 'p-foto-hero', 'p-foto-footer', 'p-foto-hero-b', 'p-firmas-foto', 'p-rsvp-foto', 'p-foto-intermedia']
     .forEach(id => refrescarPreview(id, 'image'));
   refrescarPreview('p-musica-url', 'audio');
   refrescarPreview('p-video-interno-url', 'video');
@@ -487,6 +488,15 @@ async function guardarBendicion(){
   if (__r4_1?.error) return;
   
   mostrarOk('ok-bendicion');
+}
+
+async function guardarFotoIntermedia(){
+  const __rfi_1 = await rpc('portal_actualizar_extra', {
+    p_codigo: CODIGO,
+    p_foto_intermedia_url: valor('p-foto-intermedia')
+  });
+  if (__rfi_1?.error) return;
+  mostrarOk('ok-foto-intermedia');
 }
 
 async function guardarRecepcion(){
