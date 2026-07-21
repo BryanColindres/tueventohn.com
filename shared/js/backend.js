@@ -106,6 +106,11 @@ async function cargarConfig() {
       if (invitado) data.invitado = { nombre: invitado.nombre, identificador: idInvitado };
     }
 
+    // Si todavía no se completó el pago, se muestra una franja de "vista
+    // previa" fija arriba de toda la invitación -- para que si el link se
+    // comparte antes de tiempo, quede claro que no es la versión final.
+    pintarMarcaAguaPrueba(data);
+
     return data;
   } catch (err) {
     console.error(err);
@@ -471,6 +476,31 @@ function pintarFotoIntermedia(C){
     </div>`;
 }
 
+// Franja fija de "vista previa" mientras el evento no tenga el pago
+// completo marcado (columna eventos.pago_completo). Se pinta encima de
+// TODO -- sin importar la plantilla -- para que un link compartido antes de
+// tiempo no se vea como la invitación final.
+function pintarMarcaAguaPrueba(C){
+  if (!C || C.pagoCompleto) return;
+  if (document.getElementById('marca-agua-prueba')) return;
+
+  const franja = document.createElement('div');
+  franja.id = 'marca-agua-prueba';
+  franja.style.cssText = [
+    'position:fixed', 'top:0', 'left:0', 'right:0', 'z-index:99999',
+    'background:#B5433B', 'color:#fff', 'text-align:center',
+    'padding:.6rem 1rem', 'font-family:sans-serif', 'font-size:.8rem',
+    'font-weight:600', 'letter-spacing:.02em', 'box-shadow:0 2px 8px rgba(0,0,0,.15)'
+  ].join(';');
+  franja.textContent = 'VISTA PREVIA — Esta es una versión de demostración. El evento aún no está listo para compartir.';
+  document.body.prepend(franja);
+
+  // Empuja el contenido para que la franja no tape lo primero que se ve.
+  requestAnimationFrame(() => {
+    document.body.style.marginTop = franja.offsetHeight + 'px';
+  });
+}
+
 // Se llama DESPUÉS de que cada plantilla pinta su propia sección de
 // ubicación (ceremonia). Si el cliente marcó "no es el mismo lugar" y llenó
 // los datos de recepción, agrega un segundo bloque justo debajo, usando
@@ -533,5 +563,6 @@ window.TuBodaBackend = {
   pintarBendicionYVersiculo,
   pintarVersiculoCierre,
   pintarFotoIntermedia,
+  pintarMarcaAguaPrueba,
   pintarUbicacionRecepcion
 };
