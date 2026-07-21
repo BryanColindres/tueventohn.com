@@ -137,11 +137,11 @@ function renderTablaInvitados() {
     <div class="ti-fila">
       <div>
         <div class="ti-nombre">${escapar(i.nombre)}</div>
-        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}${i.invitado_por ? ' · Invita: ' + escapar(i.invitado_por) : ''}</div>
+        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}</div>
       </div>
       <div>
         ${badgeEstado(i)}
-        <div class="ti-sub" style="margin-top:.3rem">${(i.adultos || 0) + (i.ninos || 0)} asistente(s)</div>
+        <div class="ti-sub" style="margin-top:.3rem">${i.invitado_por ? 'Invita: ' + escapar(i.invitado_por) : '—'}</div>
       </div>
       <div class="ti-sub">${badgeApertura(i)}</div>
       <div class="ti-acciones">
