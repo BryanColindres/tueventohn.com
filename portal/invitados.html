@@ -117,6 +117,13 @@
             <option value="pendiente">Pendientes</option>
             <option value="rechazado">No vienen</option>
           </select>
+          <select id="filtro-invitado-por" onchange="PAGINA_INVITADOS = 1; renderTablaInvitados()">
+            <option value="todos">Novio y novia</option>
+            <option value="novio">Invitados del novio</option>
+            <option value="novia">Invitados de la novia</option>
+            <option value="ambos">Invitados de ambos</option>
+            <option value="sin_especificar">Sin especificar</option>
+          </select>
         </div>
 
         <div class="tabla-invitados">

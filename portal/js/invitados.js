@@ -61,6 +61,7 @@ async function cargarTodo() {
     // confirmar, editar, etc.) NO se toca, para no perder el filtro activo.
     document.getElementById('buscar-invitado').value = '';
     document.getElementById('filtro-estado').value = 'todos';
+    document.getElementById('filtro-invitado-por').value = 'todos';
     primeraCarga = false;
   }
 
@@ -118,13 +119,17 @@ function set(id, val) { document.getElementById(id).textContent = val; }
 function renderTablaInvitados() {
   const busqueda = (document.getElementById('buscar-invitado').value || '').toLowerCase().trim();
   const filtro = document.getElementById('filtro-estado').value;
+  const filtroInvitadoPor = document.getElementById('filtro-invitado-por').value;
 
   const filtrados = INVITADOS.filter(i => {
     const nombre = (i.nombre || '').toLowerCase();
     const familia = (i.familia || '').toLowerCase();
     const coincideBusqueda = !busqueda || nombre.includes(busqueda) || familia.includes(busqueda);
     const coincideEstado = filtro === 'todos' || i.estado === filtro;
-    return coincideBusqueda && coincideEstado;
+    const invitadoPor = (i.invitado_por || '').toLowerCase().trim();
+    const coincideInvitadoPor = filtroInvitadoPor === 'todos'
+      || (filtroInvitadoPor === 'sin_especificar' ? !invitadoPor : invitadoPor === filtroInvitadoPor);
+    return coincideBusqueda && coincideEstado && coincideInvitadoPor;
   });
 
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA_INVITADOS));
@@ -289,10 +294,10 @@ async function procesarExcel() {
     // sin importar cuántas filas de título haya encima.
     const filasCrudas = XLSX.utils.sheet_to_json(hoja, { header: 1, defval: '' });
     const filaEncabezado = filasCrudas.findIndex(fila =>
-      fila.some(celda => String(celda).trim().toLowerCase() === 'nombre')
+      fila.some(celda => String(celda).trim().toLowerCase() === 'nombre y apellido')
     );
     if (filaEncabezado === -1) {
-      mostrarErrorExcel('No encontramos una columna llamada "Nombre" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
+      mostrarErrorExcel('No encontramos una columna llamada "Nombre y apellido" en tu archivo. Usa la plantilla que puedes descargar arriba — no cambies el nombre de las columnas.');
       return;
     }
 
@@ -314,7 +319,7 @@ async function procesarExcel() {
 
   const invitados = filas
     .map(f => ({
-      nombre: clave(f, 'nombre'), familia: clave(f, 'familia'),
+      nombre: clave(f, 'nombre y apellido'), familia: clave(f, 'familia'),
       telefono: clave(f, 'teléfono') || clave(f, 'telefono'),
       invitado_por: clave(f, 'invitado por'),
       esEjemplo: clave(f, 'es_ejemplo').toLowerCase() === 'si'
