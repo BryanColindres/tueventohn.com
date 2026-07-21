@@ -3,6 +3,7 @@
 // No se edita por boda. Solo lee config.js.
 // ============================================================
 let C;
+window.IDENTIFICADOR_INVITADO = new URLSearchParams(window.location.search).get('id') || null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   C = await TuBodaBackend.cargarConfig();
