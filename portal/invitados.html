@@ -73,6 +73,14 @@
               <div class="campo"><label>Nombre completo</label><input type="text" id="nuevo-nombre" placeholder="Ej. María José Flores"></div>
               <div class="campo"><label>Familia</label><input type="text" id="nuevo-familia" placeholder="Ej. Flores"></div>
               <div class="campo"><label>Teléfono (opcional)</label><input type="text" id="nuevo-telefono" placeholder="9999-9999"></div>
+              <div class="campo"><label>Invitado por (opcional)</label>
+                <select class="select-campo" id="nuevo-invitado-por">
+                  <option value="">— Sin especificar —</option>
+                  <option value="Novio">Novio</option>
+                  <option value="Novia">Novia</option>
+                  <option value="Ambos">Ambos</option>
+                </select>
+              </div>
             </div>
             <button class="btn btn-dorado btn-chico" onclick="agregarInvitadoManual()">Agregar invitado</button>
           </div>
@@ -228,6 +236,14 @@
       <div class="campo"><label>Nombre</label><input type="text" id="editar-nombre"></div>
       <div class="campo"><label>Familia</label><input type="text" id="editar-familia"></div>
       <div class="campo"><label>Teléfono</label><input type="text" id="editar-telefono"></div>
+      <div class="campo"><label>Invitado por (opcional)</label>
+        <select class="select-campo" id="editar-invitado-por">
+          <option value="">— Sin especificar —</option>
+          <option value="Novio">Novio</option>
+          <option value="Novia">Novia</option>
+          <option value="Ambos">Ambos</option>
+        </select>
+      </div>
       <button class="btn btn-dorado" style="width:100%;justify-content:center" onclick="guardarEdicion()">Guardar cambios</button>
     </div>
   </div>

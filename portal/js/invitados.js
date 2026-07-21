@@ -137,7 +137,7 @@ function renderTablaInvitados() {
     <div class="ti-fila">
       <div>
         <div class="ti-nombre">${escapar(i.nombre)}</div>
-        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}</div>
+        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}${i.invitado_por ? ' · Invita: ' + escapar(i.invitado_por) : ''}</div>
       </div>
       <div>
         ${badgeEstado(i)}
@@ -223,11 +223,12 @@ async function agregarInvitadoManual(forzar = false) {
   const nombre = document.getElementById('nuevo-nombre').value.trim();
   const familia = document.getElementById('nuevo-familia').value.trim();
   const telefono = document.getElementById('nuevo-telefono').value.trim();
+  const invitadoPor = document.getElementById('nuevo-invitado-por').value;
   if (!nombre) { mostrarToast('Escribe un nombre'); return; }
 
   const res = await rpc('portal_agregar_invitado_manual', {
     p_codigo: CODIGO, p_nombre: nombre, p_familia: familia || null,
-    p_telefono: telefono || null, p_forzar: forzar
+    p_telefono: telefono || null, p_forzar: forzar, p_invitado_por: invitadoPor || null
   });
 
   if (res.familia_duplicada) {
@@ -241,6 +242,7 @@ async function agregarInvitadoManual(forzar = false) {
     document.getElementById('nuevo-nombre').value = '';
     document.getElementById('nuevo-familia').value = '';
     document.getElementById('nuevo-telefono').value = '';
+    document.getElementById('nuevo-invitado-por').value = '';
     await cargarTodo();
     mostrarToast('Invitado agregado');
   }
@@ -311,7 +313,12 @@ async function procesarExcel() {
   };
 
   const invitados = filas
-    .map(f => ({ nombre: clave(f, 'nombre'), familia: clave(f, 'familia'), telefono: clave(f, 'teléfono') || clave(f, 'telefono'), esEjemplo: clave(f, 'es_ejemplo').toLowerCase() === 'si' }))
+    .map(f => ({
+      nombre: clave(f, 'nombre'), familia: clave(f, 'familia'),
+      telefono: clave(f, 'teléfono') || clave(f, 'telefono'),
+      invitado_por: clave(f, 'invitado por'),
+      esEjemplo: clave(f, 'es_ejemplo').toLowerCase() === 'si'
+    }))
     .filter(i => i.nombre && !i.esEjemplo);
 
   if (!invitados.length) {
@@ -342,6 +349,7 @@ function abrirModalEditar(id) {
   document.getElementById('editar-nombre').value = inv.nombre || '';
   document.getElementById('editar-familia').value = inv.familia || '';
   document.getElementById('editar-telefono').value = inv.telefono || '';
+  document.getElementById('editar-invitado-por').value = inv.invitado_por || '';
   document.getElementById('modal-editar').classList.remove('oculto');
 }
 function cerrarModalEditar() { document.getElementById('modal-editar').classList.add('oculto'); }
@@ -351,11 +359,13 @@ async function guardarEdicion() {
   const nombre = document.getElementById('editar-nombre').value.trim();
   const familia = document.getElementById('editar-familia').value.trim();
   const telefono = document.getElementById('editar-telefono').value.trim();
+  const invitadoPor = document.getElementById('editar-invitado-por').value;
   if (!nombre) { mostrarToast('El nombre no puede estar vacío'); return; }
 
   const res = await rpc('panel_editar_invitado', {
     p_codigo: CODIGO, p_invitado_id: id, p_nombre: nombre,
-    p_familia: familia || null, p_telefono: telefono || null
+    p_familia: familia || null, p_telefono: telefono || null,
+    p_invitado_por: invitadoPor || null
   });
   if (res.ok) {
     cerrarModalEditar();
