@@ -23,7 +23,15 @@ async function rpc(nombre, parametros){
     headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     body: JSON.stringify(parametros)
   });
-  const data = await res.json();
+  // Las funciones de Postgres que "RETURNS void" (la mayoría de los guardarX)
+  // responden con el cuerpo vacío (204) — res.json() revienta con "Unexpected
+  // end of JSON input" en ese caso. Por eso primero leemos como texto y solo
+  // parseamos si hay algo.
+  const texto = await res.text();
+  let data = null;
+  if (texto) {
+    try { data = JSON.parse(texto); } catch (e) { data = texto; }
+  }
   if (!res.ok) {
     console.error('Error en', nombre, data);
     alert('No se pudo guardar. Intenta de nuevo — si sigue fallando, avísale a Bryan.');
