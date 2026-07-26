@@ -3,21 +3,31 @@
 // Reutiliza CODIGO, rpc(), escapar(), mostrarToast() y set() ya definidos en
 // js/invitados.js (mismo documento).
 //
-// El "Cronograma" reutiliza las mismas funciones RPC que usa el contenido de
-// la invitación (portal_obtener_evento / portal_guardar_timeline): lo que se
-// edita aquí es el mismo itinerario que ve el invitado en la invitación, así
-// que no se duplica información. El "Checklist" es una tabla nueva
-// (tareas_planeacion), propia de este panel.
+// El cronograma es INDEPENDIENTE del contenido de la invitación (no usa
+// portal_guardar_timeline / datos.timeline): vive en sus propias tablas
+// (itinerario_bloques / itinerario_items, vía panel_obtener_itinerario /
+// panel_guardar_itinerario) porque no todos los clientes llenan el
+// itinerario en el contenido de su invitación. Solo se reutiliza
+// portal_obtener_evento para los nombres y la fecha (eso sí lo llenan todos
+// desde el principio, en "Datos principales").
+//
+// El checklist vive en su propia tabla (tareas_planeacion), también nueva.
 // ============================================================================
 
-let CRONOGRAMA_ITEMS = [];
+let BLOQUES = [];           // [{ titulo, items: [{hora, titulo}] }]
 let CHECKLIST_ITEMS = [];
 let EVENTO_INFO = {};
 let ITINERARIO_CARGADO = false;
 let PLANTILLA_CRONOGRAMA = 'clasico';
+let PLANTILLA_CHECKLIST = 'clasico';
+
+// Fondo real de cada plantilla, para que html2canvas capture el color
+// correcto incluso si el navegador tarda en pintar el CSS.
+const FONDOS_PLANTILLA = { clasico: '#ffffff', floral: '#F6E4E2', moderno: '#123A54' };
 
 window.cargarItinerarioSiNecesario = async function () {
   if (ITINERARIO_CARGADO) return;
+  await cargarEventoInfo();
   await Promise.all([cargarCronogramaDatos(), cargarChecklistDatos()]);
   ITINERARIO_CARGADO = true;
 };
@@ -28,61 +38,108 @@ function cambiarSubTabItinerario(tab) {
   document.getElementById('itin-sub-checklist').classList.toggle('oculto', tab !== 'checklist');
 }
 
-/* ============================================================ CRONOGRAMA = */
-async function cargarCronogramaDatos() {
+/* ---------------- info del evento (nombres y fecha, para los encabezados) */
+async function cargarEventoInfo() {
   const datos = await rpc('portal_obtener_evento', { p_codigo: CODIGO });
   if (!datos || datos.error) return;
   EVENTO_INFO = datos;
-  CRONOGRAMA_ITEMS = datos.timeline || [];
-  pintarCronogramaEditor();
+}
+
+function nombresEvento() {
+  return [EVENTO_INFO.novioANombre, EVENTO_INFO.novioBNombre].filter(Boolean).join(' & ');
+}
+
+// Formatea "2026-09-12" como "Sábado 12 de septiembre de 2026" sin librerías,
+// construyendo la fecha con año/mes/día locales para evitar el corrimiento de
+// un día que da new Date('YYYY-MM-DD') por interpretarse en UTC.
+function formatearFechaBonita(fechaStr) {
+  if (!fechaStr) return '';
+  const [y, m, d] = fechaStr.split('-').map(Number);
+  if (!y || !m || !d) return '';
+  const fecha = new Date(y, m - 1, d);
+  const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  return `${dias[fecha.getDay()]} ${d} de ${meses[m - 1]} de ${y}`;
+}
+
+/* ============================================================ CRONOGRAMA = */
+async function cargarCronogramaDatos() {
+  const data = await rpc('panel_obtener_itinerario', { p_codigo: CODIGO });
+  if (data?.error) return;
+  BLOQUES = (data.bloques || []).map(b => ({ titulo: b.titulo || '', items: (b.items || []).map(t => ({ hora: t.hora || '', titulo: t.titulo || '' })) }));
+  pintarBloquesItinerario();
   actualizarPreviewCronograma();
 }
 
-function pintarCronogramaEditor() {
-  const cont = document.getElementById('lista-cronograma');
+function pintarBloquesItinerario() {
+  const cont = document.getElementById('lista-bloques-itinerario');
   if (!cont) return;
 
-  if (!CRONOGRAMA_ITEMS.length) {
-    cont.innerHTML = `<p class="desc">Todavía no agregas ningún momento. Empieza con "+ Agregar momento".</p>`;
+  if (!BLOQUES.length) {
+    cont.innerHTML = `<p class="desc">Agrega una sección para empezar (por ejemplo "Ceremonia" o una sola sección general).</p>`;
     return;
   }
 
-  cont.innerHTML = CRONOGRAMA_ITEMS.map((t, i) => `
-    <div class="cronograma-item-editor">
-      <input type="text" value="${escapar(t.hora || '')}" placeholder="6:00 PM"
-        oninput="CRONOGRAMA_ITEMS[${i}].hora=this.value; actualizarPreviewCronograma()">
-      <input type="text" value="${escapar(t.titulo || '')}" placeholder="Ej. Ceremonia religiosa"
-        oninput="CRONOGRAMA_ITEMS[${i}].titulo=this.value; actualizarPreviewCronograma()">
-      <div class="cronograma-item-editor-acciones">
-        <button type="button" title="Subir" ${i === 0 ? 'disabled' : ''} onclick="moverMomentoCronograma(${i},-1)">▲</button>
-        <button type="button" title="Bajar" ${i === CRONOGRAMA_ITEMS.length - 1 ? 'disabled' : ''} onclick="moverMomentoCronograma(${i},1)">▼</button>
-        <button type="button" class="quitar" title="Quitar" onclick="quitarMomentoCronograma(${i})">✕</button>
+  cont.innerHTML = BLOQUES.map((b, bi) => `
+    <div class="itin-bloque">
+      <div class="itin-bloque-encabezado">
+        <input type="text" class="itin-bloque-titulo" value="${escapar(b.titulo || '')}" placeholder="Nombre de la sección (ej. Ceremonia)"
+          oninput="BLOQUES[${bi}].titulo=this.value; actualizarPreviewCronograma()">
+        <button type="button" class="quitar" title="Eliminar sección" onclick="quitarBloqueItinerario(${bi})">✕</button>
       </div>
+
+      <div class="itin-bloque-items">
+        ${b.items.length ? b.items.map((t, ii) => `
+          <div class="cronograma-item-editor">
+            <input type="text" value="${escapar(t.hora || '')}" placeholder="6:00 PM"
+              oninput="BLOQUES[${bi}].items[${ii}].hora=this.value; actualizarPreviewCronograma()">
+            <input type="text" value="${escapar(t.titulo || '')}" placeholder="Ej. Entrada de los novios"
+              oninput="BLOQUES[${bi}].items[${ii}].titulo=this.value; actualizarPreviewCronograma()">
+            <div class="cronograma-item-editor-acciones">
+              <button type="button" title="Subir" ${ii === 0 ? 'disabled' : ''} onclick="moverMomentoItinerario(${bi},${ii},-1)">▲</button>
+              <button type="button" title="Bajar" ${ii === b.items.length - 1 ? 'disabled' : ''} onclick="moverMomentoItinerario(${bi},${ii},1)">▼</button>
+              <button type="button" class="quitar" title="Quitar" onclick="quitarMomentoItinerario(${bi},${ii})">✕</button>
+            </div>
+          </div>`).join('') : `<p class="desc" style="margin:.2rem 0 .8rem">Sin momentos todavía.</p>`}
+      </div>
+
+      <button type="button" class="btn btn-outline btn-chico" onclick="agregarMomentoItinerario(${bi})">+ Agregar momento</button>
     </div>`).join('');
 }
 
-function agregarMomentoCronograma() {
-  CRONOGRAMA_ITEMS.push({ hora: '', titulo: '', icono: '' });
-  pintarCronogramaEditor();
+function agregarBloqueItinerario(nombreSugerido) {
+  BLOQUES.push({ titulo: nombreSugerido || `Sección ${BLOQUES.length + 1}`, items: [] });
+  pintarBloquesItinerario();
   actualizarPreviewCronograma();
 }
-function quitarMomentoCronograma(i) {
-  CRONOGRAMA_ITEMS.splice(i, 1);
-  pintarCronogramaEditor();
+function quitarBloqueItinerario(bi) {
+  BLOQUES.splice(bi, 1);
+  pintarBloquesItinerario();
   actualizarPreviewCronograma();
 }
-function moverMomentoCronograma(i, dir) {
-  const j = i + dir;
-  if (j < 0 || j >= CRONOGRAMA_ITEMS.length) return;
-  [CRONOGRAMA_ITEMS[i], CRONOGRAMA_ITEMS[j]] = [CRONOGRAMA_ITEMS[j], CRONOGRAMA_ITEMS[i]];
-  pintarCronogramaEditor();
+function agregarMomentoItinerario(bi) {
+  BLOQUES[bi].items.push({ hora: '', titulo: '' });
+  pintarBloquesItinerario();
+  actualizarPreviewCronograma();
+}
+function quitarMomentoItinerario(bi, ii) {
+  BLOQUES[bi].items.splice(ii, 1);
+  pintarBloquesItinerario();
+  actualizarPreviewCronograma();
+}
+function moverMomentoItinerario(bi, ii, dir) {
+  const items = BLOQUES[bi].items;
+  const jj = ii + dir;
+  if (jj < 0 || jj >= items.length) return;
+  [items[ii], items[jj]] = [items[jj], items[ii]];
+  pintarBloquesItinerario();
   actualizarPreviewCronograma();
 }
 
-async function guardarCronograma() {
-  const res = await rpc('portal_guardar_timeline', { p_codigo: CODIGO, p_items: CRONOGRAMA_ITEMS });
+async function guardarItinerario() {
+  const res = await rpc('panel_guardar_itinerario', { p_codigo: CODIGO, p_bloques: BLOQUES });
   if (res?.error) return;
-  mostrarToast('Cronograma guardado');
+  mostrarToast('Itinerario guardado');
 }
 
 /* ---------------- plantillas y vista previa ---------------- */
@@ -91,6 +148,8 @@ function elegirPlantillaCronograma(tpl) {
   document.querySelectorAll('#plantilla-picker-cronograma .plantilla-op').forEach(b => b.classList.toggle('activo', b.dataset.tpl === tpl));
   const preview = document.getElementById('cronograma-preview');
   if (preview) preview.className = `cronograma-tarjeta tpl-${tpl}`;
+  const botones = document.getElementById('cronograma-descarga-botones');
+  if (botones) botones.className = `cronograma-descarga-botones tpl-btn-${tpl}`;
 }
 
 // Adivina un emoji sencillo según palabras clave del título — puramente
@@ -108,31 +167,23 @@ function emojiPorTitulo(titulo) {
   return '🕐';
 }
 
-// Formatea "2026-09-12" como "Sábado 12 de septiembre de 2026" sin librerías,
-// construyendo la fecha con año/mes/día locales para evitar el corrimiento de
-// un día que da new Date('YYYY-MM-DD') por interpretarse en UTC.
-function formatearFechaBonita(fechaStr) {
-  if (!fechaStr) return '';
-  const [y, m, d] = fechaStr.split('-').map(Number);
-  if (!y || !m || !d) return '';
-  const fecha = new Date(y, m - 1, d);
-  const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-  return `${dias[fecha.getDay()]} ${d} de ${meses[m - 1]} de ${y}`;
-}
-
 function actualizarPreviewCronograma() {
   const preview = document.getElementById('cronograma-preview');
   if (!preview) return;
 
-  const items = CRONOGRAMA_ITEMS.filter(t => (t.hora || '').trim() || (t.titulo || '').trim());
-  const nombres = [EVENTO_INFO.novioANombre, EVENTO_INFO.novioBNombre].filter(Boolean).join(' & ');
+  const bloquesConItems = BLOQUES
+    .map(b => ({ titulo: b.titulo, items: b.items.filter(t => (t.hora || '').trim() || (t.titulo || '').trim()) }))
+    .filter(b => b.items.length);
+
+  const nombres = nombresEvento();
   const fecha = formatearFechaBonita(EVENTO_INFO.fecha);
 
-  if (!items.length) {
-    preview.innerHTML = `<p class="desc" style="margin:0">Agrega momentos al cronograma para ver la vista previa aquí.</p>`;
+  if (!bloquesConItems.length) {
+    preview.innerHTML = `<p class="desc" style="margin:0">Agrega momentos al itinerario para ver la vista previa aquí.</p>`;
     return;
   }
+
+  const soloUnaSeccion = bloquesConItems.length === 1;
 
   preview.innerHTML = `
     <div class="cronograma-header">
@@ -140,50 +191,78 @@ function actualizarPreviewCronograma() {
       <h3>${escapar(nombres) || 'Nuestra boda'}</h3>
       ${fecha ? `<p class="cronograma-fecha">${escapar(fecha)}</p>` : ''}
     </div>
-    <div class="cronograma-lista">
-      ${items.map(t => `
-        <div class="cronograma-item">
-          <span class="cronograma-item-icono">${emojiPorTitulo(t.titulo)}</span>
-          <span class="cronograma-item-hora">${escapar(t.hora || '')}</span>
-          <span class="cronograma-item-titulo">${escapar(t.titulo || '')}</span>
-        </div>`).join('')}
-    </div>
+    ${bloquesConItems.map(b => `
+      <div class="cronograma-bloque">
+        ${!soloUnaSeccion ? `<p class="cronograma-bloque-titulo">${escapar(b.titulo || '')}</p>` : ''}
+        <div class="cronograma-lista">
+          ${b.items.map(t => `
+            <div class="cronograma-item">
+              <span class="cronograma-item-icono">${emojiPorTitulo(t.titulo)}</span>
+              <span class="cronograma-item-hora">${escapar(t.hora || '')}</span>
+              <span class="cronograma-item-titulo">${escapar(t.titulo || '')}</span>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}
     <p class="cronograma-footer">Nube Eventos</p>`;
 }
 
-/* ---------------- descarga imagen / PDF ---------------- */
+/* ---------------- descarga imagen / PDF (cronograma) ---------------- */
 function hayMomentosParaDescargar() {
-  return CRONOGRAMA_ITEMS.some(t => (t.hora || '').trim() || (t.titulo || '').trim());
+  return BLOQUES.some(b => b.items.some(t => (t.hora || '').trim() || (t.titulo || '').trim()));
 }
 
-async function descargarCronogramaImagen() {
-  if (!hayMomentosParaDescargar()) { mostrarToast('Agrega al menos un momento antes de descargar'); return; }
-  if (!window.html2canvas) { mostrarToast('No se pudo cargar el generador de imágenes'); return; }
+// Espera a que las fuentes (Playfair Display / Jost) terminen de cargar antes
+// de capturar — si no, html2canvas a veces captura con la fuente de respaldo
+// a medio pintar y el layout sale corrido.
+async function esperarFuentes() {
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) { /* no crítico */ }
+}
 
-  const el = document.getElementById('cronograma-preview');
-  const canvas = await html2canvas(el, { scale: 3, backgroundColor: null });
+async function capturarElemento(el, plantilla) {
+  await esperarFuentes();
+  return html2canvas(el, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: FONDOS_PLANTILLA[plantilla] || '#ffffff',
+    width: el.offsetWidth,
+    windowWidth: el.offsetWidth
+  });
+}
+
+function descargarCanvasComoImagen(canvas, nombreArchivo) {
   canvas.toBlob(blob => {
     if (!blob) return;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `itinerario-${PLANTILLA_CRONOGRAMA}.png`;
+    a.download = nombreArchivo;
     a.click();
   });
 }
 
-async function descargarCronogramaPDF() {
-  if (!hayMomentosParaDescargar()) { mostrarToast('Agrega al menos un momento antes de descargar'); return; }
-  if (!window.html2canvas || !window.jspdf) { mostrarToast('No se pudo cargar el generador de PDF'); return; }
-
-  const el = document.getElementById('cronograma-preview');
-  const canvas = await html2canvas(el, { scale: 3, backgroundColor: '#ffffff' });
+function descargarCanvasComoPDF(canvas, nombreArchivo) {
   const imgData = canvas.toDataURL('image/png');
   const { jsPDF } = window.jspdf;
   const anchoMM = 100;
   const altoMM = anchoMM * (canvas.height / canvas.width);
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [anchoMM, altoMM] });
   pdf.addImage(imgData, 'PNG', 0, 0, anchoMM, altoMM);
-  pdf.save(`itinerario-${PLANTILLA_CRONOGRAMA}.pdf`);
+  pdf.save(nombreArchivo);
+}
+
+async function descargarCronogramaImagen() {
+  if (!hayMomentosParaDescargar()) { mostrarToast('Agrega al menos un momento antes de descargar'); return; }
+  if (!window.html2canvas) { mostrarToast('No se pudo cargar el generador de imágenes'); return; }
+  const el = document.getElementById('cronograma-preview');
+  const canvas = await capturarElemento(el, PLANTILLA_CRONOGRAMA);
+  descargarCanvasComoImagen(canvas, `itinerario-${PLANTILLA_CRONOGRAMA}.png`);
+}
+
+async function descargarCronogramaPDF() {
+  if (!hayMomentosParaDescargar()) { mostrarToast('Agrega al menos un momento antes de descargar'); return; }
+  if (!window.html2canvas || !window.jspdf) { mostrarToast('No se pudo cargar el generador de PDF'); return; }
+  const el = document.getElementById('cronograma-preview');
+  const canvas = await capturarElemento(el, PLANTILLA_CRONOGRAMA);
+  descargarCanvasComoPDF(canvas, `itinerario-${PLANTILLA_CRONOGRAMA}.pdf`);
 }
 
 /* ============================================================ CHECKLIST = */
@@ -196,24 +275,25 @@ async function cargarChecklistDatos() {
 
 function pintarChecklist() {
   const cont = document.getElementById('lista-checklist');
-  if (!cont) return;
-
-  if (!CHECKLIST_ITEMS.length) {
-    cont.innerHTML = `<p class="desc">No tienes tareas todavía. Agrega la primera arriba.</p>`;
-  } else {
-    cont.innerHTML = CHECKLIST_ITEMS.map((t, i) => `
-      <div class="checklist-item ${t.hecha ? 'completada' : ''}">
-        <input type="checkbox" ${t.hecha ? 'checked' : ''} onchange="toggleTarea('${t.id}', this.checked)">
-        <span class="checklist-texto">${escapar(t.texto)}</span>
-        <div class="checklist-item-acciones">
-          <button type="button" title="Subir" ${i === 0 ? 'disabled' : ''} onclick="moverTarea(${i},-1)">▲</button>
-          <button type="button" title="Bajar" ${i === CHECKLIST_ITEMS.length - 1 ? 'disabled' : ''} onclick="moverTarea(${i},1)">▼</button>
-          <button type="button" class="quitar" title="Eliminar" onclick="eliminarTarea('${t.id}')">✕</button>
-        </div>
-      </div>`).join('');
+  if (cont) {
+    if (!CHECKLIST_ITEMS.length) {
+      cont.innerHTML = `<p class="desc">No tienes tareas todavía. Agrega la primera arriba.</p>`;
+    } else {
+      cont.innerHTML = CHECKLIST_ITEMS.map((t, i) => `
+        <div class="checklist-item ${t.hecha ? 'completada' : ''}">
+          <input type="checkbox" ${t.hecha ? 'checked' : ''} onchange="toggleTarea('${t.id}', this.checked)">
+          <span class="checklist-texto">${escapar(t.texto)}</span>
+          <div class="checklist-item-acciones">
+            <button type="button" title="Subir" ${i === 0 ? 'disabled' : ''} onclick="moverTarea(${i},-1)">▲</button>
+            <button type="button" title="Bajar" ${i === CHECKLIST_ITEMS.length - 1 ? 'disabled' : ''} onclick="moverTarea(${i},1)">▼</button>
+            <button type="button" class="quitar" title="Eliminar" onclick="eliminarTarea('${t.id}')">✕</button>
+          </div>
+        </div>`).join('');
+    }
   }
 
   actualizarProgresoChecklist();
+  actualizarPreviewChecklist();
 }
 
 function actualizarProgresoChecklist() {
@@ -257,4 +337,56 @@ async function moverTarea(i, dir) {
   [CHECKLIST_ITEMS[i], CHECKLIST_ITEMS[j]] = [CHECKLIST_ITEMS[j], CHECKLIST_ITEMS[i]];
   pintarChecklist();
   await rpc('panel_reordenar_checklist', { p_codigo: CODIGO, p_ids: CHECKLIST_ITEMS.map(t => t.id) });
+}
+
+/* ---------------- checklist descargable (para imprimir a mano) ---------------- */
+function elegirPlantillaChecklist(tpl) {
+  PLANTILLA_CHECKLIST = tpl;
+  document.querySelectorAll('#plantilla-picker-checklist .plantilla-op').forEach(b => b.classList.toggle('activo', b.dataset.tpl === tpl));
+  const preview = document.getElementById('checklist-preview');
+  if (preview) preview.className = `checklist-tarjeta tpl-${tpl}`;
+  const botones = document.getElementById('checklist-descarga-botones');
+  if (botones) botones.className = `cronograma-descarga-botones tpl-btn-${tpl}`;
+}
+
+function actualizarPreviewChecklist() {
+  const preview = document.getElementById('checklist-preview');
+  if (!preview) return;
+
+  const nombres = nombresEvento();
+  const fecha = formatearFechaBonita(EVENTO_INFO.fecha);
+
+  if (!CHECKLIST_ITEMS.length) {
+    preview.innerHTML = `<p class="desc" style="margin:0">Agrega tareas para ver la vista previa aquí.</p>`;
+    return;
+  }
+
+  preview.innerHTML = `
+    <p class="checklist-tarjeta-eyebrow">Checklist de boda</p>
+    <h3>${escapar(nombres) || 'Nuestra boda'}</h3>
+    ${fecha ? `<p class="checklist-tarjeta-fecha">${escapar(fecha)}</p>` : ''}
+    <div class="checklist-tarjeta-lista">
+      ${CHECKLIST_ITEMS.map(t => `<div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> ${escapar(t.texto)}</div>`).join('')}
+    </div>
+    <div class="checklist-tarjeta-notas">
+      <div class="checklist-tarjeta-nota"><p>Ideas</p></div>
+      <div class="checklist-tarjeta-nota"><p>No olvidar</p></div>
+    </div>
+    <p class="cronograma-footer">Nube Eventos</p>`;
+}
+
+async function descargarChecklistImagen() {
+  if (!CHECKLIST_ITEMS.length) { mostrarToast('Agrega al menos una tarea antes de descargar'); return; }
+  if (!window.html2canvas) { mostrarToast('No se pudo cargar el generador de imágenes'); return; }
+  const el = document.getElementById('checklist-preview');
+  const canvas = await capturarElemento(el, PLANTILLA_CHECKLIST);
+  descargarCanvasComoImagen(canvas, `checklist-boda-${PLANTILLA_CHECKLIST}.png`);
+}
+
+async function descargarChecklistPDF() {
+  if (!CHECKLIST_ITEMS.length) { mostrarToast('Agrega al menos una tarea antes de descargar'); return; }
+  if (!window.html2canvas || !window.jspdf) { mostrarToast('No se pudo cargar el generador de PDF'); return; }
+  const el = document.getElementById('checklist-preview');
+  const canvas = await capturarElemento(el, PLANTILLA_CHECKLIST);
+  descargarCanvasComoPDF(canvas, `checklist-boda-${PLANTILLA_CHECKLIST}.pdf`);
 }

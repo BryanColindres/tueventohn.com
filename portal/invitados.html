@@ -208,7 +208,7 @@
 
         <div class="tarjeta">
           <h2>Itinerario y planeación</h2>
-          <p class="desc">Organiza el cronograma del día y da seguimiento a los pendientes de la boda. El cronograma es el mismo que ven tus invitados en la invitación — lo que cambies aquí se refleja allá también.</p>
+          <p class="desc">Organiza el cronograma del día y da seguimiento a los pendientes de la boda. Esto es independiente de lo que hayas puesto en el contenido de tu invitación — puedes usarlo aunque no hayas llenado esa sección ahí.</p>
         </div>
 
         <div class="generador-tabs">
@@ -219,37 +219,66 @@
         <!-- ---- CRONOGRAMA ---- -->
         <div id="itin-sub-cronograma" class="gen-panel">
           <div class="tarjeta">
-            <h2 style="font-size:1rem">Momentos del día</h2>
-            <p class="desc">Agrega cada momento en orden. Puedes reordenarlos con las flechas.</p>
-            <div id="lista-cronograma"></div>
-            <button class="btn btn-outline btn-chico" onclick="agregarMomentoCronograma()">+ Agregar momento</button>
-            <br><br>
-            <button class="btn btn-dorado" onclick="guardarCronograma()">Guardar cronograma</button>
+            <h2 style="font-size:1rem">Secciones del itinerario</h2>
+            <p class="desc">Puedes usar una sola sección para un itinerario general, o separar por momentos (Ceremonia, Recepción, Fiesta...) si prefieres más detalle. Dentro de cada una, agrega los momentos en orden y reordénalos con las flechas.</p>
+
+            <div id="lista-bloques-itinerario"></div>
+
+            <div class="itin-agregar-bloque">
+              <button class="btn btn-outline btn-chico" onclick="agregarBloqueItinerario('Ceremonia')">+ Ceremonia</button>
+              <button class="btn btn-outline btn-chico" onclick="agregarBloqueItinerario('Recepción')">+ Recepción</button>
+              <button class="btn btn-outline btn-chico" onclick="agregarBloqueItinerario('Fiesta')">+ Fiesta</button>
+              <button class="btn btn-outline btn-chico" onclick="agregarBloqueItinerario('')">+ Sección personalizada</button>
+            </div>
+
+            <button class="btn btn-dorado" onclick="guardarItinerario()">Guardar itinerario</button>
           </div>
 
           <div class="tarjeta">
             <h2 style="font-size:1rem">Descargar para tus invitados</h2>
-            <p class="desc">Elige un estilo y descárgalo como imagen o PDF para compartirlo por WhatsApp o redes sociales.</p>
+            <p class="desc">Toca una plantilla para ver exactamente cómo se ve antes de descargarla.</p>
 
             <div class="plantilla-picker" id="plantilla-picker-cronograma">
               <button type="button" class="plantilla-op activo" data-tpl="clasico" onclick="elegirPlantillaCronograma('clasico')">
-                <span class="plantilla-swatch plantilla-swatch-clasico"></span> Clásico
+                <div class="plantilla-mini-marco"><div class="plantilla-mini cronograma-tarjeta tpl-clasico">
+                  <div class="cronograma-header"><p class="cronograma-eyebrow">Itinerario del día</p><h3>Ana &amp; Luis</h3><p class="cronograma-fecha">Sábado 12 de septiembre</p></div>
+                  <div class="cronograma-lista">
+                    <div class="cronograma-item"><span class="cronograma-item-icono">💍</span><span class="cronograma-item-hora">4:00 pm</span><span class="cronograma-item-titulo">Ceremonia</span></div>
+                    <div class="cronograma-item"><span class="cronograma-item-icono">🥂</span><span class="cronograma-item-hora">6:00 pm</span><span class="cronograma-item-titulo">Recepción</span></div>
+                  </div>
+                </div></div>
+                <p class="plantilla-nombre">Clásico</p>
               </button>
               <button type="button" class="plantilla-op" data-tpl="floral" onclick="elegirPlantillaCronograma('floral')">
-                <span class="plantilla-swatch plantilla-swatch-floral"></span> Floral
+                <div class="plantilla-mini-marco"><div class="plantilla-mini cronograma-tarjeta tpl-floral">
+                  <div class="cronograma-header"><p class="cronograma-eyebrow">Itinerario del día</p><h3>Ana &amp; Luis</h3><p class="cronograma-fecha">Sábado 12 de septiembre</p></div>
+                  <div class="cronograma-lista">
+                    <div class="cronograma-item"><span class="cronograma-item-icono">💍</span><span class="cronograma-item-hora">4:00 pm</span><span class="cronograma-item-titulo">Ceremonia</span></div>
+                    <div class="cronograma-item"><span class="cronograma-item-icono">🥂</span><span class="cronograma-item-hora">6:00 pm</span><span class="cronograma-item-titulo">Recepción</span></div>
+                  </div>
+                </div></div>
+                <p class="plantilla-nombre">Floral</p>
               </button>
               <button type="button" class="plantilla-op" data-tpl="moderno" onclick="elegirPlantillaCronograma('moderno')">
-                <span class="plantilla-swatch plantilla-swatch-moderno"></span> Moderno
+                <div class="plantilla-mini-marco"><div class="plantilla-mini cronograma-tarjeta tpl-moderno">
+                  <div class="cronograma-header"><p class="cronograma-eyebrow">Itinerario del día</p><h3>Ana &amp; Luis</h3><p class="cronograma-fecha">Sábado 12 de septiembre</p></div>
+                  <div class="cronograma-lista">
+                    <div class="cronograma-item"><span class="cronograma-item-icono">💍</span><span class="cronograma-item-hora">4:00 pm</span><span class="cronograma-item-titulo">Ceremonia</span></div>
+                    <div class="cronograma-item"><span class="cronograma-item-icono">🥂</span><span class="cronograma-item-hora">6:00 pm</span><span class="cronograma-item-titulo">Recepción</span></div>
+                  </div>
+                </div></div>
+                <p class="plantilla-nombre">Moderno</p>
               </button>
             </div>
 
+            <p class="desc" style="margin-top:0">Vista previa con tu itinerario real:</p>
             <div class="cronograma-descarga-wrap">
               <div id="cronograma-preview" class="cronograma-tarjeta tpl-clasico"></div>
             </div>
 
-            <div class="cronograma-descarga-botones">
-              <button class="btn btn-outline btn-chico" onclick="descargarCronogramaImagen()">⬇ Descargar imagen</button>
-              <button class="btn btn-dorado btn-chico" onclick="descargarCronogramaPDF()">⬇ Descargar PDF</button>
+            <div class="cronograma-descarga-botones tpl-btn-clasico" id="cronograma-descarga-botones">
+              <button class="btn-descarga" onclick="descargarCronogramaImagen()">⬇ Descargar imagen</button>
+              <button class="btn-descarga btn-descarga-solido" onclick="descargarCronogramaPDF()">⬇ Descargar PDF</button>
             </div>
           </div>
         </div>
@@ -271,6 +300,48 @@
             </div>
 
             <div id="lista-checklist"></div>
+          </div>
+
+          <div class="tarjeta">
+            <h2 style="font-size:1rem">Descargar para imprimir</h2>
+            <p class="desc">Una versión para imprimir y marcar a mano, con espacio para ideas y pendientes.</p>
+
+            <div class="plantilla-picker" id="plantilla-picker-checklist">
+              <button type="button" class="plantilla-op activo" data-tpl="clasico" onclick="elegirPlantillaChecklist('clasico')">
+                <div class="plantilla-mini-marco"><div class="plantilla-mini checklist-tarjeta tpl-clasico">
+                  <p class="checklist-tarjeta-eyebrow">Checklist de boda</p><h3>Ana &amp; Luis</h3>
+                  <div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> Reservar el lugar</div>
+                  <div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> Enviar invitaciones</div>
+                </div></div>
+                <p class="plantilla-nombre">Clásico</p>
+              </button>
+              <button type="button" class="plantilla-op" data-tpl="floral" onclick="elegirPlantillaChecklist('floral')">
+                <div class="plantilla-mini-marco"><div class="plantilla-mini checklist-tarjeta tpl-floral">
+                  <p class="checklist-tarjeta-eyebrow">Checklist de boda</p><h3>Ana &amp; Luis</h3>
+                  <div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> Reservar el lugar</div>
+                  <div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> Enviar invitaciones</div>
+                </div></div>
+                <p class="plantilla-nombre">Floral</p>
+              </button>
+              <button type="button" class="plantilla-op" data-tpl="moderno" onclick="elegirPlantillaChecklist('moderno')">
+                <div class="plantilla-mini-marco"><div class="plantilla-mini checklist-tarjeta tpl-moderno">
+                  <p class="checklist-tarjeta-eyebrow">Checklist de boda</p><h3>Ana &amp; Luis</h3>
+                  <div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> Reservar el lugar</div>
+                  <div class="checklist-tarjeta-item"><span class="checklist-tarjeta-caja"></span> Enviar invitaciones</div>
+                </div></div>
+                <p class="plantilla-nombre">Moderno</p>
+              </button>
+            </div>
+
+            <p class="desc" style="margin-top:0">Vista previa con tus tareas reales:</p>
+            <div class="cronograma-descarga-wrap">
+              <div id="checklist-preview" class="checklist-tarjeta tpl-clasico"></div>
+            </div>
+
+            <div class="cronograma-descarga-botones tpl-btn-clasico" id="checklist-descarga-botones">
+              <button class="btn-descarga" onclick="descargarChecklistImagen()">⬇ Descargar imagen</button>
+              <button class="btn-descarga btn-descarga-solido" onclick="descargarChecklistPDF()">⬇ Descargar PDF</button>
+            </div>
           </div>
         </div>
 
