@@ -24,7 +24,7 @@
         <button class="panel-tab activo" data-tab="invitados" onclick="cambiarTabPanel('invitados')">Invitados</button>
         <button class="panel-tab" data-tab="mesas" onclick="cambiarTabPanel('mesas')">Mesas</button>
         <button class="panel-tab" data-tab="muro" onclick="cambiarTabPanel('muro')">Muro de Firmas</button>
-        <button class="panel-tab" disabled title="Próximamente">Recordatorios</button>
+        <button class="panel-tab" data-tab="itinerario" onclick="cambiarTabPanel('itinerario')">Itinerario</button>
       </div>
 
       <!-- ================= INVITADOS (incluye el resumen) ================= -->
@@ -203,6 +203,79 @@
         <p id="sin-firmas" class="desc oculto" style="text-align:center;margin-top:1rem">No hay mensajes en este filtro.</p>
       </div>
 
+      <!-- ================= ITINERARIO ================= -->
+      <div id="tab-itinerario" class="panel-vista oculto">
+
+        <div class="tarjeta">
+          <h2>Itinerario y planeación</h2>
+          <p class="desc">Organiza el cronograma del día y da seguimiento a los pendientes de la boda. El cronograma es el mismo que ven tus invitados en la invitación — lo que cambies aquí se refleja allá también.</p>
+        </div>
+
+        <div class="generador-tabs">
+          <button class="gen-tab activo" data-tab="cronograma" onclick="cambiarSubTabItinerario('cronograma')">Cronograma</button>
+          <button class="gen-tab" data-tab="checklist" onclick="cambiarSubTabItinerario('checklist')">Checklist de tareas</button>
+        </div>
+
+        <!-- ---- CRONOGRAMA ---- -->
+        <div id="itin-sub-cronograma" class="gen-panel">
+          <div class="tarjeta">
+            <h2 style="font-size:1rem">Momentos del día</h2>
+            <p class="desc">Agrega cada momento en orden. Puedes reordenarlos con las flechas.</p>
+            <div id="lista-cronograma"></div>
+            <button class="btn btn-outline btn-chico" onclick="agregarMomentoCronograma()">+ Agregar momento</button>
+            <br><br>
+            <button class="btn btn-dorado" onclick="guardarCronograma()">Guardar cronograma</button>
+          </div>
+
+          <div class="tarjeta">
+            <h2 style="font-size:1rem">Descargar para tus invitados</h2>
+            <p class="desc">Elige un estilo y descárgalo como imagen o PDF para compartirlo por WhatsApp o redes sociales.</p>
+
+            <div class="plantilla-picker" id="plantilla-picker-cronograma">
+              <button type="button" class="plantilla-op activo" data-tpl="clasico" onclick="elegirPlantillaCronograma('clasico')">
+                <span class="plantilla-swatch plantilla-swatch-clasico"></span> Clásico
+              </button>
+              <button type="button" class="plantilla-op" data-tpl="floral" onclick="elegirPlantillaCronograma('floral')">
+                <span class="plantilla-swatch plantilla-swatch-floral"></span> Floral
+              </button>
+              <button type="button" class="plantilla-op" data-tpl="moderno" onclick="elegirPlantillaCronograma('moderno')">
+                <span class="plantilla-swatch plantilla-swatch-moderno"></span> Moderno
+              </button>
+            </div>
+
+            <div class="cronograma-descarga-wrap">
+              <div id="cronograma-preview" class="cronograma-tarjeta tpl-clasico"></div>
+            </div>
+
+            <div class="cronograma-descarga-botones">
+              <button class="btn btn-outline btn-chico" onclick="descargarCronogramaImagen()">⬇ Descargar imagen</button>
+              <button class="btn btn-dorado btn-chico" onclick="descargarCronogramaPDF()">⬇ Descargar PDF</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---- CHECKLIST ---- -->
+        <div id="itin-sub-checklist" class="gen-panel oculto">
+          <div class="tarjeta">
+            <h2 style="font-size:1rem">Checklist de planeación</h2>
+            <p class="desc">Te dejamos una lista inicial de tareas comunes — bórralas o agrega las tuyas.</p>
+
+            <div class="checklist-progreso">
+              <div class="barra-estados"><span id="checklist-barra" style="background:#2FAE6B;width:0%"></span></div>
+              <p class="desc" id="checklist-contador" style="margin:0">0 de 0 completadas</p>
+            </div>
+
+            <div class="checklist-agregar">
+              <input type="text" id="checklist-nuevo-texto" placeholder="Ej. Confirmar el menú con el catering" onkeydown="if(event.key==='Enter') agregarTarea()">
+              <button class="btn btn-dorado btn-chico" onclick="agregarTarea()">+ Agregar</button>
+            </div>
+
+            <div id="lista-checklist"></div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
     <div id="portal-error" class="estado-error oculto">
@@ -268,7 +341,10 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="js/invitados.js"></script>
   <script src="js/mesas.js"></script>
+  <script src="js/itinerario.js"></script>
 </body>
 </html>

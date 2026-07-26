@@ -77,6 +77,7 @@ function cambiarTabPanel(tab) {
   document.getElementById(`tab-${tab}`).classList.remove('oculto');
   if (tab === 'mesas' && window.cargarMesasSiNecesario) window.cargarMesasSiNecesario();
   if (tab === 'muro') cargarFirmas();
+  if (tab === 'itinerario' && window.cargarItinerarioSiNecesario) window.cargarItinerarioSiNecesario();
 }
 
 function cambiarTabGenerador(tab) {

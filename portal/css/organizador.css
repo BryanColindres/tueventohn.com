@@ -269,3 +269,92 @@
   .ti-fila.encabezado{display:none}
   .ti-acciones{margin-top:.4rem}
 }
+
+/* ============================================================================
+   ITINERARIO (cronograma + checklist) — tab-itinerario
+   ============================================================================ */
+
+/* ---- editor del cronograma ---- */
+.cronograma-item-editor{display:grid;grid-template-columns:80px 1fr auto;gap:.6rem;align-items:center;
+  padding:.7rem .9rem;border:1px dashed var(--borde);border-radius:10px;background:var(--celeste-nube);margin-bottom:.6rem}
+.cronograma-item-editor input{padding:.6rem .7rem;border:1px solid var(--borde);border-radius:8px;
+  font-family:var(--font);font-size:.85rem;background:#fff}
+.cronograma-item-editor-acciones{display:flex;gap:.3rem}
+.cronograma-item-editor-acciones button{width:26px;height:26px;border-radius:50%;border:1px solid var(--borde);
+  background:#fff;color:var(--texto-mid);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center}
+.cronograma-item-editor-acciones button:disabled{opacity:.3;cursor:default}
+.cronograma-item-editor-acciones button.quitar{color:#B0473F;border-color:#F3D3CF}
+
+/* ---- selector de plantilla ---- */
+.plantilla-picker{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.3rem}
+.plantilla-op{display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border-radius:999px;
+  border:1px solid var(--borde);background:#fff;font-family:var(--font);font-size:.82rem;color:var(--texto-mid);cursor:pointer}
+.plantilla-op.activo{border-color:var(--celeste-oscuro);color:var(--celeste-oscuro);background:var(--celeste-nube);font-weight:600}
+.plantilla-swatch{width:20px;height:20px;border-radius:50%;display:inline-block;flex-shrink:0;border:1px solid var(--borde)}
+.plantilla-swatch-clasico{background:linear-gradient(135deg,#fff 50%,var(--celeste-oscuro) 50%)}
+.plantilla-swatch-floral{background:linear-gradient(135deg,var(--rosa-suave) 50%,var(--rosa) 50%)}
+.plantilla-swatch-moderno{background:linear-gradient(135deg,var(--azul-profundo) 50%,var(--celeste) 50%)}
+
+/* ---- tarjeta descargable (vista previa + fuente de la exportación) ---- */
+.cronograma-descarga-wrap{display:flex;justify-content:center;overflow-x:auto;padding:1.4rem 0;background:#EAF3F8;border-radius:16px;margin-bottom:1.1rem}
+.cronograma-tarjeta{width:380px;max-width:100%;padding:2.2rem 1.8rem;box-sizing:border-box;text-align:center;border-radius:6px}
+.cronograma-header{margin-bottom:1.4rem}
+.cronograma-eyebrow{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;margin:0 0 .5rem}
+.cronograma-header h3{font-family:var(--font-display);font-style:italic;font-size:1.5rem;margin:0 0 .3rem}
+.cronograma-fecha{font-size:.8rem;margin:0}
+.cronograma-lista{display:flex;flex-direction:column;gap:.9rem;text-align:left}
+.cronograma-item{display:flex;align-items:center;gap:.8rem}
+.cronograma-item-icono{font-size:1.2rem;flex-shrink:0}
+.cronograma-item-hora{font-family:var(--font-display);font-style:italic;font-size:.95rem;flex-shrink:0;min-width:66px}
+.cronograma-item-titulo{font-size:.88rem}
+.cronograma-footer{margin:1.8rem 0 0;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;opacity:.6}
+.cronograma-descarga-botones{display:flex;gap:.7rem;flex-wrap:wrap}
+
+/* estilo Clásico */
+.tpl-clasico{background:#fff;border:1px solid var(--borde)}
+.tpl-clasico .cronograma-eyebrow{color:var(--celeste-oscuro)}
+.tpl-clasico .cronograma-header h3{color:var(--azul-profundo)}
+.tpl-clasico .cronograma-fecha{color:var(--texto-mid)}
+.tpl-clasico .cronograma-item-hora{color:var(--celeste-oscuro)}
+.tpl-clasico .cronograma-item-titulo{color:var(--texto)}
+.tpl-clasico .cronograma-footer{color:var(--texto-mid)}
+
+/* estilo Floral */
+.tpl-floral{background:var(--rosa-suave);border:1.5px dashed var(--rosa)}
+.tpl-floral .cronograma-eyebrow{color:var(--rosa)}
+.tpl-floral .cronograma-header h3{color:#7A4642}
+.tpl-floral .cronograma-fecha{color:#9C6B67}
+.tpl-floral .cronograma-item-hora{color:var(--rosa)}
+.tpl-floral .cronograma-item-titulo{color:#5C3E3B}
+.tpl-floral .cronograma-footer{color:#9C6B67}
+
+/* estilo Moderno */
+.tpl-moderno{background:var(--azul-profundo);border:none}
+.tpl-moderno .cronograma-eyebrow{color:var(--celeste)}
+.tpl-moderno .cronograma-header h3{color:#fff}
+.tpl-moderno .cronograma-fecha{color:var(--celeste-claro)}
+.tpl-moderno .cronograma-item-hora{color:var(--celeste)}
+.tpl-moderno .cronograma-item-titulo{color:#fff}
+.tpl-moderno .cronograma-footer{color:var(--celeste-claro)}
+
+/* ---- checklist ---- */
+.checklist-progreso{margin-bottom:1.2rem}
+.checklist-progreso .barra-estados{margin-bottom:.5rem}
+.checklist-agregar{display:flex;gap:.6rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.checklist-agregar input{flex:1 1 220px;padding:.7rem .9rem;border:1px solid var(--borde);border-radius:10px;
+  font-family:var(--font);font-size:.85rem;background:var(--celeste-nube)}
+.checklist-item{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-bottom:1px solid var(--borde)}
+.checklist-item:last-child{border-bottom:none}
+.checklist-item input[type=checkbox]{width:19px;height:19px;flex-shrink:0;accent-color:var(--verde);cursor:pointer}
+.checklist-item .checklist-texto{flex:1;font-size:.88rem;color:var(--texto)}
+.checklist-item.completada .checklist-texto{color:var(--texto-mid);text-decoration:line-through}
+.checklist-item-acciones{display:flex;gap:.25rem;flex-shrink:0}
+.checklist-item-acciones button{width:26px;height:26px;border-radius:50%;border:1px solid var(--borde);
+  background:#fff;color:var(--texto-mid);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center}
+.checklist-item-acciones button:disabled{opacity:.3;cursor:default}
+.checklist-item-acciones button.quitar{color:#B0473F;border-color:#F3D3CF}
+
+@media(max-width:640px){
+  .cronograma-item-editor{grid-template-columns:1fr;gap:.4rem}
+  .cronograma-item-editor-acciones{justify-content:flex-end}
+}
