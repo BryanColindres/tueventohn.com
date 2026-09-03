@@ -52,6 +52,7 @@
 .ti-icon-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--borde);background:#fff;
   display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;color:var(--texto-mid);flex-shrink:0}
 .ti-icon-btn:hover{background:var(--celeste-nube)}
+.ti-icon-btn--whatsapp:hover{background:#e4faec;border-color:#25D366}
 .ti-icon-vacio{border-color:transparent;background:transparent;cursor:default}
 
 /* ---- paginación ---- */

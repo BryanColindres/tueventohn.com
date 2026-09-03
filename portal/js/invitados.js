@@ -63,6 +63,10 @@ async function cargarTodo() {
     document.getElementById('filtro-estado').value = 'todos';
     document.getElementById('filtro-invitado-por').value = 'todos';
     primeraCarga = false;
+    // Nombres de la pareja + fecha, para armar el mensaje de "copiar link".
+    // cargarEventoInfo() vive en itinerario.js (misma página) y llena
+    // el global EVENTO_INFO — no hace falta duplicarlo aquí.
+    if (window.cargarEventoInfo) await cargarEventoInfo();
   }
 
   renderResumen();
@@ -151,11 +155,11 @@ function renderTablaInvitados() {
       </div>
       <div class="ti-sub">${badgeApertura(i)}</div>
       <div class="ti-acciones">
-        <button class="ti-icon-btn" title="Copiar link personal" onclick="copiarLinkInvitado('${i.link}')">🔗</button>
+        <button class="ti-icon-btn" title="Copiar link personal (con mensaje)" onclick="copiarLinkPersonal('${i.id}')">${ICONO_LINK}</button>
         ${i.link_familiar
-          ? `<button class="ti-icon-btn" title="Copiar link familiar (toda la familia)" onclick="copiarLinkInvitado('${i.link_familiar}')">👪</button>`
+          ? `<button class="ti-icon-btn" title="Copiar link familiar (con mensaje, toda la familia)" onclick="copiarLinkFamiliarDesdeInvitado('${i.id}')">${ICONO_FAMILIA}</button>`
           : `<span class="ti-icon-btn ti-icon-vacio"></span>`}
-        <button class="ti-icon-btn" title="WhatsApp" onclick="compartirWhatsapp('${i.id}')">💬</button>
+        <button class="ti-icon-btn ti-icon-btn--whatsapp" title="Enviar por WhatsApp" onclick="compartirWhatsapp('${i.id}')">${ICONO_WHATSAPP}</button>
         <button class="ti-icon-btn" title="Editar" onclick="abrirModalEditar('${i.id}')">✎</button>
         <button class="ti-icon-btn" title="Eliminar" onclick="eliminarInvitado('${i.id}')">🗑</button>
       </div>
@@ -387,17 +391,78 @@ async function eliminarInvitado(id) {
 }
 
 /* ============================================================ COMPARTIR = */
-function copiarLinkInvitado(link) {
-  navigator.clipboard?.writeText(link).then(
-    () => mostrarToast('Link copiado'),
-    () => mostrarToast(link)
+// Iconos claros para los botones de acción (antes eran emoji que en
+// algunos celulares se veían borrosos o no se entendían, sobre todo el de
+// "familia"). currentColor hereda el color del botón, salvo WhatsApp que
+// va siempre en verde para que se reconozca de un vistazo.
+const ICONO_LINK = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12a4 4 0 004 4h3a4 4 0 000-8h-1"/><path d="M15 12a4 4 0 00-4-4H8a4 4 0 000 8h1"/></svg>';
+const ICONO_FAMILIA = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M2.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5"/><path d="M14.7 20c0-2.3 1.4-4 2.8-4.3 1.8.4 3 2.1 3 4.3"/></svg>';
+const ICONO_WHATSAPP = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 01-8.5 8.5c-1.3 0-2.6-.3-3.7-.9L3 20l1-5.7a8.5 8.5 0 1117-1.9z"/></svg>';
+
+// "03 de octubre, 2026" — el formato corto que se usa en el mensaje.
+function formatearFechaCorta(fechaStr) {
+  if (!fechaStr) return '';
+  const [y, m, d] = fechaStr.split('-').map(Number);
+  if (!y || !m || !d) return '';
+  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  return `${String(d).padStart(2, '0')} de ${meses[m - 1]}, ${y}`;
+}
+
+// Todos los invitados con esa familia (para listar los nombres en el mensaje).
+function nombresDeFamilia(nombreFamilia) {
+  return INVITADOS.filter(x => (x.familia || '') === nombreFamilia).map(x => x.nombre).filter(Boolean);
+}
+
+// Mismo mensaje siempre, sea link personal o familiar — solo cambian los
+// nombres y la cantidad de personas. nombresEvento()/EVENTO_INFO vienen de
+// itinerario.js (misma página).
+function construirMensajeInvitacion(nombres, link) {
+  const pareja = (typeof nombresEvento === 'function') ? nombresEvento() : '';
+  const fecha = formatearFechaCorta(EVENTO_INFO.fecha);
+  const encabezadoFecha = [pareja, fecha].filter(Boolean).join(' — ');
+  const lista = nombres.filter(Boolean);
+  const cuerpo = lista.length <= 1
+    ? `Esta invitación es para 1 persona:\n${lista[0] || ''}`
+    : `Esta invitación es para ${lista.length} personas:\n${lista.join('\n')}`;
+  return [
+    '💍 ¡Hola!',
+    'Con mucha alegría te invitamos a nuestra boda.',
+    encabezadoFecha,
+    cuerpo,
+    'Presiona este enlace para ver tu invitación:',
+    link
+  ].filter(Boolean).join('\n');
+}
+
+function copiarTexto(texto) {
+  navigator.clipboard?.writeText(texto).then(
+    () => mostrarToast('Mensaje copiado'),
+    () => mostrarToast(texto)
   );
 }
+
+function copiarLinkPersonal(id) {
+  const inv = INVITADOS.find(x => x.id === id);
+  if (!inv) return;
+  copiarTexto(construirMensajeInvitacion([inv.nombre], inv.link));
+}
+
+function copiarLinkFamiliarDesdeInvitado(id) {
+  const inv = INVITADOS.find(x => x.id === id);
+  if (!inv || !inv.link_familiar) return;
+  copiarTexto(construirMensajeInvitacion(nombresDeFamilia(inv.familia), inv.link_familiar));
+}
+
+function copiarLinkFamilia(familiaId) {
+  const f = FAMILIAS.find(x => x.id === familiaId);
+  if (!f) return;
+  copiarTexto(construirMensajeInvitacion(nombresDeFamilia(f.nombre), f.link));
+}
+
 function compartirWhatsapp(id) {
   const inv = INVITADOS.find(i => i.id === id);
-  const primerNombre = inv.nombre.split(' ')[0];
   const telefono = (inv.telefono || '').replace(/\D/g, '');
-  const mensaje = encodeURIComponent(`¡Hola ${primerNombre}! Este es tu link personal para confirmar tu asistencia: ${inv.link}`);
+  const mensaje = encodeURIComponent(construirMensajeInvitacion([inv.nombre], inv.link));
   const numero = telefono ? `504${telefono}` : '';
   window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
 }
@@ -464,7 +529,7 @@ function renderListaFamilias() {
         </div>
       </div>
       <div class="ti-acciones">
-        <button class="ti-icon-btn" title="Copiar link familiar" onclick="copiarLinkInvitado('${f.link}')">🔗</button>
+        <button class="ti-icon-btn" title="Copiar link familiar (con mensaje)" onclick="copiarLinkFamilia('${f.id}')">${ICONO_LINK}</button>
       </div>
     </div>`;
   }).join('');
