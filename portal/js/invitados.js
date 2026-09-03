@@ -147,7 +147,7 @@ function renderTablaInvitados() {
     <div class="ti-fila">
       <div>
         <div class="ti-nombre">${escapar(i.nombre)}</div>
-        <div class="ti-sub">${i.familia ? 'Familia ' + escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}</div>
+        <div class="ti-sub">${i.familia ? escapar(i.familia) : 'Sin familia'}${i.telefono ? ' · ' + escapar(i.telefono) : ''}</div>
       </div>
       <div>
         ${badgeEstado(i)}
@@ -426,12 +426,10 @@ function construirMensajeInvitacion(nombres, link) {
     : `Esta invitación es para ${lista.length} personas:\n${lista.join('\n')}`;
   return [
     '💍 ¡Hola!',
-    'Con mucha alegría te invitamos a nuestra boda.',
-    encabezadoFecha,
+    [`Con mucha alegría te invitamos a nuestra boda.`, encabezadoFecha].filter(Boolean).join('\n'),
     cuerpo,
-    'Presiona este enlace para ver tu invitación:',
-    link
-  ].filter(Boolean).join('\n');
+    [`Presiona este enlace para ver tu invitación:`, link].filter(Boolean).join('\n')
+  ].filter(Boolean).join('\n\n');
 }
 
 function copiarTexto(texto) {
@@ -530,6 +528,7 @@ function renderListaFamilias() {
       </div>
       <div class="ti-acciones">
         <button class="ti-icon-btn" title="Copiar link familiar (con mensaje)" onclick="copiarLinkFamilia('${f.id}')">${ICONO_LINK}</button>
+        <button class="ti-icon-btn" title="Editar nombre de la familia" onclick="renombrarFamilia('${f.id}', '${escapar(f.nombre).replace(/'/g, "\\'")}')">✎</button>
       </div>
     </div>`;
   }).join('');
@@ -556,6 +555,15 @@ async function actualizarConteoFamilia(familiaId, valor) {
   if (isNaN(conteo) || conteo < 0) { mostrarToast('Escribe un número válido'); await cargarFamilias(); return; }
   const res = await rpc('portal_actualizar_conteo_familia', { p_codigo: CODIGO, p_familia_id: familiaId, p_conteo: conteo });
   if (res.ok) mostrarToast('Conteo actualizado');
+}
+
+async function renombrarFamilia(familiaId, nombreActual) {
+  const nuevo = prompt('Nombre de la familia:', nombreActual);
+  if (nuevo === null) return; // canceló
+  const limpio = nuevo.trim();
+  if (!limpio || limpio === nombreActual) return;
+  const res = await rpc('panel_renombrar_familia', { p_codigo: CODIGO, p_familia_id: familiaId, p_nombre_nuevo: limpio });
+  if (res.ok) { await cargarTodo(); mostrarToast('Familia actualizada'); }
 }
 
 /* ============================================================ MURO DE FIRMAS (moderación) == */
