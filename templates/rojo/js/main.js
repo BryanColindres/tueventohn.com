@@ -185,7 +185,6 @@ function pintarTimeline(){
   if ((C.modules && C.modules.timeline === false) || !C.timeline || !C.timeline.length) { seccion.style.display = 'none'; return; }
   cont.innerHTML = C.timeline.map((t, i) => `
     <div class="prog-item reveal">
-      <span class="prog-icono">${ICONOS_TIMELINE[i % ICONOS_TIMELINE.length]}</span>
       <span class="prog-hora">${t.hora}</span>
       <span class="prog-titulo">${TuBodaBackend.iconoTimelineHtml(t.icono)}${t.titulo}</span>
     </div>`).join('');

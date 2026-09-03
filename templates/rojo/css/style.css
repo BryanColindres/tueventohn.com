@@ -111,12 +111,11 @@ a{text-decoration:none;color:inherit}
 /* TIMELINE — tarjetas en fila con icono circular */
 .section-timeline{padding:4.5rem 0}
 .programa{display:flex;flex-direction:column;max-width:480px;margin:2.6rem auto 0;padding:0 2rem}
-.prog-item{display:grid;grid-template-columns:44px 60px 1fr;gap:1rem;align-items:center;padding:1.1rem 0;border-bottom:1px solid var(--rosa-suave)}
+.prog-item{display:grid;grid-template-columns:60px 1fr;gap:1rem;align-items:center;padding:1.1rem 0;border-bottom:1px solid var(--rosa-suave)}
 .prog-item:last-child{border-bottom:none}
-.prog-icono{width:38px;height:38px;border-radius:50%;background:var(--marfil-deep);border:1px solid var(--rosa-suave);display:flex;align-items:center;justify-content:center;color:var(--vino)}
-.prog-icono svg{width:16px;height:16px}
-.prog-hora{font-family:var(--font-display);font-size:.8rem;color:var(--vino);text-align:left}
+.prog-hora{font-family:var(--font-display);font-size:1rem;color:var(--vino);text-align:left;font-weight:600}
 .prog-titulo{font-family:var(--font-serif);font-size:1.1rem;color:var(--texto)}
+.prog-titulo img,.prog-titulo svg{width:26px;height:26px;vertical-align:-6px;margin-right:.4rem}
 
 /* MAPA */
 .section-map{padding:4.5rem 0;text-align:center;background:var(--marfil-deep)}
@@ -126,7 +125,7 @@ a{text-decoration:none;color:inherit}
 /* GALERÍA — tamaños y formas variadas (círculo + cuadro) */
 .section-galeria{padding:4.5rem 0;text-align:center}
 .galeria-grid{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:1rem;margin-top:2.6rem;max-width:640px;margin-left:auto;margin-right:auto;padding:0 2rem}
-.gal-item{overflow:hidden;border:1px solid var(--rosa-suave)}
+.gal-item{overflow:hidden;border:6px solid #fff;outline:1px solid var(--rosa-suave);outline-offset:-1px;box-shadow:0 8px 20px rgba(122,31,46,.18)}
 .gal-item:nth-child(4n+1){width:150px;height:190px}
 .gal-item:nth-child(4n+2){width:120px;height:120px;border-radius:50%;align-self:center}
 .gal-item:nth-child(4n+3){width:130px;height:170px}
@@ -163,7 +162,8 @@ a{text-decoration:none;color:inherit}
 
 @media(max-width:640px){
   .historia-item,.historia-item:nth-child(even){flex-direction:column;text-align:center}
-  .prog-item{grid-template-columns:56px 1fr}
+  .prog-item{grid-template-columns:50px 1fr;gap:.6rem}
+  .prog-hora{font-size:1.05rem}
 }
 
 
