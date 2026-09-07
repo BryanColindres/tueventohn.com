@@ -463,7 +463,7 @@ function initLightbox() {
 // ══════════════════════════════════════════════════════
 let selectedEmoji = '❤️', uploadedPhotoUrl = '';
 let _bookIdx = 0, _bookData = [], _bookFlipping = false;
-// CLOUDINARY_CLOUD_NAME / CLOUDINARY_UPLOAD_PRESET ya están declaradas en
+// CLOUDINARY_CLOUD_NAME / CLOUDINARY_UPLOAD_PRESET ya están declaradas en.
 // shared/js/backend.js (se carga antes que este archivo) — no redeclarar
 // aquí o el navegador tira SyntaxError por identificador duplicado.
 
