@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Invitación de Boda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+<!-- PWA + Favicon -->
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png"/>
+<link rel="apple-touch-icon" href="img/icon-192.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#9B6B6B"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     VELO DE CARGA — cubre todo mientras se resuelve el
+     config y (si aplica) la validación de acceso.
+══════════════════════════════════════════════════ -->
+<div id="veloCarga" style="position:fixed;inset:0;z-index:3000;background:#F7EFE8;display:flex;align-items:center;justify-content:center;transition:opacity .4s ease">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;letter-spacing:.08em;color:#9B6B6B">B <span style="opacity:.5">&amp;</span> S</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PANTALLA — ENLACE NO HABILITADO
+══════════════════════════════════════════════════ -->
+<div class="access-gate access-gate--denied" id="gateDenied">
+  <div class="access-gate__bg">
+    <img src="img/preboda16.jpg" onerror="this.style.display='none'"/>
+    <div class="access-gate__overlay"></div>
+  </div>
+  <div class="access-gate__content">
+    <div class="access-gate__monogram" id="gateMonogram">B <span>&amp;</span> S</div>
+    <div class="access-gate__deco">
+      <span></span>
+      <svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg>
+      <span></span>
+    </div>
+    <h1 id="gateDeniedTitulo" data-texto="gateDeniedTitulo">Este enlace no está habilitado</h1>
+    <p id="gateDeniedTexto" data-texto="gateDeniedTexto">Este enlace no corresponde a ninguna invitación de nuestra boda. Si crees que se trata de un error, escríbenos directamente y con gusto te ayudamos.</p>
+    <a class="access-gate__btn" id="gateDeniedWA" href="#" target="_blank">Escribirnos por WhatsApp</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PANTALLA — INVITACIÓN BLOQUEADA
+══════════════════════════════════════════════════ -->
+<div class="access-gate access-gate--blocked" id="gateBlocked">
+  <div class="access-gate__bg">
+    <img src="img/preboda11.jpg" onerror="this.style.display='none'"/>
+    <div class="access-gate__overlay"></div>
+  </div>
+  <div class="access-gate__content">
+    <div class="access-gate__monogram" id="gateMonogramBloqueado">B <span>&amp;</span> S</div>
+    <div class="access-gate__deco">
+      <span></span>
+      <svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg>
+      <span></span>
+    </div>
+    <h1 id="gateBlockedTitulo" data-texto="gateBlockedTitulo">Esta invitación ya no está disponible</h1>
+    <p id="gateBlockedTexto" data-texto="gateBlockedTexto">Al no recibir tu confirmación antes de la fecha límite, asumimos que no podrás acompañarnos en esta ocasión. ¡Esperamos verte y compartir contigo en una próxima oportunidad!</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PANTALLA DE VIDEO INTRO
+══════════════════════════════════════════════════ -->
+<div class="video-screen" id="videoScreen">
+  <div class="video-petals" id="videoPetals"></div>
+  <video class="video-el" id="videoEl" playsinline preload="metadata"></video>
+  <div class="video-tap-msg" id="videoTapMsg">
+    <div class="video-tap-msg__inner">
+      <div class="video-tap-msg__monogram" id="tapMonogram">B <span>&</span> S</div>
+      <p class="video-tap-msg__pre" id="tapFecha">03 · 10 · 2026</p>
+      <h2 class="video-tap-msg__title">Tienes una invitación</h2>
+      <p class="video-tap-msg__sub">Toca para reproducir</p>
+      <div class="video-tap-msg__pulse">
+        <div class="video-tap-msg__ring"></div>
+        <div class="video-tap-msg__ring video-tap-msg__ring--2"></div>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="video-progress-bar" id="videoProgressBar">
+    <div class="video-progress-fill" id="videoProgressFill"></div>
+  </div>
+  <button class="video-skip" id="videoSkip" style="display:none">Ver invitación →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PANTALLA NOMBRE INVITADO
+══════════════════════════════════════════════════ -->
+<div class="name-screen" id="nameScreen" style="display:none">
+  <div class="name-screen__petals" id="namePetals"></div>
+  <div class="name-screen__content">
+    <div class="name-screen__deco"><span></span><svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg><span></span></div>
+    <p class="name-screen__pre">Esta invitación es para</p>
+    <h2 class="name-screen__name" id="nameScreenGuest"></h2>
+    <p class="name-screen__sub" id="nameScreenSub"></p>
+    <div class="name-screen__deco"><span></span><svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg><span></span></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     INVITACIÓN PRINCIPAL
+══════════════════════════════════════════════════ -->
+<div class="invitation" id="invitation">
+
+  <audio id="bgMusic" loop preload="none"></audio>
+  <audio id="voiceMsg" preload="auto"></audio>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero__bg">
+      <div class="hero__overlay"></div>
+      <img class="hero__photo" id="heroFoto" src="" onerror="this.style.display='none'"/>
+    </div>
+    <div class="petals-hero" id="petalsHero"></div>
+    <div class="hero__content reveal">
+      <p class="hero__label">Nos casamos</p>
+      <h1 class="hero__names">
+        <span id="heroNovio"></span>
+        <em class="hero__amp">&</em>
+        <span id="heroNovia"></span>
+      </h1>
+      <p class="hero__apellidos" id="heroApellidos"></p>
+      <div class="divider-rose"><span></span><svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg><span></span></div>
+      <p class="hero__date" id="heroFecha"></p>
+      <div class="scroll-hint" id="scrollHint">
+        <div class="scroll-hint__video-wrap">
+          <video class="scroll-hint__video" autoplay loop muted playsinline>
+            <source src="img/scroll-hint.mp4" type="video/mp4"/>
+          </video>
+        </div>
+        <p class="scroll-hint__text">Desliza</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COUNTDOWN ── -->
+  <section class="section-countdown">
+    <div class="container">
+      <p class="label reveal" id="cdLabel" data-texto="tituloCountdown">Faltan</p>
+      <div class="countdown reveal">
+        <div class="cd-item"><span id="cd-days">00</span><p>días</p></div>
+        <div class="cd-dot">·</div>
+        <div class="cd-item"><span id="cd-hours">00</span><p>horas</p></div>
+        <div class="cd-dot">·</div>
+        <div class="cd-item"><span id="cd-mins">00</span><p>minutos</p></div>
+        <div class="cd-dot">·</div>
+        <div class="cd-item"><span id="cd-secs">00</span><p>segundos</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VERSÍCULO + FOTO ── -->
+  <section class="section-split" id="section-versiculo">
+    <div class="split-photo reveal-left">
+      <img id="versePhoto" src="" onerror="this.parentElement.style.display='none'"/>
+    </div>
+    <div class="split-text reveal-right" style="background:var(--cream)">
+      <svg class="quote-icon" viewBox="0 0 60 45"><path d="M0 45V27C0 18 6 9.3 18 1.5L22.5 7.5C16.5 11.5 13 16.5 12 22.5H24V45H0ZM36 45V27C36 18 42 9.3 54 1.5L58.5 7.5C52.5 11.5 49 16.5 48 22.5H60V45H36Z" fill="currentColor" opacity="0.2"/></svg>
+      <blockquote id="verseText"></blockquote>
+      <cite id="verseCite"></cite>
+    </div>
+  </section>
+
+  <!-- ── MENSAJE DE VOZ ── -->
+  <section class="section-voice" id="section-voice">
+    <div class="container">
+      <div class="voice-card reveal">
+        <div class="voice-card__photo"><img id="voicePhoto" src="" onerror="this.style.display='none'"/></div>
+        <div class="voice-card__body">
+          <p class="label">Un mensaje para ti</p>
+          <h2 class="voice-card__name" id="voiceName">Querido invitado</h2>
+          <p class="voice-card__desc" id="voiceDesc">Los novios grabaron un mensaje especial para ti</p>
+          <button class="voice-btn" id="voiceBtn">
+            <span id="voiceIcon">▶</span>
+            <span id="voiceLabel">Escuchar mensaje</span>
+          </button>
+          <div class="voice-progress" id="voiceProgress"><div class="voice-progress__fill" id="voiceProgressFill"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EVENTO ── -->
+  <section class="section-split">
+    <div class="split-text reveal-left" style="background:white">
+      <p class="label">La celebración</p>
+      <h2 class="split-title" id="venueName"></h2>
+      <div class="event-row"><span>📅</span><div><p class="event-row__label">Fecha</p><p class="event-row__val" id="eventDate"></p></div></div>
+      <div class="event-row"><span>🕐</span><div><p class="event-row__label">Hora</p><p class="event-row__val" id="eventTime"></p></div></div>
+      <div class="event-row border-none"><span>📍</span><div><p class="event-row__label">Lugar</p><p class="event-row__val" id="eventVenue"></p></div></div>
+      <p class="event-maps-note">↓ Puedes ver cómo llegar más abajo</p>
+    </div>
+    <div class="split-photo reveal-right">
+      <img id="eventoFoto" src="" onerror="this.parentElement.style.display='none'"/>
+    </div>
+  </section>
+
+  <!-- ── MAPA ── -->
+  <section class="section-map">
+    <div class="container" style="text-align:center">
+      <p class="label reveal">Cómo llegar</p>
+      <p class="subtitle reveal" id="mapVenueLabel"></p>
+    </div>
+    <div class="map-wrap reveal">
+      <div class="map-frame">
+        <iframe id="mapIframe" width="100%" height="100%" style="border:0;border-radius:20px;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src=""></iframe>
+        <div class="map-pin-wrap">
+          <div class="map-pin"><div class="map-pin__dot"></div><div class="map-pin__pulse"></div></div>
+          <p class="map-pin__label" id="mapPinLabel"></p>
+        </div>
+      </div>
+      <div class="map-btns">
+        <a class="btn btn-rose" id="mapsBtn" href="#" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Google Maps
+        </a>
+        <a class="btn btn-outline" id="wazeBtn" href="#" target="_blank">Waze</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── INSTRUCCIONES / DETALLES ── -->
+  <section class="section-instructions" id="section-detalles">
+    <div class="container" style="text-align:center">
+      <p class="label reveal" data-texto="eyebrowDetalles">Detalles importantes</p>
+      <div class="instr-grid" id="instrGrid"></div>
+    </div>
+  </section>
+
+  <!-- ── VESTIMENTA ── -->
+  <section class="section-vestimenta" id="sectionVestimenta">
+    <div class="vest-solo">
+      <p class="label reveal" id="vestTituloLabel" data-texto="eyebrowVestimenta">Código de Vestimenta</p>
+      <h2 class="vest-solo__title reveal" id="vestTitulo" data-texto="tituloVestimenta">Etiqueta formal, colores suaves</h2>
+      <p class="vest-solo__body reveal" id="vestTexto"></p>
+      <button class="btn btn-rose vest-link reveal" id="vestGaleriaBtn" onclick="openVestModal()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Ver referencias de vestimenta
+      </button>
+    </div>
+  </section>
+
+  <!-- ── HISTORIA (3 párrafos + fotos alternas) ── -->
+  <section class="section-story" id="section-historia-intro">
+    <div class="container" style="text-align:center">
+      <p class="label reveal" id="historiaTituloEl" data-texto="eyebrowHistoria">UNA PROMESA DE AMOR</p>
+      <p class="subtitle reveal" id="historiaSubtituloEl">La historia que hoy queremos celebrar junto a ustedes.</p>
+    </div>
+    <div class="story-split story-split--left reveal-left" id="storyBlock0">
+      <div class="story-split__photo" id="storyPhoto1"><img src="" onerror="this.parentElement.parentElement.style.display='none'"/></div>
+      <div class="story-split__text"><p id="story1"></p></div>
+    </div>
+    <div class="story-split story-split--right reveal-right" id="storyBlock1">
+      <div class="story-split__text"><p id="story2"></p></div>
+      <div class="story-split__photo" id="storyPhoto2"><img src="" onerror="this.parentElement.parentElement.style.display='none'"/></div>
+    </div>
+    <div class="story-split story-split--left reveal-left" id="storyBlock2">
+      <div class="story-split__photo" id="storyPhoto3"><img src="" onerror="this.parentElement.parentElement.style.display='none'"/></div>
+      <div class="story-split__text"><p id="story3"></p></div>
+    </div>
+    <div class="container"><div class="gallery-grid" id="galleryGrid"></div></div>
+  </section>
+
+  <!-- ── LÍNEA DE TIEMPO ILUSTRADA ── -->
+  <section class="section-timeline" id="section-timeline-ilustrado">
+    <div class="container" style="text-align:center">
+      <p class="label reveal" data-texto="tituloItinerario">Nuestra historia juntos</p>
+      <p class="subtitle reveal">El camino que nos trajo hasta aquí</p>
+    </div>
+    <div class="timeline-wrap" id="timelineWrap"></div>
+  </section>
+
+  <!-- ── CONFIRMACIÓN ── -->
+  <section class="section-split" id="rsvpSection">
+    <div class="split-photo reveal-left" id="rsvpPhoto">
+      <img src="" onerror="this.parentElement.style.display='none'"/>
+    </div>
+    <div class="split-text reveal-right" style="background:var(--rose-deep)">
+      <p class="label" style="color:rgba(255,255,255,.65)">¿Vendrás?</p>
+      <h2 class="split-title" style="color:white" data-texto="tituloRSVP">Confirma tu asistencia</h2>
+
+      <div class="rsvp-personal" id="rsvpPersonal" style="display:none">
+        <div class="rsvp-personal__card">
+          <p class="rsvp-personal__titulo" id="rsvpPersonalTitulo" data-texto="rsvpPersonalTitulo">Esta invitación es personal e intransferible</p>
+          <p class="rsvp-personal__msg" id="rsvpPersonalMsg" data-texto="rsvpPersonalMsg">Ha sido enviada especialmente para:</p>
+          <p class="rsvp-personal__nombre" id="rsvpPersonalNombre"></p>
+          <p class="rsvp-personal__nota" id="rsvpPersonalNota" data-texto="rsvpPersonalNota">Por favor no compartas este enlace con otras personas.</p>
+        </div>
+      </div>
+
+      <p class="rsvp-desc" id="rsvpDesc" data-texto="eyebrowRSVP">Nos encantaría contar con tu presencia. Por favor confírmanos tu asistencia.</p>
+      <p class="rsvp-wa-label">¿A quién le confirmas?</p>
+      <div class="rsvp-wa-btns">
+        <a class="btn btn-white btn-large" id="whatsappBtnNovio" href="#" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span id="waLabelNovio">Él · Novio</span>
+        </a>
+        <a class="btn btn-white btn-large" id="whatsappBtnNovia" href="#" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span id="waLabelNovia">Ella · Novia</span>
+        </a>
+      </div>
+      <p class="rsvp-note">Al hacer clic se abrirá WhatsApp con un mensaje listo.</p>
+    </div>
+  </section>
+
+  <!-- ── LIBRO DE FIRMAS ── -->
+  <section class="section-book" id="section-firmas">
+    <div class="container" style="text-align:center">
+      <p class="label reveal" id="bookTituloEl" data-texto="tituloLibroFirmas">LIBRO DE FIRMAS</p>
+      <p class="subtitle reveal" id="bookSubtituloEl" data-texto="eyebrowLibroFirmas">Cada palabra y cada recuerdo significan mucho para nosotros.</p>
+      <p class="book-desc reveal" id="bookDescEl" data-texto="introLibroFirmas">Deja un mensaje y comparte una imagen junto a los novios o con alguno de ellos.</p>
+    </div>
+    <div class="book-container reveal">
+      <div class="book">
+        <div class="book-page book-page--left">
+          <div class="book-page__inner">
+            <div class="book-page__header">
+              <div class="book-page__lines"></div>
+              <h3 class="book-page__title">Deja tu firma</h3>
+              <p class="book-page__sub" id="bookGuestName">Invitado especial</p>
+            </div>
+            <div class="book-photo-upload" id="bookPhotoArea">
+              <div class="book-photo-preview" id="bookPhotoPreview">
+                <div class="book-photo-placeholder" id="bookPhotoPlaceholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  <p>Subir foto<br/><span>opcional</span></p>
+                </div>
+                <img id="bookPhotoImg" src="" alt="" style="display:none"/>
+                <button class="book-photo-remove" id="bookPhotoRemove" style="display:none">✕</button>
+              </div>
+              <input type="file" id="bookPhotoInput" accept="image/*,video/*,.heic,.heif,.HEIC,.HEIF,.mov,.MOV" style="display:none"/>
+            </div>
+            <div class="book-field">
+              <textarea id="bookMessage" data-texto="placeholderMensajeFirma" placeholder="Escribe tu mensaje para los novios..." maxlength="280" rows="4"></textarea>
+              <span class="book-charcount"><span id="bookChars">280</span> caracteres</span>
+            </div>
+            <div class="book-emojis">
+              <p class="book-emojis__label">Tu reacción</p>
+              <div class="book-emojis__row">
+                <button class="book-emoji selected" data-e="❤️">❤️</button>
+                <button class="book-emoji" data-e="🎉">🎉</button>
+                <button class="book-emoji" data-e="💍">💍</button>
+                <button class="book-emoji" data-e="🥂">🥂</button>
+                <button class="book-emoji" data-e="😭">😭</button>
+                <button class="book-emoji" data-e="🙏">🙏</button>
+              </div>
+            </div>
+            <div class="book-privacy" id="bookPrivacyRow">
+              <label class="book-privacy__label">
+                <input type="checkbox" id="bookPrivate"/>
+                <span class="book-privacy__check"></span>
+                <span>Mensaje privado — solo para los novios</span>
+              </label>
+            </div>
+            <button class="book-submit" id="bookSubmit">
+              <span id="bookSubmitLabel" data-texto="botonPublicarFirma">Firmar el libro 💌</span>
+            </button>
+          </div>
+        </div>
+        <div class="book-spine">
+          <p id="bookSpineIniciales">B <span>&</span> S</p>
+          <p class="book-spine__year" id="bookSpineAnio">2026</p>
+        </div>
+        <div class="book-page book-page--right" id="bookPageRight">
+          <div class="book-page__inner">
+            <div class="book-page__header">
+              <div class="book-page__lines"></div>
+              <h3 class="book-page__title">Mensajes con amor</h3>
+            </div>
+            <div class="book-flip-wrap" id="bookFlipWrap">
+              <div id="bookFlipContainer"></div>
+              <p class="book-entries__empty" id="bookEmptyMsg">Los mensajes aparecerán aquí 🌹</p>
+            </div>
+            <div class="book-nav" id="bookNav" style="display:none">
+              <button class="book-nav__btn" id="bookPrev">‹ Anterior</button>
+              <span class="book-nav__page" id="bookPageNum">1 / 1</span>
+              <button class="book-nav__btn" id="bookNext">Siguiente ›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div class="footer__photo">
+      <video src="img/footer.mp4" autoplay loop muted playsinline onerror="this.style.display='none'"></video>
+      <div class="footer__overlay"></div>
+    </div>
+    <div class="footer__content reveal">
+      <div class="divider-rose" style="justify-content:center;margin-bottom:2rem"><span></span><svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg><span></span></div>
+      <h2 class="footer__names"><span id="footerNovio"></span> <span class="footer__amp">&</span> <span id="footerNovia"></span></h2>
+      <p class="footer__date" id="footerFecha"></p>
+      <p class="footer__phrase" id="footerPhrase" data-texto="fraseFooter">Con amor, los esperamos.</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+    <img class="lb-img" id="lbImg" src="" alt=""/>
+    <button class="lb-nav lb-next" id="lbNext">›</button>
+  </div>
+
+</div><!-- /invitation -->
+
+<!-- MODAL de vestimenta -->
+<div class="vest-modal" id="vestModal">
+  <div class="vest-modal__box">
+    <button class="vest-modal__close" onclick="closeVestModal()">✕</button>
+    <div class="vest-modal__content">
+      <div class="vest-section" id="vestSeccionHombres">
+        <h3 class="vest-section__title"><span class="vest-section__icon">👔</span>Vestimenta para Caballeros</h3>
+        <p class="vest-section__sub">Etiqueta formal · Tonos cálidos</p>
+        <div class="vest-grid" id="vestGridHombres"></div>
+      </div>
+      <div class="vest-divider" id="vestDivider"><span></span><svg viewBox="0 0 40 20"><path d="M20 2C14 10 8 10 8 10C14 10 20 18 20 18C20 18 26 10 32 10C26 10 20 2 20 2Z" fill="currentColor"/></svg><span></span></div>
+      <div class="vest-section" id="vestSeccionMujeres">
+        <h3 class="vest-section__title"><span class="vest-section__icon">👗</span>Vestimenta para Damas</h3>
+        <p class="vest-section__sub">Etiqueta formal · Tonos cálidos</p>
+        <div class="vest-grid" id="vestGridDamas"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/config-demo-petalos.js"></script>
+<script src="../../shared/js/backend.js"></script>
+<script src="../../shared/js/textos.js"></script>
+<script src="js/main.js"></script>
+
+<button class="music-btn" id="musicBtn" title="Música">
+  <svg id="musicOn" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+    <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" opacity=".9"/>
+    <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z" opacity=".7"/>
+  </svg>
+  <svg id="musicOff" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+    <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+    <path d="M19 11l-1.5-1.5-1.5 1.5-1.5-1.5L16 8l-1.5-1.5L16 5l1.5 1.5L19 5l1.5 1.5L19 8l1.5 1.5z" opacity=".8"/>
+  </svg>
+</button>
+</body>
+</html>

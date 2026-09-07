@@ -97,6 +97,16 @@ async function cargarConfig() {
       console.warn("get_event_extra no disponible todavía:", err);
     }
 
+    // Contenido específico de la plantilla "petalos" (historiaIntro,
+    // timelineIlustrado, galerías de vestimenta) — mismo criterio: RPC
+    // aislada, no rompe nada si aún no existe o si la plantilla no la usa.
+    try {
+      const extra2 = await _rpc("get_event_extra2", { p_slug: slug });
+      if (extra2) Object.assign(data, extra2);
+    } catch (err) {
+      console.warn("get_event_extra2 no disponible todavía:", err);
+    }
+
     // Si la invitación tiene RSVP Premium y la URL trae un identificador de
     // invitado, se resuelve su nombre para personalizar el banner y (si
     // corresponde) la pantalla de mensaje personalizado.
@@ -133,12 +143,34 @@ function mostrarErrorCarga(mensaje) {
 // ---------------- LIBRO DE FIRMAS ----------------
 // Siempre entra como "pendiente" (lo fuerza un trigger en la base de datos).
 // cargarFirmas() solo puede ver las aprobadas — lo filtra la base de datos.
-async function enviarFirma(eventoId, nombre, mensaje, invitadoId) {
-  await _insert("firmas", [{ evento_id: eventoId, nombre, mensaje, invitado_id: invitadoId || null }]);
+async function enviarFirma(eventoId, nombre, mensaje, invitadoId, extra) {
+  const fila = { evento_id: eventoId, nombre, mensaje, invitado_id: invitadoId || null };
+  // `extra` es opcional — las plantillas que no lo usan (las 14 originales)
+  // siguen funcionando exactamente igual, sin mandar estas columnas.
+  if (extra) {
+    if (extra.emoji) fila.emoji = extra.emoji;
+    if (extra.fotoUrl) fila.foto_url = extra.fotoUrl;
+    if (typeof extra.privado === "boolean") fila.privado = extra.privado;
+  }
+  await _insert("firmas", [fila]);
 }
 
 async function cargarFirmas(eventoId) {
-  return _select("firmas", `evento_id=eq.${eventoId}&order=fecha.desc&select=nombre,mensaje`);
+  return _select("firmas", `evento_id=eq.${eventoId}&order=fecha.desc&select=nombre,mensaje,emoji,foto_url,privado`);
+}
+
+// ---------------- ACCESO PERSONALIZADO POR INVITADO ----------------
+// Valida del lado del servidor si un identificador de invitado puede ver
+// la invitación (nunca viaja la lista completa de invitados al cliente).
+// Devuelve { encontrado, bloqueado, nombre } — ver validar_acceso_invitado.
+async function validarAccesoInvitado(slug, identificador) {
+  try {
+    return await _rpc("validar_acceso_invitado", { p_slug: slug, p_identificador: identificador });
+  } catch (err) {
+    console.error(err);
+    // Ante un error de red, no bloqueamos la invitación de nadie.
+    return { encontrado: true, bloqueado: false };
+  }
 }
 
 // ---------------- GALERÍA ----------------
@@ -550,6 +582,7 @@ window.TuBodaBackend = {
   enviarCancion,
   cargarCanciones,
   validarInvitado,
+  validarAccesoInvitado,
   obtenerInvitado,
   mostrarBloqueado,
   limpiarDivisoresHuerfanos,

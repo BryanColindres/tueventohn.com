@@ -345,7 +345,17 @@ const TEXTOS_EDITABLES = [
   { clave: 'etiquetaEnRevision', etiqueta: 'Etiqueta "en revisión"', porDefecto: 'En revisión' },
   { clave: 'eyebrowVestimenta', etiqueta: 'Texto pequeño arriba de vestimenta', porDefecto: '' },
   { clave: 'botonComoLlegar', etiqueta: 'Texto del botón "Cómo llegar"', porDefecto: 'Cómo Llegar' },
-  { clave: 'botonAgregarCalendario', etiqueta: 'Texto del botón agregar al calendario', porDefecto: 'Agregar al Calendario' }
+  { clave: 'botonAgregarCalendario', etiqueta: 'Texto del botón agregar al calendario', porDefecto: 'Agregar al Calendario' },
+  // — Solo aplica a la plantilla "petalos" (acceso por invitado) —
+  { clave: 'gateDeniedTitulo', etiqueta: '[Pétalos] Título — enlace no habilitado', porDefecto: 'Este enlace no está habilitado' },
+  { clave: 'gateDeniedTexto', etiqueta: '[Pétalos] Texto — enlace no habilitado', porDefecto: 'Este enlace no corresponde a ninguna invitación.' },
+  { clave: 'gateBlockedTitulo', etiqueta: '[Pétalos] Título — invitación bloqueada', porDefecto: 'Esta invitación ya no está disponible' },
+  { clave: 'gateBlockedTexto', etiqueta: '[Pétalos] Texto — invitación bloqueada', porDefecto: 'Al no recibir tu confirmación antes de la fecha límite...' },
+  { clave: 'rsvpPersonalTitulo', etiqueta: '[Pétalos] Título — invitación personal', porDefecto: 'Esta invitación es personal e intransferible' },
+  { clave: 'rsvpPersonalMsg', etiqueta: '[Pétalos] Mensaje — invitación personal', porDefecto: 'Ha sido enviada especialmente para:' },
+  { clave: 'rsvpPersonalNota', etiqueta: '[Pétalos] Nota — invitación personal', porDefecto: 'Por favor no compartas este enlace con otras personas.' },
+  { clave: 'tituloVestimenta', etiqueta: '[Pétalos] Subtítulo de vestimenta', porDefecto: 'Etiqueta formal, colores suaves' },
+  { clave: 'fraseFooter', etiqueta: '[Pétalos] Frase de despedida (footer)', porDefecto: 'Con amor, los esperamos.' }
 ];
 
 
