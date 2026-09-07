@@ -251,8 +251,10 @@ function pintarVestimenta() {
   }
   set('vestTexto', C.vestimenta.texto);
 
-  const tieneGaleria = (C.vestimenta.galeriaHombres && C.vestimenta.galeriaHombres.length) ||
-                       (C.vestimenta.galeriaMujeres && C.vestimenta.galeriaMujeres.length);
+  const tieneGaleria = (C.modules && C.modules.vestimenta_galeria !== false) && (
+    (C.vestimenta.galeriaHombres && C.vestimenta.galeriaHombres.length) ||
+    (C.vestimenta.galeriaMujeres && C.vestimenta.galeriaMujeres.length)
+  );
   const btn = $('vestGaleriaBtn');
   if (btn) btn.style.display = tieneGaleria ? 'inline-flex' : 'none';
 }
@@ -461,8 +463,9 @@ function initLightbox() {
 // ══════════════════════════════════════════════════════
 let selectedEmoji = '❤️', uploadedPhotoUrl = '';
 let _bookIdx = 0, _bookData = [], _bookFlipping = false;
-// Mismo preset de Cloudinary que usa toda la plataforma (ver shared/js/backend.js).
-const CLOUDINARY_CLOUD_NAME = 'di6hpumct', CLOUDINARY_UPLOAD_PRESET = 'boda_jissel_daniel';
+// CLOUDINARY_CLOUD_NAME / CLOUDINARY_UPLOAD_PRESET ya están declaradas en
+// shared/js/backend.js (se carga antes que este archivo) — no redeclarar
+// aquí o el navegador tira SyntaxError por identificador duplicado.
 
 function buildFlipBook(entries) {
   _bookData = entries || []; _bookIdx = 0;
@@ -540,7 +543,7 @@ function initBook() {
   if (prevB) prevB.addEventListener('click', () => { if (_bookFlipping || _bookIdx <= 0) return; _bookFlipping = true; _bookIdx--; _renderPage(_bookIdx, 'prev'); _updateCounter(); });
   if (nextB) nextB.addEventListener('click', () => { if (_bookFlipping || _bookIdx >= _bookData.length - 1) return; _bookFlipping = true; _bookIdx++; _renderPage(_bookIdx, 'next'); _updateCounter(); });
 
-  cargarFirmas();
+  cargarFirmasPetalos();
 }
 
 async function uploadCloudinary(file) {
@@ -579,7 +582,7 @@ async function submitFirma() {
 
 // Carga los mensajes ya APROBADOS desde Supabase (la moderación la hace
 // el panel admin, igual que en las otras 14 plantillas).
-async function cargarFirmas() {
+async function cargarFirmasPetalos() {
   try {
     const firmas = await TuBodaBackend.cargarFirmas(C.eventoId);
     const normalizadas = (firmas || []).filter(f => !f.privado).map(f => ({
