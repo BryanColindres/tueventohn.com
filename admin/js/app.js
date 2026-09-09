@@ -354,7 +354,6 @@ const TEXTOS_EDITABLES = [
   { clave: 'rsvpPersonalTitulo', etiqueta: '[Pétalos] Título — invitación personal', porDefecto: 'Esta invitación es personal e intransferible' },
   { clave: 'rsvpPersonalMsg', etiqueta: '[Pétalos] Mensaje — invitación personal', porDefecto: 'Ha sido enviada especialmente para:' },
   { clave: 'rsvpPersonalNota', etiqueta: '[Pétalos] Nota — invitación personal', porDefecto: 'Por favor no compartas este enlace con otras personas.' },
-  { clave: 'tituloVestimenta', etiqueta: '[Pétalos] Subtítulo de vestimenta', porDefecto: 'Etiqueta formal, colores suaves' },
   { clave: 'fraseFooter', etiqueta: '[Pétalos] Frase de despedida (footer)', porDefecto: 'Con amor, los esperamos.' }
 ];
 

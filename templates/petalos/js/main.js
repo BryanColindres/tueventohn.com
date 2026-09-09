@@ -29,6 +29,15 @@ function iniciales(html, iniciales) {
   el.innerHTML = partes.length === 2 ? `${partes[0]} <span>&</span> ${partes[1]}` : iniciales;
 }
 
+function horaBonita(hora) {
+  if (!hora) return '';
+  const [hStr, mStr] = hora.split(':');
+  let h = parseInt(hStr, 10);
+  if (isNaN(h)) return '';
+  const ampm = h >= 12 ? 'p.m.' : 'a.m.';
+  h = h % 12; if (h === 0) h = 12;
+  return `${h}:${(mStr || '00').padStart(2, '0')} ${ampm}`;
+}
 function ocultarVelo() {
   const v = $('veloCarga');
   if (!v) return;
@@ -122,7 +131,7 @@ function applyConfig() {
   // Evento / lugar (dinámico — cada cliente tiene su propio salón)
   set('venueName', C.lugar.nombre);
   set('eventDate', C.fechaTexto);
-  set('eventTime', C.horaTexto);
+  set('eventTime', horaBonita(C.hora));
   set('eventVenue', C.lugar.direccion);
   set('mapVenueLabel', C.lugar.nombre);
   set('mapPinLabel', C.lugar.nombre);
@@ -158,6 +167,7 @@ function applyConfig() {
   pintarVestimenta();
   pintarHistoriaIntro();
   pintarVideoInterno();
+  pintarRecepcion();
 
   // Galería (reusa el campo compartido `galeriaMuestra`)
   const gg = $('galleryGrid');
@@ -290,6 +300,16 @@ function mostrarResumenRSVP(personas) {
 }
 
 // ── Instrucciones / detalles importantes (reusa C.detallesImportantes) ──
+// Mismos 4 íconos que usan las otras plantillas para "detalles importantes"
+// (el picker del portal solo ofrece estas categorías para esta sección).
+const ICONOS_DETALLES = {
+  reloj: '<svg viewBox="0 0 278 278" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M139 26c-62.4 0-113 50.6-113 113s50.6 113 113 113 113-50.6 113-113S201.4 26 139 26zm0 24c49.1 0 89 39.9 89 89s-39.9 89-89 89-89-39.9-89-89 39.9-89 89-89z"/><rect x="129" y="60" width="20" height="90" rx="10"/><rect x="139" y="130" width="20" height="66" rx="10" transform="rotate(55 139 130)"/><rect x="94" y="14" width="90" height="18" rx="9"/></g></svg>',
+  adultos: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zM4 18v-4h3v-5.5C7 7.12 8.12 6 9.5 6S12 7.12 12 8.5V13h3v5h1v2H3v-2h1zm14-9c1.66 0 3 1.34 3 3v6h-2v6h-4v-6h-2v-6c0-1.66 1.34-3 3-3z"/></svg>',
+  regalo: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.11-.31.18-.65.18-1a2.996 2.996 0 0 0-5.5-1.65l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zM15 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>',
+  general: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>'
+};
+
+
 function buildInstrucciones() {
   const seccion = $('section-detalles');
   const grid = $('instrGrid');
@@ -300,7 +320,7 @@ function buildInstrucciones() {
   }
   grid.innerHTML = C.detallesImportantes.map(item => `
     <div class="instr-card reveal">
-      <div class="instr-card__icon">${item.icono || '🌹'}</div>
+      <div class="instr-card__icon">${ICONOS_DETALLES[item.icono] || ICONOS_DETALLES.general}</div>
       <h3>${item.titulo}</h3>
       <p>${item.texto}</p>
     </div>`).join('');
@@ -317,6 +337,21 @@ function pintarVideoInterno() {
   set('videoInternoFrase', C.videoInterno.frase || '');
 }
 
+
+// ── Recepción (solo si es distinta a la ceremonia) ──
+function pintarRecepcion() {
+  const seccion = $('sectionRecepcion');
+  if (C.mismoLugar !== false || !C.lugarRecepcionNombre) { if (seccion) seccion.style.display = 'none'; return; }
+
+  if (seccion) seccion.style.display = 'block';
+  set('recepcionVenueLabel', C.lugarRecepcionNombre);
+  set('recepcionPinLabel', C.lugarRecepcionNombre);
+  if (C.horaRecepcion) set('recepcionHora', horaBonita(C.horaRecepcion));
+  href('recepcionMapsBtn', C.lugarRecepcionMapsUrl);
+  href('recepcionWazeBtn', C.lugarRecepcionWazeUrl);
+  const iframe = $('recepcionMapIframe');
+  if (iframe) iframe.src = `https://www.google.com/maps?q=${encodeURIComponent((C.lugarRecepcionNombre || '') + ' ' + (C.lugarRecepcionDireccion || ''))}&z=16&output=embed`;
+}
 
 function pintarHistoriaIntro() {
   const seccion = $('section-historia-intro');
@@ -344,7 +379,7 @@ function buildTimelineIlustrado() {
   }
   wrap.innerHTML = C.timeline.map((item, i) => {
     const body = `<div class="tl-body"><span class="tl-fecha">${item.hora || ''}</span><h3 class="tl-titulo">${item.titulo || ''}</h3></div>`;
-    const dot = `<div class="tl-dot"><div class="tl-dot__icon"></div></div>`;
+    const dot = `<div class="tl-dot"><div class="tl-dot__icon">${TuBodaBackend.iconoTimelineHtml(item.icono)}</div></div>`;
     const empty = `<div class="tl-empty"></div>`;
     return `<div class="tl-item" data-i="${i}">${i % 2 === 0 ? body + dot + empty : empty + dot + body}</div>`;
   }).join('');

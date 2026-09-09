@@ -19,7 +19,7 @@ window.CONFIG_DEMO = {
 
   fecha: "2026-10-03T10:30:00",
   fechaTexto: "Sábado, 03 de octubre de 2026",
-  horaTexto: "10:30 A.M",
+  hora: "10:30",
   rsvpFechaLimite: "15 de septiembre de 2026",
 
   lugar: {
@@ -60,21 +60,21 @@ window.CONFIG_DEMO = {
 
   // ── Línea de tiempo — las 9 entradas originales (hora/ícono/título) ──
   timeline: [
-    { hora: "Enero, 2022", titulo: "Nos conocimos", icono: "✨" },
-    { hora: "2022", titulo: "Primeras conversaciones", icono: "💬" },
-    { hora: "Enero, 2023", titulo: "Primera cita", icono: "🌹" },
-    { hora: "10 de abril, 2023", titulo: "Nos hicimos novios", icono: "💑" },
-    { hora: "Mayo, 2024", titulo: "Nuestro primer viaje", icono: "✈️" },
-    { hora: "Diciembre, 2024", titulo: "Nuestras familias", icono: "👨‍👩‍👧‍👦" },
-    { hora: "Febrero, 2026", titulo: "La propuesta", icono: "💍" },
-    { hora: "Mayo, 2026", titulo: "La preboda", icono: "📸" },
-    { hora: "03 de Octubre, 2026", titulo: "Nos casamos", icono: "⛪" }
+    { hora: "Enero, 2022", titulo: "Nos conocimos", icono: "cupid" },
+    { hora: "2022", titulo: "Primeras conversaciones", icono: "sobre" },
+    { hora: "Enero, 2023", titulo: "Primera cita", icono: "champagne" },
+    { hora: "10 de abril, 2023", titulo: "Nos hicimos novios", icono: "anillo2" },
+    { hora: "Mayo, 2024", titulo: "Nuestro primer viaje", icono: "honeymoon" },
+    { hora: "Diciembre, 2024", titulo: "Nuestras familias", icono: "heart" },
+    { hora: "Febrero, 2026", titulo: "La propuesta", icono: "diamond" },
+    { hora: "Mayo, 2026", titulo: "La preboda", icono: "camara" },
+    { hora: "03 de Octubre, 2026", titulo: "Nos casamos", icono: "church" }
   ],
 
   detallesImportantes: [
-    { icono: "⏰", titulo: "Hora de llegada", texto: "Te pedimos llegar 30 minutos antes de la ceremonia para que puedas ubicarte con comodidad." },
-    { icono: "🌸", titulo: "Solo adultos", texto: "Esperamos compartir una celebración pensada exclusivamente para adultos. Para una mejor organización del evento, agradecemos respetar que la invitación es únicamente para las personas señaladas." },
-    { icono: "🎁", titulo: "Regalos", texto: "Tu presencia es el mejor regalo en este día especial; cualquier otro detalle será una contribución para nuestro hogar y futuros sueños." }
+    { icono: "reloj", titulo: "Hora de llegada", texto: "Te pedimos llegar 30 minutos antes de la ceremonia para que puedas ubicarte con comodidad." },
+    { icono: "adultos", titulo: "Solo adultos", texto: "Esperamos compartir una celebración pensada exclusivamente para adultos. Para una mejor organización del evento, agradecemos respetar que la invitación es únicamente para las personas señaladas." },
+    { icono: "regalo", titulo: "Regalos", texto: "Tu presencia es el mejor regalo en este día especial; cualquier otro detalle será una contribución para nuestro hogar y futuros sueños." }
   ],
 
   vestimenta: {

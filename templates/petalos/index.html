@@ -228,6 +228,31 @@
     </div>
   </section>
 
+  <!-- ── RECEPCIÓN (solo si es un lugar distinto a la ceremonia) ── -->
+  <section class="section-map" id="sectionRecepcion" style="display:none">
+    <div class="container" style="text-align:center">
+      <p class="label reveal">La Recepción</p>
+      <p class="subtitle reveal" id="recepcionVenueLabel"></p>
+      <p class="subtitle reveal" id="recepcionHora" style="margin-top:.3rem"></p>
+    </div>
+    <div class="map-wrap reveal">
+      <div class="map-frame">
+        <iframe id="recepcionMapIframe" width="100%" height="100%" style="border:0;border-radius:20px;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src=""></iframe>
+        <div class="map-pin-wrap">
+          <div class="map-pin"><div class="map-pin__dot"></div><div class="map-pin__pulse"></div></div>
+          <p class="map-pin__label" id="recepcionPinLabel"></p>
+        </div>
+      </div>
+      <div class="map-btns">
+        <a class="btn btn-rose" id="recepcionMapsBtn" href="#" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Google Maps
+        </a>
+        <a class="btn btn-outline" id="recepcionWazeBtn" href="#" target="_blank">Waze</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ── INSTRUCCIONES / DETALLES ── -->
   <section class="section-instructions" id="section-detalles">
     <div class="container" style="text-align:center">
@@ -240,8 +265,7 @@
   <section class="section-vestimenta" id="sectionVestimenta">
     <div class="vest-solo">
       <p class="label reveal" id="vestTituloLabel" data-texto="eyebrowVestimenta">Código de Vestimenta</p>
-      <h2 class="vest-solo__title reveal" id="vestTitulo" data-texto="tituloVestimenta">Etiqueta formal, colores suaves</h2>
-      <p class="vest-solo__body reveal" id="vestTexto"></p>
+      <p class="vest-solo__body reveal" id="vestTexto" style="margin-top:.5rem"></p>
       <button class="btn btn-rose vest-link reveal" id="vestGaleriaBtn" onclick="openVestModal()" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Ver referencias de vestimenta

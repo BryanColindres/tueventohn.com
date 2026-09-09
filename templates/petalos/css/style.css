@@ -278,7 +278,8 @@ cite{font-family:var(--font-b);font-size:.78rem;letter-spacing:.15em;color:var(-
 .instr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:3rem}
 .instr-card{background:var(--white);border-radius:20px;padding:2.5rem 1.75rem;text-align:center;box-shadow:0 4px 30px rgba(155,107,107,.08);transition:transform .3s var(--ease),box-shadow .3s;display:flex;flex-direction:column;align-items:center}
 .instr-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(155,107,107,.15)}
-.instr-card__icon{font-size:2rem;margin-bottom:1rem}
+.instr-card__icon{width:42px;height:42px;margin:0 auto 1rem;color:var(--rose-mid)}
+.instr-card__icon svg{width:100%;height:100%}
 .instr-card h3{font-family:var(--font-d);font-weight:400;font-size:1.25rem;color:var(--rose-deep);margin-bottom:.75rem}
 .instr-card p{font-size:.88rem;line-height:1.7;color:var(--text-mid)}
 
@@ -344,7 +345,9 @@ cite{font-family:var(--font-b);font-size:.78rem;letter-spacing:.15em;color:var(-
 .tl-item:nth-child(even) .tl-dot{grid-column:2;order:0}
 .tl-item:nth-child(even) .tl-body{grid-column:3;padding-left:2.5rem;text-align:left;order:1}
 .tl-dot{display:flex;flex-direction:column;align-items:center;gap:.4rem;position:relative;z-index:1;padding-top:.3rem}
-.tl-dot__icon{width:16px;height:16px;border-radius:50%;background:var(--rose-mid);border:3px solid var(--white);box-shadow:0 4px 16px rgba(155,107,107,.25);transition:transform .4s var(--bounce),box-shadow .3s;overflow:hidden}
+.tl-dot__icon{width:34px;height:34px;border-radius:50%;background:var(--white);border:2px solid var(--rose-soft);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(155,107,107,.18);transition:transform .4s var(--bounce),box-shadow .3s;overflow:hidden;color:var(--rose-mid)}
+.tl-dot__icon .icono-itinerario{display:flex;width:18px;height:18px}
+.tl-dot__icon .icono-itinerario svg{width:100%;height:100%}
 .tl-item.in-view .tl-dot__icon{transform:scale(1.12);box-shadow:0 8px 24px rgba(155,107,107,.28)}
 .tl-body{opacity:0;transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .tl-item:nth-child(odd) .tl-body{transform:translateX(-30px)}
