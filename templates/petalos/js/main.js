@@ -341,16 +341,17 @@ function pintarVideoInterno() {
 // ── Recepción (solo si es distinta a la ceremonia) ──
 function pintarRecepcion() {
   const seccion = $('sectionRecepcion');
-  if (C.mismoLugar !== false || !C.lugarRecepcionNombre) { if (seccion) seccion.style.display = 'none'; return; }
+  const lr = C.lugarRecepcion;
+  if (C.mismoLugar !== false || !lr || !lr.nombre) { if (seccion) seccion.style.display = 'none'; return; }
 
   if (seccion) seccion.style.display = 'block';
-  set('recepcionVenueLabel', C.lugarRecepcionNombre);
-  set('recepcionPinLabel', C.lugarRecepcionNombre);
+  set('recepcionVenueLabel', lr.nombre);
+  set('recepcionPinLabel', lr.nombre);
   if (C.horaRecepcion) set('recepcionHora', horaBonita(C.horaRecepcion));
-  href('recepcionMapsBtn', C.lugarRecepcionMapsUrl);
-  href('recepcionWazeBtn', C.lugarRecepcionWazeUrl);
+  href('recepcionMapsBtn', lr.mapsUrl);
+  href('recepcionWazeBtn', lr.wazeUrl);
   const iframe = $('recepcionMapIframe');
-  if (iframe) iframe.src = `https://www.google.com/maps?q=${encodeURIComponent((C.lugarRecepcionNombre || '') + ' ' + (C.lugarRecepcionDireccion || ''))}&z=16&output=embed`;
+  if (iframe) iframe.src = `https://www.google.com/maps?q=${encodeURIComponent((lr.nombre || '') + ' ' + (lr.direccion || ''))}&z=16&output=embed`;
 }
 
 function pintarHistoriaIntro() {
