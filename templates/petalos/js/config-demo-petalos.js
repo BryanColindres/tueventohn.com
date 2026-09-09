@@ -51,23 +51,23 @@ window.CONFIG_DEMO = {
   rsvpFotoUrl: "img/preboda12.jpg",
 
   // ── Historia — 3 párrafos con foto alterna (texto exacto, sin resumir) ──
-  historiaIntro: [
-    { texto: "Con la bendición de Dios y de nuestros padres, hemos decidido dar un paso más en esta hermosa historia que comenzó hace tres años, cuando supimos que algo especial nacía entre nosotros. Desde entonces, cada momento compartido ha sido un regalo; nuestro amor ha crecido día a día, al igual que nuestro deseo de caminar juntos por la vida.", foto: "img/preboda4.jpg" },
-    { texto: "Hoy, con el corazón lleno de alegría e ilusión, queremos que seas testigo y parte del día más importante de nuestras vidas, compartiendo este momento tan especial junto a las personas que más amamos.", foto: "img/preboda5.jpg" },
-    { texto: "\"Así que no son ya más dos, sino una sola carne; por tanto, lo que Dios juntó, no lo separe el hombre.\" Mateo 19:6", foto: "img/preboda7.jpg" }
+  historia: [
+    { titulo: "Con la bendición de Dios", texto: "Con la bendición de Dios y de nuestros padres, hemos decidido dar un paso más en esta hermosa historia que comenzó hace tres años, cuando supimos que algo especial nacía entre nosotros. Desde entonces, cada momento compartido ha sido un regalo; nuestro amor ha crecido día a día, al igual que nuestro deseo de caminar juntos por la vida.", foto: "img/preboda4.jpg" },
+    { titulo: "El día más importante", texto: "Hoy, con el corazón lleno de alegría e ilusión, queremos que seas testigo y parte del día más importante de nuestras vidas, compartiendo este momento tan especial junto a las personas que más amamos.", foto: "img/preboda5.jpg" },
+    { titulo: "Una sola carne", texto: "\"Así que no son ya más dos, sino una sola carne; por tanto, lo que Dios juntó, no lo separe el hombre.\" Mateo 19:6", foto: "img/preboda7.jpg" }
   ],
 
-  // ── Línea de tiempo ilustrada — las 9 entradas originales, completas ──
-  timelineIlustrado: [
-    { fecha: "Enero, 2022", titulo: "Nos conocimos", texto: "Un día aparecimos en la vida del otro, sin planearlo, ni esperarlo. Cada uno pensando en lo suyo, sin darnos cuenta lo que vendría a continuación, de la mano de nuestro instrumento querido.", icono: "✨", foto: "img/nos_conocimos.jpg" },
-    { fecha: "2022", titulo: "Primeras conversaciones", texto: "Nuestra amistad se fue haciendo cada vez más grande y llegamos a compartir experiencias pasadas y planes a futuro. Y poco a poco la amistad se fue transformando en algo más, hasta el punto de que en nuestras conversaciones del futuro nos visualizábamos juntos.", icono: "💬", foto: "img/primeras_conv.jpg" },
-    { fecha: "Enero, 2023", titulo: "Primera cita", texto: "Inolvidable cita, donde ambos, finalmente, nos abrimos y confesamos lo que ya llevaba días sembrado en nuestro interior. Desde entonces, las citas y los planes se convirtieron en el motor de nuestra vida.", icono: "🌹", foto: "img/primera_cita.jpg" },
-    { fecha: "10 de abril, 2023", titulo: "Nos hicimos novios", texto: "Luego de hacer muy larga la espera, decidimos dar el paso que nuestros corazones ya habían elegido desde hacía tiempo. Así comenzó oficialmente nuestra historia como novios, una etapa llena de amor, sueños compartidos.", icono: "💑", foto: "img/novios.jpg" },
-    { fecha: "Mayo, 2024", titulo: "Nuestro primer viaje", texto: "Descubrimos que viajar juntos era lo más natural del mundo y decidimos seguir explorando nuevos caminos, con la esperanza de compartir muchas más aventuras en el futuro.", icono: "✈️", foto: "img/viaje.jpg" },
-    { fecha: "Diciembre, 2024", titulo: "Nuestras familias", texto: "Hicimos una gran familia que siempre ha estado a nuestro lado, apoyándonos y guiándonos por el buen camino, siendo ejemplo de amor y temor a Dios.", icono: "👨‍👩‍👧‍👦", foto: "img/familia.jpg" },
-    { fecha: "Febrero, 2026", titulo: "La propuesta", texto: "El 14 de febrero, el amor quedó inmortalizado, se dijo el tan esperado: \"Si, acepto\", y entre lágrimas y sonrisas celebramos nuestro recorrido hacia el altar.", icono: "💍", foto: "img/propuesta.jpg" },
-    { fecha: "Mayo, 2026", titulo: "La preboda", texto: "Un día de fotos, risas y amor. La antesala del momento más especial.", icono: "📸", foto: "img/preboda17.jpg" },
-    { fecha: "03 de Octubre, 2026", titulo: "Nos casamos", texto: "El día que prometemos amarnos, respetarnos y acompañarnos para siempre.", icono: "⛪", foto: "img/preboda6.jpg" }
+  // ── Línea de tiempo — las 9 entradas originales (hora/ícono/título) ──
+  timeline: [
+    { hora: "Enero, 2022", titulo: "Nos conocimos", icono: "✨" },
+    { hora: "2022", titulo: "Primeras conversaciones", icono: "💬" },
+    { hora: "Enero, 2023", titulo: "Primera cita", icono: "🌹" },
+    { hora: "10 de abril, 2023", titulo: "Nos hicimos novios", icono: "💑" },
+    { hora: "Mayo, 2024", titulo: "Nuestro primer viaje", icono: "✈️" },
+    { hora: "Diciembre, 2024", titulo: "Nuestras familias", icono: "👨‍👩‍👧‍👦" },
+    { hora: "Febrero, 2026", titulo: "La propuesta", icono: "💍" },
+    { hora: "Mayo, 2026", titulo: "La preboda", icono: "📸" },
+    { hora: "03 de Octubre, 2026", titulo: "Nos casamos", icono: "⛪" }
   ],
 
   detallesImportantes: [
@@ -92,10 +92,18 @@ window.CONFIG_DEMO = {
 
   whatsapp: { novio: "50431626792", novia: "50499223790" },
 
+  cancionModo: "embed",
+  cancionEmbedUrl: "https://open.spotify.com/embed/playlist/4q1xgZvpq2mJjQaZKajgFp",
+
+  rsvpDemoPersonas: [
+    { invitado_id: "demo-1", nombre: "Invitado de ejemplo", estado: "pendiente" }
+  ],
+
   modules: {
-    countdown: true, musica: true, mapa: true, timeline_ilustrado: true,
-    historia_intro: true, detalles: true, regalos: true, vestimenta: true,
+    countdown: true, musica: true, mapa: true, timeline: true,
+    historia: true, detalles: true, regalos: true, vestimenta: true,
     mensaje_personalizado: true, firmas: true, video: true, galeria: true,
+    vestimenta_galeria: true, cancion: true, rsvp_premium: false,
     // Apagado en el demo — no complica la vista de catálogo. Actívalo por
     // evento real cuando el cliente sí quiera links personales con bloqueo.
     acceso_invitado: false

@@ -102,6 +102,11 @@ function applyConfig() {
   const versePhoto = $('versePhoto'); if (versePhoto && C.fotos && C.fotos.heroB) versePhoto.src = C.fotos.heroB;
   const voicePhoto = $('voicePhoto'); if (voicePhoto && C.fotos && C.fotos.heroB) voicePhoto.src = C.fotos.heroB;
   const eventoFoto = $('eventoFoto'); if (eventoFoto && C.lugar && C.lugar.foto) eventoFoto.src = C.lugar.foto;
+  const footerUrl = (C.fotos && C.fotos.footer) || 'img/footer.mp4';
+  const esVideoFooter = /\.(mp4|webm|mov)(\?|$)/i.test(footerUrl);
+  const footerVideo = $('footerVideo'), footerFoto = $('footerFoto');
+  if (esVideoFooter && footerVideo) { footerVideo.src = footerUrl; footerVideo.style.display = 'block'; }
+  else if (footerFoto) { footerFoto.src = footerUrl; footerFoto.style.display = 'block'; }
   const rsvpPhoto = document.querySelector('#rsvpPhoto img'); if (rsvpPhoto && C.rsvpFotoUrl) rsvpPhoto.src = C.rsvpFotoUrl;
 
   set('heroFecha', fechaCompacta(C.fecha));
@@ -147,8 +152,7 @@ function applyConfig() {
     if (block) block.style.display = 'block';
     set('rsvpPersonalNombre', GUEST);
   }
-  const mensajeBase = `Hola, soy ${GUEST || 'un invitado'}, confirmo mi asistencia a la boda de ${primerNombre(C.pareja.nombreA)} y ${primerNombre(C.pareja.nombreB)}${C.fechaTexto ? ' el ' + C.fechaTexto : ''}.`;
-  setWAButtons(mensajeBase);
+  pintarRSVP();
 
   buildInstrucciones();
   pintarVestimenta();
@@ -166,6 +170,7 @@ function applyConfig() {
   }
 
   buildTimelineIlustrado();
+  pintarCancion();
 
   const privRow = $('bookPrivacyRow');
   if (privRow) privRow.style.display = (!C.modules || C.modules.firmas !== false) ? 'block' : 'none';
@@ -175,10 +180,112 @@ function applyConfig() {
   initLightbox();
 }
 
-function setWAButtons(msg) {
-  const encoded = encodeURIComponent(msg);
-  href('whatsappBtnNovio', C.whatsapp && C.whatsapp.novio ? `https://wa.me/${C.whatsapp.novio}?text=${encoded}` : null);
-  href('whatsappBtnNovia', C.whatsapp && C.whatsapp.novia ? `https://wa.me/${C.whatsapp.novia}?text=${encoded}` : null);
+async function pintarRSVP() {
+  const tienePremium = !!(C.modules && C.modules.rsvp_premium);
+
+  if (!tienePremium) {
+    const mensajeBase = `Hola, soy ${GUEST || 'un invitado'}, confirmo mi asistencia a la boda de ${primerNombre(C.pareja.nombreA)} y ${primerNombre(C.pareja.nombreB)}${C.fechaTexto ? ' el ' + C.fechaTexto : ''}.`;
+    const encoded = encodeURIComponent(mensajeBase);
+    href('whatsappBtnNovio', C.whatsapp && C.whatsapp.novio ? `https://wa.me/${C.whatsapp.novio}?text=${encoded}` : null);
+    href('whatsappBtnNovia', C.whatsapp && C.whatsapp.novia ? `https://wa.me/${C.whatsapp.novia}?text=${encoded}` : null);
+    const waBlock = $('rsvpWhatsappBlock'); if (waBlock) waBlock.style.display = 'block';
+    return;
+  }
+
+  // RSVP Premium: nadie escribe su nombre, ya viene identificado por el
+  // link (individual o familiar) — se guarda de verdad en la base.
+  const id = window.IDENTIFICADOR_INVITADO;
+  const formWrap = $('rsvpFormWrap'), sinLink = $('rsvpSinLink');
+
+  let personas = [];
+  if (id) {
+    try { personas = await TuBodaBackend.cargarPersonasParaRSVP(id); } catch (e) { personas = []; }
+  } else if (C.rsvpDemoPersonas) {
+    personas = C.rsvpDemoPersonas; // vista de ejemplo (catálogo), no guarda nada
+  }
+
+  if (!personas.length) { if (sinLink) sinLink.style.display = 'block'; return; }
+
+  const todosRespondieron = personas.every(p => p.estado && p.estado !== 'pendiente');
+  if (todosRespondieron) { mostrarResumenRSVP(personas); return; }
+
+  if (formWrap) formWrap.style.display = 'block';
+
+  if (personas.length === 1) {
+    const persona = personas[0];
+    const indivWrap = $('rsvpIndividual'); if (indivWrap) indivWrap.style.display = 'flex';
+    const guardar = async (asiste) => {
+      if (!id) { toast('Esto es una vista de ejemplo — aquí no se guarda nada.'); return; }
+      try {
+        await TuBodaBackend.confirmarAsistencia(id, [{ invitado_id: persona.invitado_id, asiste }]);
+        if (formWrap) formWrap.style.display = 'none';
+        const gracias = $('rsvpGracias'); if (gracias) gracias.style.display = 'block';
+      } catch (err) { toast('No se pudo enviar tu confirmación, intenta de nuevo'); }
+    };
+    const siBtn = $('rsvpIndividualSi'), noBtn = $('rsvpIndividualNo');
+    if (siBtn) siBtn.addEventListener('click', () => guardar(true));
+    if (noBtn) noBtn.addEventListener('click', () => guardar(false));
+    return;
+  }
+
+  // Familia: un botón de entrada, al tocarlo se despliegan los nombres.
+  const botonEntrada = $('rsvpBotonEntrada');
+  if (botonEntrada) {
+    botonEntrada.style.display = 'inline-flex';
+    botonEntrada.addEventListener('click', () => {
+      botonEntrada.style.display = 'none';
+      desplegarFamiliaRSVP(personas, id, formWrap);
+    }, { once: true });
+  }
+}
+
+function desplegarFamiliaRSVP(personas, id, formWrap) {
+  const wrap = $('rsvpPersonas'), familiaWrap = $('rsvpFamiliaWrap');
+  if (familiaWrap) familiaWrap.style.display = 'block';
+
+  const decisiones = {};
+  if (wrap) wrap.innerHTML = personas.map(p => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap">
+      <span style="color:white;font-family:var(--font-b)">${p.nombre}</span>
+      <span style="display:flex;gap:.5rem">
+        <button type="button" class="rsvp-op rsvp-si btn btn-outline${p.estado === 'confirmado' ? ' activo' : ''}" data-id="${p.invitado_id}" style="padding:.5rem 1rem;font-size:.8rem;border-color:rgba(255,255,255,.6);color:white">Sí</button>
+        <button type="button" class="rsvp-op rsvp-no btn btn-outline${p.estado === 'rechazado' ? ' activo' : ''}" data-id="${p.invitado_id}" style="padding:.5rem 1rem;font-size:.8rem;border-color:rgba(255,255,255,.6);color:white">No</button>
+      </span>
+    </div>`).join('');
+
+  personas.forEach(p => { if (p.estado && p.estado !== 'pendiente') decisiones[p.invitado_id] = p.estado === 'confirmado'; });
+
+  wrap?.querySelectorAll('.rsvp-op').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pid = btn.dataset.id;
+      decisiones[pid] = btn.classList.contains('rsvp-si');
+      wrap.querySelectorAll(`.rsvp-op[data-id="${pid}"]`).forEach(b => b.style.background = 'transparent');
+      btn.style.background = 'rgba(255,255,255,.25)';
+    });
+  });
+
+  const enviarBtn = $('rsvpEnviar');
+  if (enviarBtn) enviarBtn.addEventListener('click', async () => {
+    const arr = Object.entries(decisiones).map(([invitado_id, asiste]) => ({ invitado_id, asiste }));
+    if (arr.length < personas.length) { toast('Selecciona una opción para cada persona de la lista'); return; }
+    if (!id) { toast('Esto es una vista de ejemplo — aquí no se guarda nada.'); return; }
+    try {
+      await TuBodaBackend.confirmarAsistencia(id, arr);
+      if (formWrap) formWrap.style.display = 'none';
+      const gracias = $('rsvpGracias'); if (gracias) gracias.style.display = 'block';
+    } catch (err) { toast('No se pudo enviar tu confirmación, intenta de nuevo'); }
+  });
+}
+
+function mostrarResumenRSVP(personas) {
+  const cont = $('rsvpResumen');
+  if (!cont) return;
+  const iconos = { confirmado: '✅', rechazado: '🚫' };
+  cont.innerHTML = (personas.length === 1
+    ? `<p>${personas[0].estado === 'confirmado' ? 'Ya confirmaste tu asistencia. ¡Te esperamos!' : 'Registramos que no podrás acompañarnos. ¡Gracias por avisarnos!'}</p>`
+    : `<p>Así quedaron las confirmaciones de tu familia:</p><ul style="list-style:none;padding:0;margin-top:.6rem;display:flex;flex-direction:column;gap:.4rem">${personas.map(p => `<li>${iconos[p.estado] || '•'} ${p.nombre}</li>`).join('')}</ul>`
+  );
+  cont.style.display = 'block';
 }
 
 // ── Instrucciones / detalles importantes (reusa C.detallesImportantes) ──
@@ -198,40 +305,33 @@ function buildInstrucciones() {
     </div>`).join('');
 }
 
-// ── Historia — 3 párrafos con foto alterna (layout fijo de esta plantilla) ──
+// ── Historia — reusa C.historia (ya conectado al portal) ──
 function pintarHistoriaIntro() {
   const seccion = $('section-historia-intro');
-  if ((C.modules && (C.modules.historia_intro === false)) || !C.historiaIntro || !C.historiaIntro.length) {
+  const grid = $('storyGrid');
+  if ((C.modules && C.modules.historia === false) || !C.historia || !C.historia.length) {
     if (seccion) seccion.style.display = 'none';
     return;
   }
-  C.historiaIntro.slice(0, 3).forEach((item, i) => {
-    const bloque = $('storyBlock' + i);
-    if (!item) { if (bloque) bloque.style.display = 'none'; return; }
-    set('story' + (i + 1), item.texto);
-    const img = document.querySelector(`#storyPhoto${i + 1} img`);
-    if (img && item.foto) img.src = item.foto;
-  });
-  // Oculta bloques sobrantes si vienen menos de 3
-  for (let i = C.historiaIntro.length; i < 3; i++) {
-    const bloque = $('storyBlock' + i);
-    if (bloque) bloque.style.display = 'none';
-  }
+  if (grid) grid.innerHTML = C.historia.map((item, i) => {
+    const lado = i % 2 === 0 ? 'left' : 'right';
+    const fotoHtml = item.foto ? `<div class="story-split__photo"><img src="${item.foto}" onerror="this.parentElement.style.display='none'"/></div>` : '';
+    const textoHtml = `<div class="story-split__text">${item.titulo ? `<h3 style="font-family:var(--font-a);font-size:1.3rem;margin-bottom:.5rem;color:var(--rose-deep)">${item.titulo}</h3>` : ''}<p>${item.texto || ''}</p></div>`;
+    return `<div class="story-split story-split--${lado} reveal-${lado}">${lado === 'left' ? fotoHtml + textoHtml : textoHtml + fotoHtml}</div>`;
+  }).join('');
 }
 
-// ── Línea de tiempo ilustrada (ícono + foto + texto) ──
+// ── Línea de tiempo — reusa C.timeline (ya conectado al portal) ──
 function buildTimelineIlustrado() {
   const seccion = $('section-timeline-ilustrado');
   const wrap = $('timelineWrap');
   if (!wrap) return;
-  if ((C.modules && C.modules.timeline_ilustrado === false) || !C.timelineIlustrado || !C.timelineIlustrado.length) {
+  if ((C.modules && C.modules.timeline === false) || !C.timeline || !C.timeline.length) {
     if (seccion) seccion.style.display = 'none';
     return;
   }
-  wrap.innerHTML = C.timelineIlustrado.map((item, i) => {
-    const photoHtml = item.foto
-      ? `<div class="tl-photo"><img src="${item.foto}" alt="${item.titulo || ''}" onerror="this.parentElement.style.display='none'"/></div>` : '';
-    const body = `<div class="tl-body"><span class="tl-fecha">${item.fecha || ''}</span><h3 class="tl-titulo">${item.titulo || ''}</h3><p class="tl-texto">${item.texto || ''}</p>${photoHtml}</div>`;
+  wrap.innerHTML = C.timeline.map((item, i) => {
+    const body = `<div class="tl-body"><span class="tl-fecha">${item.hora || ''}</span><h3 class="tl-titulo">${item.titulo || ''}</h3></div>`;
     const dot = `<div class="tl-dot"><div class="tl-dot__icon">${item.icono || '🌹'}</div></div>`;
     const empty = `<div class="tl-empty"></div>`;
     return `<div class="tl-item" data-i="${i}">${i % 2 === 0 ? body + dot + empty : empty + dot + body}</div>`;
@@ -463,7 +563,7 @@ function initLightbox() {
 // ══════════════════════════════════════════════════════
 let selectedEmoji = '❤️', uploadedPhotoUrl = '';
 let _bookIdx = 0, _bookData = [], _bookFlipping = false;
-// CLOUDINARY_CLOUD_NAME / CLOUDINARY_UPLOAD_PRESET ya están declaradas en.
+// CLOUDINARY_CLOUD_NAME / CLOUDINARY_UPLOAD_PRESET ya están declaradas en
 // shared/js/backend.js (se carga antes que este archivo) — no redeclarar
 // aquí o el navegador tira SyntaxError por identificador duplicado.
 
@@ -600,7 +700,46 @@ function toast(msg) {
   setTimeout(() => t.remove(), 4000);
 }
 
-// ── Auto-nudge scroll ──────────────────────────────────
+// ── Playlist / canción ──────────────────────────────────
+function pintarCancion() {
+  const seccion = $('section-cancion');
+  if (!C.modules || !C.modules.cancion) { if (seccion) seccion.style.display = 'none'; return; }
+
+  const embedWrap = $('cancionEmbedWrap'), form = $('formCancion'), intro = $('cancionIntro');
+  const hayPlaylistReal = C.cancionModo === 'embed' && C.cancionEmbedUrl;
+
+  if (hayPlaylistReal) {
+    const urlEmbebida = TuBodaBackend.normalizarPlaylistUrl(C.cancionEmbedUrl);
+    set('cancionIntro', 'Esta es nuestra playlist para la fiesta. Ábrela y, si quieres, agrega ahí mismo tu canción favorita.');
+    const esSpotify = urlEmbebida.includes('spotify.com');
+    const esYoutube = urlEmbebida.includes('youtube.com') || urlEmbebida.includes('youtu.be');
+    if (esSpotify) embedWrap.innerHTML = `<iframe src="${urlEmbebida}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    else if (esYoutube) embedWrap.innerHTML = `<iframe width="100%" height="220" src="${urlEmbebida}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
+    else embedWrap.innerHTML = `<a href="${urlEmbebida}" target="_blank" class="btn btn-outline">Abrir playlist</a>`;
+    embedWrap.style.display = 'block';
+    if (form) form.style.display = 'none';
+    return;
+  }
+
+  // Sin playlist real compartida: los invitados sugieren una canción escrita.
+  set('cancionIntro', 'Escribe una canción que no puede faltar en la fiesta.');
+  if (form) {
+    form.style.display = 'flex';
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = $('cancionInput'), nombreInput = $('cancionNombre');
+      const texto = input.value.trim();
+      if (!texto) return;
+      try {
+        await TuBodaBackend.enviarCancion(C.eventoId, (nombreInput.value || '').trim() || 'Invitado', texto);
+        input.value = ''; nombreInput.value = '';
+        toast('¡Gracias! Ya la anotamos. 🎶');
+      } catch (err) { toast('No se pudo guardar tu canción, intenta de nuevo'); }
+    });
+  }
+}
+
+
 function initAutoNudge() {
   const inv = $('invitation');
   let done = false;
