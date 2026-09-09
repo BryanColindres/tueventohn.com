@@ -344,7 +344,7 @@ function buildTimelineIlustrado() {
   }
   wrap.innerHTML = C.timeline.map((item, i) => {
     const body = `<div class="tl-body"><span class="tl-fecha">${item.hora || ''}</span><h3 class="tl-titulo">${item.titulo || ''}</h3></div>`;
-    const dot = `<div class="tl-dot"><div class="tl-dot__icon">${item.icono || '🌹'}</div></div>`;
+    const dot = `<div class="tl-dot"><div class="tl-dot__icon"></div></div>`;
     const empty = `<div class="tl-empty"></div>`;
     return `<div class="tl-item" data-i="${i}">${i % 2 === 0 ? body + dot + empty : empty + dot + body}</div>`;
   }).join('');

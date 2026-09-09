@@ -344,7 +344,7 @@ cite{font-family:var(--font-b);font-size:.78rem;letter-spacing:.15em;color:var(-
 .tl-item:nth-child(even) .tl-dot{grid-column:2;order:0}
 .tl-item:nth-child(even) .tl-body{grid-column:3;padding-left:2.5rem;text-align:left;order:1}
 .tl-dot{display:flex;flex-direction:column;align-items:center;gap:.4rem;position:relative;z-index:1;padding-top:.3rem}
-.tl-dot__icon{width:48px;height:48px;border-radius:50%;background:var(--white);border:2px solid var(--rose-soft);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 16px rgba(155,107,107,.15);transition:transform .4s var(--bounce),box-shadow .3s}
+.tl-dot__icon{width:16px;height:16px;border-radius:50%;background:var(--rose-mid);border:3px solid var(--white);box-shadow:0 4px 16px rgba(155,107,107,.25);transition:transform .4s var(--bounce),box-shadow .3s;overflow:hidden}
 .tl-item.in-view .tl-dot__icon{transform:scale(1.12);box-shadow:0 8px 24px rgba(155,107,107,.28)}
 .tl-body{opacity:0;transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .tl-item:nth-child(odd) .tl-body{transform:translateX(-30px)}
