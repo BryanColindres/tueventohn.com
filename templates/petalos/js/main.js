@@ -102,11 +102,11 @@ function applyConfig() {
   const versePhoto = $('versePhoto'); if (versePhoto && C.fotos && C.fotos.heroB) versePhoto.src = C.fotos.heroB;
   const voicePhoto = $('voicePhoto'); if (voicePhoto && C.fotos && C.fotos.heroB) voicePhoto.src = C.fotos.heroB;
   const eventoFoto = $('eventoFoto'); if (eventoFoto && C.lugar && C.lugar.foto) eventoFoto.src = C.lugar.foto;
-  const footerUrl = (C.fotos && C.fotos.footer) || 'img/footer.mp4';
-  const esVideoFooter = /\.(mp4|webm|mov)(\?|$)/i.test(footerUrl);
+  const footerUrl = (C.fotos && C.fotos.footer) || '';
+  const esVideoFooter = footerUrl && /\.(mp4|webm|mov)(\?|$)/i.test(footerUrl);
   const footerVideo = $('footerVideo'), footerFoto = $('footerFoto');
   if (esVideoFooter && footerVideo) { footerVideo.src = footerUrl; footerVideo.style.display = 'block'; }
-  else if (footerFoto) { footerFoto.src = footerUrl; footerFoto.style.display = 'block'; }
+  else if (footerUrl && footerFoto) { footerFoto.src = footerUrl; footerFoto.style.display = 'block'; }
   const rsvpPhoto = document.querySelector('#rsvpPhoto img'); if (rsvpPhoto && C.rsvpFotoUrl) rsvpPhoto.src = C.rsvpFotoUrl;
 
   set('heroFecha', fechaCompacta(C.fecha));
@@ -157,6 +157,7 @@ function applyConfig() {
   buildInstrucciones();
   pintarVestimenta();
   pintarHistoriaIntro();
+  pintarVideoInterno();
 
   // Galería (reusa el campo compartido `galeriaMuestra`)
   const gg = $('galleryGrid');
@@ -305,7 +306,18 @@ function buildInstrucciones() {
     </div>`).join('');
 }
 
-// ── Historia — reusa C.historia (ya conectado al portal) ──
+// ── Video interno (aparte del video de apertura) ──
+function pintarVideoInterno() {
+  const seccion = $('section-video-interno');
+  if (!C.modules || !C.modules.video_interno || !C.videoInterno || !C.videoInterno.url) {
+    if (seccion) seccion.style.display = 'none';
+    return;
+  }
+  const v = $('videoInternoEl'); if (v) v.src = C.videoInterno.url;
+  set('videoInternoFrase', C.videoInterno.frase || '');
+}
+
+
 function pintarHistoriaIntro() {
   const seccion = $('section-historia-intro');
   const grid = $('storyGrid');

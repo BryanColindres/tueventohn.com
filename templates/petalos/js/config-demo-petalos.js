@@ -44,6 +44,7 @@ window.CONFIG_DEMO = {
 
   video: "img/video-intro.mp4",
   videoDelay: 0,
+  videoInterno: { url: "img/video-intro.mp4", frase: "Cada momento juntos nos trajo hasta aquí." },
   musicaUrl: "audio/musica.mp3",
 
   mensajePersonalizado: { tipo: "audio", url: "audio/mensaje.mp3" },
@@ -103,7 +104,7 @@ window.CONFIG_DEMO = {
     countdown: true, musica: true, mapa: true, timeline: true,
     historia: true, detalles: true, regalos: true, vestimenta: true,
     mensaje_personalizado: true, firmas: true, video: true, galeria: true,
-    vestimenta_galeria: true, cancion: true, rsvp_premium: false,
+    vestimenta_galeria: true, cancion: true, rsvp_premium: false, video_interno: true,
     // Apagado en el demo — no complica la vista de catálogo. Actívalo por
     // evento real cuando el cliente sí quiera links personales con bloqueo.
     acceso_invitado: false

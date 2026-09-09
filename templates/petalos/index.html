@@ -23,7 +23,7 @@
      config y (si aplica) la validación de acceso.
 ══════════════════════════════════════════════════ -->
 <div id="veloCarga" style="position:fixed;inset:0;z-index:3000;background:#F7EFE8;display:flex;align-items:center;justify-content:center;transition:opacity .4s ease">
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;letter-spacing:.08em;color:#9B6B6B">B <span style="opacity:.5">&amp;</span> S</div>
+  <div style="font-size:1.4rem;color:#9B6B6B;opacity:.7">🌹</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════
@@ -259,11 +259,19 @@
     <div class="container"><div class="gallery-grid" id="galleryGrid"></div></div>
   </section>
 
+  <!-- ── VIDEO INTERNO ── -->
+  <section class="section-instructions" id="section-video-interno">
+    <div class="container" style="text-align:center">
+      <video id="videoInternoEl" playsinline controls style="width:100%;max-width:480px;border-radius:12px;box-shadow:0 20px 40px rgba(46,42,36,.15)"></video>
+      <p id="videoInternoFrase" style="font-family:var(--font-a);font-style:italic;font-size:1.1rem;color:var(--text-light);margin-top:1.2rem;max-width:420px;margin-left:auto;margin-right:auto"></p>
+    </div>
+  </section>
+
   <!-- ── LÍNEA DE TIEMPO ILUSTRADA ── -->
   <section class="section-timeline" id="section-timeline-ilustrado">
     <div class="container" style="text-align:center">
-      <p class="label reveal" data-texto="tituloItinerario">Nuestra historia juntos</p>
-      <p class="subtitle reveal">El camino que nos trajo hasta aquí</p>
+      <p class="label reveal" data-texto="tituloItinerario">Itinerario del día</p>
+      <p class="subtitle reveal">Así se irá viviendo nuestra celebración</p>
     </div>
     <div class="timeline-wrap" id="timelineWrap"></div>
   </section>
