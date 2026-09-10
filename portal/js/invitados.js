@@ -155,9 +155,9 @@ function renderTablaInvitados() {
       </div>
       <div class="ti-sub">${badgeApertura(i)}</div>
       <div class="ti-acciones">
-        <button class="ti-icon-btn" title="Copiar link personal (con mensaje)" onclick="copiarLinkPersonal('${i.id}')">${ICONO_LINK}</button>
+        <button class="ti-icon-btn" title="Copiar solo el link personal" onclick="copiarLinkPersonal('${i.id}')">${ICONO_LINK}</button>
         ${i.link_familiar
-          ? `<button class="ti-icon-btn" title="Copiar link familiar (con mensaje, toda la familia)" onclick="copiarLinkFamiliarDesdeInvitado('${i.id}')">${ICONO_FAMILIA}</button>`
+          ? `<button class="ti-icon-btn" title="Copiar solo el link familiar (toda la familia)" onclick="copiarLinkFamiliarDesdeInvitado('${i.id}')">${ICONO_FAMILIA}</button>`
           : `<span class="ti-icon-btn ti-icon-vacio"></span>`}
         <button class="ti-icon-btn ti-icon-btn--whatsapp" title="Enviar por WhatsApp" onclick="compartirWhatsapp('${i.id}')">${ICONO_WHATSAPP}</button>
         <button class="ti-icon-btn" title="Editar" onclick="abrirModalEditar('${i.id}')">✎</button>
@@ -442,19 +442,19 @@ function copiarTexto(texto) {
 function copiarLinkPersonal(id) {
   const inv = INVITADOS.find(x => x.id === id);
   if (!inv) return;
-  copiarTexto(construirMensajeInvitacion([inv.nombre], inv.link));
+  copiarTexto(inv.link);
 }
 
 function copiarLinkFamiliarDesdeInvitado(id) {
   const inv = INVITADOS.find(x => x.id === id);
   if (!inv || !inv.link_familiar) return;
-  copiarTexto(construirMensajeInvitacion(nombresDeFamilia(inv.familia), inv.link_familiar));
+  copiarTexto(inv.link_familiar);
 }
 
 function copiarLinkFamilia(familiaId) {
   const f = FAMILIAS.find(x => x.id === familiaId);
   if (!f) return;
-  copiarTexto(construirMensajeInvitacion(nombresDeFamilia(f.nombre), f.link));
+  copiarTexto(f.link);
 }
 
 function compartirWhatsapp(id) {
@@ -527,7 +527,7 @@ function renderListaFamilias() {
         </div>
       </div>
       <div class="ti-acciones">
-        <button class="ti-icon-btn" title="Copiar link familiar (con mensaje)" onclick="copiarLinkFamilia('${f.id}')">${ICONO_LINK}</button>
+        <button class="ti-icon-btn" title="Copiar solo el link familiar" onclick="copiarLinkFamilia('${f.id}')">${ICONO_LINK}</button>
         <button class="ti-icon-btn" title="Editar nombre de la familia" onclick="renombrarFamilia('${f.id}', '${escapar(f.nombre).replace(/'/g, "\\'")}')">✎</button>
       </div>
     </div>`;
