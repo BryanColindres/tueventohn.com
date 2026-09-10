@@ -135,7 +135,9 @@ function applyConfig() {
   set('mapVenueLabel', C.lugar.nombre);
   set('mapPinLabel', C.lugar.nombre);
   href('mapsBtn', C.lugar.mapsUrl);
+  const mapsBtn = $('mapsBtn'); if (mapsBtn) mapsBtn.style.display = C.lugar.mapsUrl ? 'inline-flex' : 'none';
   href('wazeBtn', C.lugar.wazeUrl);
+  const wazeBtn = $('wazeBtn'); if (wazeBtn) wazeBtn.style.display = C.lugar.wazeUrl ? 'inline-flex' : 'none';
   const mapIframe = $('mapIframe');
   if (mapIframe) {
     mapIframe.src = (C.lugar.lat != null && C.lugar.lng != null)
@@ -350,7 +352,9 @@ function pintarRecepcion() {
   set('recepcionPinLabel', lr.nombre);
   if (C.horaRecepcion) set('recepcionHora', horaBonita(C.horaRecepcion));
   href('recepcionMapsBtn', lr.mapsUrl);
+  const recepcionMapsBtn = $('recepcionMapsBtn'); if (recepcionMapsBtn) recepcionMapsBtn.style.display = lr.mapsUrl ? 'inline-flex' : 'none';
   href('recepcionWazeBtn', lr.wazeUrl);
+  const recepcionWazeBtn = $('recepcionWazeBtn'); if (recepcionWazeBtn) recepcionWazeBtn.style.display = lr.wazeUrl ? 'inline-flex' : 'none';
   const iframe = $('recepcionMapIframe');
   if (iframe) iframe.src = `https://www.google.com/maps?q=${encodeURIComponent((lr.nombre || '') + ' ' + (lr.direccion || ''))}&z=16&output=embed`;
 }
