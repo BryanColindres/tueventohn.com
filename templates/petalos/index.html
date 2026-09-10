@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/style.css?v=6"/>
+<link rel="stylesheet" href="css/style.css?v=7"/>
 <!-- PWA + Favicon -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png"/>
@@ -261,10 +261,22 @@
     </div>
   </section>
 
+  <!-- ── REGALOS (cuenta bancaria, opcional) ── -->
+  <section class="section-instructions" id="section-regalos" style="display:none">
+    <div class="container" style="text-align:center;max-width:480px">
+      <p class="label reveal" data-texto="eyebrowRegalos">Regalos</p>
+      <h2 class="vest-solo__title reveal" data-texto="tituloRegalos">Tu presencia es nuestro regalo</h2>
+      <p class="vest-solo__body reveal" id="regalosTexto"></p>
+      <button class="btn btn-outline reveal" id="regalosBoton" data-texto="botonVerMesaRegalos" style="display:none;margin-top:1rem">Más detalles de cuenta</button>
+      <p id="regalosDetalle" style="display:none;margin-top:1rem;font-family:var(--font-b);font-size:.9rem;color:var(--text-light);white-space:pre-line"></p>
+    </div>
+  </section>
+
   <!-- ── VESTIMENTA ── -->
   <section class="section-vestimenta" id="sectionVestimenta">
     <div class="vest-solo">
       <p class="label reveal" id="vestTituloLabel" data-texto="eyebrowVestimenta">Código de Vestimenta</p>
+      <h2 class="vest-solo__title reveal" id="vestTitulo" data-texto="tituloVestimenta">Etiqueta formal, colores suaves</h2>
       <p class="vest-solo__body reveal" id="vestTexto" style="margin-top:.5rem"></p>
       <div id="vestPaleta" style="display:none;justify-content:center;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap"></div>
       <p id="vestColorEvitar" style="display:none;margin-top:1rem;font-family:var(--font-b);font-size:.85rem;color:var(--text-light)"></p>
@@ -500,10 +512,10 @@
   </div>
 </div>
 
-<script src="js/config-demo-petalos.js?v=6"></script>
-<script src="../../shared/js/backend.js?v=6"></script>
-<script src="../../shared/js/textos.js?v=6"></script>
-<script src="js/main.js?v=6"></script>
+<script src="js/config-demo-petalos.js?v=7"></script>
+<script src="../../shared/js/backend.js?v=7"></script>
+<script src="../../shared/js/textos.js?v=7"></script>
+<script src="js/main.js?v=7"></script>
 
 <button class="music-btn" id="musicBtn" title="Música">
   <svg id="musicOn" viewBox="0 0 24 24" fill="currentColor">

@@ -73,6 +73,11 @@ window.CONFIG_DEMO = {
     { hora: "03 de Octubre, 2026", titulo: "Nos casamos", icono: "church" }
   ],
 
+  regalos: {
+    texto: "Tu presencia es el regalo más importante para nosotros. Si deseas tener un detalle con nosotros, aquí tienes los datos de nuestra cuenta.",
+    cuentaTexto: "Bryan Colindres\nNúmero de cuenta BAC: 754164301"
+  },
+
   detallesImportantes: [
     { icono: "reloj", titulo: "Hora de llegada", texto: "Te pedimos llegar 30 minutos antes de la ceremonia para que puedas ubicarte con comodidad." },
     { icono: "adultos", titulo: "Solo adultos", texto: "Esperamos compartir una celebración pensada exclusivamente para adultos. Para una mejor organización del evento, agradecemos respetar que la invitación es únicamente para las personas señaladas." },
