@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/style.css?v=3"/>
+<link rel="stylesheet" href="css/style.css?v=4"/>
 <!-- PWA + Favicon -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png"/>
@@ -376,6 +376,9 @@
   <!-- ── LIBRO DE FIRMAS ── -->
   <section class="section-book" id="section-firmas">
     <div class="container" style="text-align:center">
+      <div id="firmasFotoWrap" style="display:none;width:110px;height:110px;border-radius:50%;overflow:hidden;margin:0 auto 1.2rem;box-shadow:0 8px 24px rgba(155,107,107,.25)">
+        <img id="firmasFoto" src="" alt="" style="display:block;width:100%;height:100%;object-fit:cover"/>
+      </div>
       <p class="label reveal" id="bookTituloEl" data-texto="tituloLibroFirmas">LIBRO DE FIRMAS</p>
       <p class="subtitle reveal" id="bookSubtituloEl" data-texto="eyebrowLibroFirmas">Cada palabra y cada recuerdo significan mucho para nosotros.</p>
       <p class="book-desc reveal" id="bookDescEl" data-texto="introLibroFirmas">Deja un mensaje y comparte una imagen junto a los novios o con alguno de ellos.</p>
@@ -497,10 +500,10 @@
   </div>
 </div>
 
-<script src="js/config-demo-petalos.js?v=3"></script>
-<script src="../../shared/js/backend.js?v=3"></script>
-<script src="../../shared/js/textos.js?v=3"></script>
-<script src="js/main.js?v=3"></script>
+<script src="js/config-demo-petalos.js?v=4"></script>
+<script src="../../shared/js/backend.js?v=4"></script>
+<script src="../../shared/js/textos.js?v=4"></script>
+<script src="js/main.js?v=4"></script>
 
 <button class="music-btn" id="musicBtn" title="Música">
   <svg id="musicOn" viewBox="0 0 24 24" fill="currentColor">

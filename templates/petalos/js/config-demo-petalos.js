@@ -51,6 +51,7 @@ window.CONFIG_DEMO = {
   mensajePersonalizado: { tipo: "audio", url: "audio/mensaje.mp3" },
 
   rsvpFotoUrl: "img/preboda12.jpg",
+  firmasFotoUrl: "img/preboda11.jpg",
 
   // ── Historia — 3 párrafos con foto alterna (texto exacto, sin resumir) ──
   historia: [

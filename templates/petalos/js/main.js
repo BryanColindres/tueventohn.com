@@ -693,6 +693,11 @@ function initBook() {
   const seccion = $('section-firmas');
   if (!C.modules || C.modules.firmas === false) { if (seccion) seccion.style.display = 'none'; return; }
 
+  if (C.firmasFotoUrl) {
+    const wrap = $('firmasFotoWrap'), img = $('firmasFoto');
+    if (wrap && img) { img.src = C.firmasFotoUrl; wrap.style.display = 'block'; }
+  }
+
   document.querySelectorAll('.book-emoji').forEach(btn => btn.addEventListener('click', () => {
     document.querySelectorAll('.book-emoji').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected'); selectedEmoji = btn.dataset.e;
