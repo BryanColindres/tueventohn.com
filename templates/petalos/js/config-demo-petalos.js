@@ -32,7 +32,8 @@ window.CONFIG_DEMO = {
   },
 
   // "texto — cita", igual que en el resto de la plataforma.
-  versiculoHistoria: "\"El amor es paciente, es bondadoso. El amor no es envidioso ni jactancioso ni orgulloso.\" — 1 Corintios 13:4",
+  bendicionTexto: "El amor es paciente, es bondadoso. El amor no es envidioso ni jactancioso ni orgulloso.",
+  versiculoHistoria: "1 Corintios 13:4",
 
   fotos: {
     hero: "img/preboda2.jpg",
@@ -80,6 +81,13 @@ window.CONFIG_DEMO = {
   vestimenta: {
     texto: "Nos reservamos el blanco para la novia y el beige para el novio. Los invitamos a usar tonos cálidos y elegantes.",
     pinterestUrl: "https://pin.it/7ask6Yvrq",
+    paletaColores: [
+      { hex: "#9B6B6B", nombre: "Rosa Profundo" },
+      { hex: "#C4907A", nombre: "Rosa Medio" },
+      { hex: "#D4A99A", nombre: "Rosa Suave" },
+      { hex: "#EDD5C5", nombre: "Blush" }
+    ],
+    colorEvitar: { hex: "#FFFFFF", nombre: "Blanco (reservado para la novia)" },
     // Las 8 fotos reales que sí existen en img/vestimenta/ para cada género
     // (el resto de plantillas no usa este campo).
     galeriaHombres: ["img/vestimenta/h1.jpg","img/vestimenta/h2.jpg","img/vestimenta/h3.jpg","img/vestimenta/h4.jpg","img/vestimenta/h5.jpg","img/vestimenta/h6.jpg","img/vestimenta/h7.jpg","img/vestimenta/h8.jpg"],

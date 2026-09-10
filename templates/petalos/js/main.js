@@ -124,9 +124,8 @@ function applyConfig() {
   set('bookSpineAnio', new Date(C.fecha).getFullYear());
 
   // Versículo (texto + cita vienen en un solo campo: "texto — cita")
-  const partesVerso = (C.versiculoHistoria || '').split(' — ');
-  set('verseText', partesVerso[0] ? '"' + partesVerso[0].replace(/^"|"$/g, '') + '"' : '');
-  set('verseCite', partesVerso[1] ? '— ' + partesVerso[1] : '');
+  set('verseText', C.bendicionTexto ? `"${C.bendicionTexto}"` : '');
+  set('verseCite', C.versiculoHistoria ? `— ${C.versiculoHistoria}` : '');
 
   // Evento / lugar (dinámico — cada cliente tiene su propio salón)
   set('venueName', C.lugar.nombre);
@@ -399,6 +398,24 @@ function pintarVestimenta() {
   }
   set('vestTexto', C.vestimenta.texto);
 
+  const paleta = C.vestimenta.paletaColores;
+  const paletaWrap = $('vestPaleta');
+  if (paletaWrap && paleta && paleta.length) {
+    paletaWrap.style.display = 'flex';
+    paletaWrap.innerHTML = paleta.map(c => `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.35rem">
+        <span style="display:block;width:34px;height:34px;border-radius:50%;background:${c.hex};border:2px solid rgba(0,0,0,.08)"></span>
+        ${c.nombre ? `<span style="font-family:var(--font-b);font-size:.7rem;color:var(--text-light)">${c.nombre}</span>` : ''}
+      </div>`).join('');
+  }
+
+  const colorEvitar = C.vestimenta.colorEvitar;
+  const evitarEl = $('vestColorEvitar');
+  if (evitarEl && colorEvitar && colorEvitar.nombre) {
+    evitarEl.style.display = 'block';
+    evitarEl.textContent = `Preferimos evitar: ${colorEvitar.nombre}`;
+  }
+
   const tieneGaleria = (C.modules && C.modules.vestimenta_galeria !== false) && (
     (C.vestimenta.galeriaHombres && C.vestimenta.galeriaHombres.length) ||
     (C.vestimenta.galeriaMujeres && C.vestimenta.galeriaMujeres.length)
@@ -488,10 +505,28 @@ function initVideo() {
 }
 
 function abrirInvitacionDirecto() {
-  const screen = $('videoScreen'), invitation = $('invitation');
-  if (screen) screen.style.display = 'none';
-  if (GUEST) showNameScreen(() => revelarInvitacion(invitation));
-  else revelarInvitacion(invitation);
+  const screen = $('videoScreen'), invitation = $('invitation'), tapMsg = $('videoTapMsg'),
+        progressBar = $('videoProgressBar'), skipBtn = $('videoSkip');
+  if (progressBar) progressBar.style.display = 'none';
+  if (skipBtn) skipBtn.style.display = 'none';
+
+  const continuar = () => {
+    if (screen) {
+      screen.classList.add('closing');
+      setTimeout(() => {
+        screen.classList.add('gone');
+        if (GUEST) showNameScreen(() => revelarInvitacion(invitation));
+        else revelarInvitacion(invitation);
+      }, 800);
+    } else if (GUEST) showNameScreen(() => revelarInvitacion(invitation));
+    else revelarInvitacion(invitation);
+  };
+
+  // Sin video de apertura: igual pedimos un toque — es lo único que le
+  // permite al navegador reproducir música después, sin esto la bloquea
+  // en silencio sin avisar a nadie.
+  if (screen) screen.addEventListener('click', continuar, { once: true });
+  else continuar();
 }
 
 function revelarInvitacion(invitation) {
