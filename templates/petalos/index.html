@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/style.css?v=4"/>
+<link rel="stylesheet" href="css/style.css?v=5"/>
 <!-- PWA + Favicon -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png"/>
@@ -118,7 +118,7 @@
   <section class="hero">
     <div class="hero__bg">
       <div class="hero__overlay"></div>
-      <img class="hero__photo" id="heroFoto" src="" onerror="this.style.display='none'"/>
+      <img class="hero__photo" id="heroFoto" onerror="this.style.display='none'"/>
     </div>
     <div class="petals-hero" id="petalsHero"></div>
     <div class="hero__content reveal">
@@ -161,7 +161,7 @@
   <!-- ── VERSÍCULO + FOTO ── -->
   <section class="section-split" id="section-versiculo">
     <div class="split-photo reveal-left">
-      <img id="versePhoto" src="" onerror="this.parentElement.style.display='none'"/>
+      <img id="versePhoto" onerror="this.parentElement.style.display='none'"/>
     </div>
     <div class="split-text reveal-right" style="background:var(--cream)">
       <svg class="quote-icon" viewBox="0 0 60 45"><path d="M0 45V27C0 18 6 9.3 18 1.5L22.5 7.5C16.5 11.5 13 16.5 12 22.5H24V45H0ZM36 45V27C36 18 42 9.3 54 1.5L58.5 7.5C52.5 11.5 49 16.5 48 22.5H60V45H36Z" fill="currentColor" opacity="0.2"/></svg>
@@ -174,7 +174,7 @@
   <section class="section-voice" id="section-voice">
     <div class="container">
       <div class="voice-card reveal">
-        <div class="voice-card__photo"><img id="voicePhoto" src="" onerror="this.style.display='none'"/></div>
+        <div class="voice-card__photo"><img id="voicePhoto" onerror="this.style.display='none'"/></div>
         <div class="voice-card__body">
           <p class="label">Un mensaje para ti</p>
           <h2 class="voice-card__name" id="voiceName">Querido invitado</h2>
@@ -200,7 +200,7 @@
       <p class="event-maps-note">↓ Puedes ver cómo llegar más abajo</p>
     </div>
     <div class="split-photo reveal-right">
-      <img id="eventoFoto" src="" onerror="this.parentElement.style.display='none'"/>
+      <img id="eventoFoto" onerror="this.parentElement.style.display='none'"/>
     </div>
   </section>
 
@@ -305,7 +305,7 @@
   <!-- ── CONFIRMACIÓN ── -->
   <section class="section-split" id="rsvpSection">
     <div class="split-photo reveal-left" id="rsvpPhoto">
-      <img src="" onerror="this.parentElement.style.display='none'"/>
+      <img onerror="this.parentElement.style.display='none'"/>
     </div>
     <div class="split-text reveal-right" style="background:var(--rose-deep)">
       <p class="label" style="color:rgba(255,255,255,.65)">¿Vendrás?</p>
@@ -500,10 +500,10 @@
   </div>
 </div>
 
-<script src="js/config-demo-petalos.js?v=4"></script>
-<script src="../../shared/js/backend.js?v=4"></script>
-<script src="../../shared/js/textos.js?v=4"></script>
-<script src="js/main.js?v=4"></script>
+<script src="js/config-demo-petalos.js?v=5"></script>
+<script src="../../shared/js/backend.js?v=5"></script>
+<script src="../../shared/js/textos.js?v=5"></script>
+<script src="js/main.js?v=5"></script>
 
 <button class="music-btn" id="musicBtn" title="Música">
   <svg id="musicOn" viewBox="0 0 24 24" fill="currentColor">

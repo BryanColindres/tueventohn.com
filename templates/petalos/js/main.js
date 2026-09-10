@@ -174,8 +174,10 @@ function applyConfig() {
     if (!C.modules || !C.modules.galeria || !C.galeriaMuestra || !C.galeriaMuestra.length) {
       gg.closest('section')?.querySelectorAll('.container').forEach(c => { if (c.contains(gg)) c.style.display = 'none'; });
     } else {
-      gg.innerHTML = C.galeriaMuestra.map((src, i) => `
-        <div class="gal-item reveal" data-idx="${i}"><img src="${src}" onerror="this.parentElement.style.display='none'"/></div>`).join('');
+      gg.innerHTML = C.galeriaMuestra.map((item, i) => {
+        const src = (typeof item === 'string') ? item : (item && item.url) || '';
+        return src ? `<div class="gal-item reveal" data-idx="${i}"><img src="${src}" onerror="this.parentElement.style.display='none'"/></div>` : '';
+      }).join('');
     }
   }
 
