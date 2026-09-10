@@ -646,6 +646,14 @@ async function guardarVideoApertura(){
   mostrarOk('ok-video-apertura');
 }
 
+async function quitarVideoApertura(){
+  document.getElementById('p-video-apertura-url').value = '';
+  refrescarPreview('p-video-apertura-url', 'video');
+  const res = await rpc('portal_actualizar_video_apertura', { p_codigo: CODIGO, p_url: '' });
+  if (res?.error) return;
+  mostrarOk('ok-video-apertura');
+}
+
 // ---------------- GALERÍA ----------------
 async function subirFotoGaleriaCliente(e){
   const archivos = [...e.target.files];
