@@ -32,8 +32,14 @@ window.CONFIG_DEMO = {
   },
 
   // "texto — cita", igual que en el resto de la plataforma.
+  // "Bendición y versículo" — aparece justo antes de "Nuestra historia".
+  bendicionTexto: "El amor es paciente, es bondadoso. El amor no es envidioso ni jactancioso ni orgulloso.",
+  versiculoHistoria: "1 Corintios 13:4",
+
+  // "Versículo o mensaje especial" — otro campo aparte, aparece después de la
+  // ubicación y antes de "Detalles importantes".
   mensajes: [
-    { texto: "El amor es paciente, es bondadoso. El amor no es envidioso ni jactancioso ni orgulloso.", referencia: "1 Corintios 13:4" }
+    { texto: "Así que no son ya más dos, sino una sola carne; por tanto, lo que Dios juntó, no lo separe el hombre.", referencia: "Mateo 19:6" }
   ],
 
   fotos: {

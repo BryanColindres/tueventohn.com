@@ -123,12 +123,11 @@ function applyConfig() {
   set('tapFecha', fechaCompacta(C.fecha));
   set('bookSpineAnio', new Date(C.fecha).getFullYear());
 
-  // Versículo (texto + cita vienen en un solo campo: "texto — cita")
-  const primerMensaje = (C.mensajes && C.mensajes[0]) || null;
+  // Bendición y versículo (foto + cita) — campo propio, separado de "mensajes"
   const seccionVersiculo = $('section-versiculo');
-  if (seccionVersiculo) seccionVersiculo.style.display = (primerMensaje && primerMensaje.texto) ? '' : 'none';
-  set('verseText', primerMensaje && primerMensaje.texto ? `"${primerMensaje.texto}"` : '');
-  set('verseCite', primerMensaje && primerMensaje.referencia ? `— ${primerMensaje.referencia}` : '');
+  if (seccionVersiculo) seccionVersiculo.style.display = C.bendicionTexto ? '' : 'none';
+  set('verseText', C.bendicionTexto ? `"${C.bendicionTexto}"` : '');
+  set('verseCite', C.versiculoHistoria ? `— ${C.versiculoHistoria}` : '');
 
   // Evento / lugar (dinámico — cada cliente tiene su propio salón)
   set('venueName', C.lugar.nombre);
@@ -172,6 +171,7 @@ function applyConfig() {
   pintarHistoriaIntro();
   pintarVideoInterno();
   pintarRecepcion();
+  pintarMensajeEspecial();
 
   // Galería (reusa el campo compartido `galeriaMuestra`)
   const gg = $('galleryGrid');
@@ -363,7 +363,17 @@ function pintarRecepcion() {
   if (iframe) iframe.src = `https://www.google.com/maps?q=${encodeURIComponent((lr.nombre || '') + ' ' + (lr.direccion || ''))}&z=16&output=embed`;
 }
 
-// ── Regalos (texto + cuenta con "más detalles") ──
+// ── Mensaje especial (mensajes[] — distinto de bendición y versículo) ──
+function pintarMensajeEspecial() {
+  const seccion = $('sectionMensajes');
+  const msg = (C.mensajes && C.mensajes[0]) || null;
+  if (!msg || !msg.texto) { if (seccion) seccion.style.display = 'none'; return; }
+  if (seccion) seccion.style.display = 'block';
+  set('mensajeEspecialTexto', `"${msg.texto}"`);
+  set('mensajeEspecialCita', msg.referencia ? `— ${msg.referencia}` : '');
+}
+
+
 function pintarRegalos() {
   const seccion = $('section-regalos');
   if (!C.modules || !C.modules.regalos || !C.regalos || !C.regalos.texto) {
