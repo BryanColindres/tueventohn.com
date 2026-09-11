@@ -32,8 +32,9 @@ window.CONFIG_DEMO = {
   },
 
   // "texto — cita", igual que en el resto de la plataforma.
-  bendicionTexto: "El amor es paciente, es bondadoso. El amor no es envidioso ni jactancioso ni orgulloso.",
-  versiculoHistoria: "1 Corintios 13:4",
+  mensajes: [
+    { texto: "El amor es paciente, es bondadoso. El amor no es envidioso ni jactancioso ni orgulloso.", referencia: "1 Corintios 13:4" }
+  ],
 
   fotos: {
     hero: "img/preboda2.jpg",

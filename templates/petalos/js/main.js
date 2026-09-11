@@ -124,8 +124,11 @@ function applyConfig() {
   set('bookSpineAnio', new Date(C.fecha).getFullYear());
 
   // Versículo (texto + cita vienen en un solo campo: "texto — cita")
-  set('verseText', C.bendicionTexto ? `"${C.bendicionTexto}"` : '');
-  set('verseCite', C.versiculoHistoria ? `— ${C.versiculoHistoria}` : '');
+  const primerMensaje = (C.mensajes && C.mensajes[0]) || null;
+  const seccionVersiculo = $('section-versiculo');
+  if (seccionVersiculo) seccionVersiculo.style.display = (primerMensaje && primerMensaje.texto) ? '' : 'none';
+  set('verseText', primerMensaje && primerMensaje.texto ? `"${primerMensaje.texto}"` : '');
+  set('verseCite', primerMensaje && primerMensaje.referencia ? `— ${primerMensaje.referencia}` : '');
 
   // Evento / lugar (dinámico — cada cliente tiene su propio salón)
   set('venueName', C.lugar.nombre);
