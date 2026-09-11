@@ -15,8 +15,18 @@ function href(id, u) { const el = $(id); if (el && u) el.href = u; }
 function primerNombre(nombre) { return (nombre || '').split(' ')[0]; }
 
 // ── Fecha compacta "03 · 10 · 2026" (para hero/footer/tap) ──
+// new Date("2026-09-26") lo interpreta como medianoche UTC — en Honduras
+// (6 horas atrás) eso cae el día anterior en hora local. Este parser arma
+// la fecha con los componentes exactos, siempre en hora LOCAL.
+function parsearFechaLocal(fechaStr) {
+  if (!fechaStr) return new Date(NaN);
+  const m = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (!m) return new Date(fechaStr);
+  const [, y, mo, d, h, mi, s] = m;
+  return new Date(+y, +mo - 1, +d, +(h || 0), +(mi || 0), +(s || 0));
+}
 function fechaCompacta(fechaIso) {
-  const d = new Date(fechaIso);
+  const d = parsearFechaLocal(fechaIso);
   if (isNaN(d)) return '';
   const pad = n => String(n).padStart(2, '0');
   return `${pad(d.getDate())} · ${pad(d.getMonth() + 1)} · ${d.getFullYear()}`;
@@ -121,7 +131,7 @@ function applyConfig() {
   set('heroFecha', fechaCompacta(C.fecha));
   set('footerFecha', fechaCompacta(C.fecha));
   set('tapFecha', fechaCompacta(C.fecha));
-  set('bookSpineAnio', new Date(C.fecha).getFullYear());
+  set('bookSpineAnio', parsearFechaLocal(C.fecha).getFullYear());
 
   // Bendición y versículo (foto + cita) — campo propio, separado de "mensajes"
   const seccionVersiculo = $('section-versiculo');
@@ -478,7 +488,7 @@ function spawnPetals(containerId, count) {
 function startCountdown() {
   const seccion = document.querySelector('.section-countdown');
   if (C.modules && C.modules.countdown === false) { if (seccion) seccion.style.display = 'none'; return; }
-  const target = new Date(C.fecha).getTime();
+  const target = parsearFechaLocal(C.fecha).getTime();
   const pad = n => String(Math.floor(n)).padStart(2, '0');
   const tick = () => {
     const diff = target - Date.now();
