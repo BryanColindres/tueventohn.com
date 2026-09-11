@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/style.css?v=8"/>
+<link rel="stylesheet" href="css/style.css?v=9"/>
 <!-- PWA + Favicon -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png"/>
@@ -158,6 +158,18 @@
     </div>
   </section>
 
+  <!-- ── VERSÍCULO + FOTO ── -->
+  <section class="section-split" id="section-versiculo">
+    <div class="split-photo reveal-left">
+      <img id="versePhoto" onerror="this.parentElement.style.display='none'"/>
+    </div>
+    <div class="split-text reveal-right" style="background:var(--cream)">
+      <svg class="quote-icon" viewBox="0 0 60 45"><path d="M0 45V27C0 18 6 9.3 18 1.5L22.5 7.5C16.5 11.5 13 16.5 12 22.5H24V45H0ZM36 45V27C36 18 42 9.3 54 1.5L58.5 7.5C52.5 11.5 49 16.5 48 22.5H60V45H36Z" fill="currentColor" opacity="0.2"/></svg>
+      <blockquote id="verseText"></blockquote>
+      <cite id="verseCite"></cite>
+    </div>
+  </section>
+
   <!-- ── MENSAJE DE VOZ ── -->
   <section class="section-voice" id="section-voice">
     <div class="container">
@@ -238,18 +250,6 @@
         </a>
         <a class="btn btn-outline" id="recepcionWazeBtn" href="#" target="_blank">Waze</a>
       </div>
-    </div>
-  </section>
-
-  <!-- ── VERSÍCULO + FOTO ── -->
-  <section class="section-split" id="section-versiculo">
-    <div class="split-photo reveal-left">
-      <img id="versePhoto" onerror="this.parentElement.style.display='none'"/>
-    </div>
-    <div class="split-text reveal-right" style="background:var(--cream)">
-      <svg class="quote-icon" viewBox="0 0 60 45"><path d="M0 45V27C0 18 6 9.3 18 1.5L22.5 7.5C16.5 11.5 13 16.5 12 22.5H24V45H0ZM36 45V27C36 18 42 9.3 54 1.5L58.5 7.5C52.5 11.5 49 16.5 48 22.5H60V45H36Z" fill="currentColor" opacity="0.2"/></svg>
-      <blockquote id="verseText"></blockquote>
-      <cite id="verseCite"></cite>
     </div>
   </section>
 
@@ -512,10 +512,10 @@
   </div>
 </div>
 
-<script src="js/config-demo-petalos.js?v=8"></script>
-<script src="../../shared/js/backend.js?v=8"></script>
-<script src="../../shared/js/textos.js?v=8"></script>
-<script src="js/main.js?v=8"></script>
+<script src="js/config-demo-petalos.js?v=9"></script>
+<script src="../../shared/js/backend.js?v=9"></script>
+<script src="../../shared/js/textos.js?v=9"></script>
+<script src="js/main.js?v=9"></script>
 
 <button class="music-btn" id="musicBtn" title="Música">
   <svg id="musicOn" viewBox="0 0 24 24" fill="currentColor">
