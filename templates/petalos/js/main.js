@@ -409,7 +409,7 @@ function pintarHistoriaIntro() {
   if (grid) grid.innerHTML = C.historia.map((item, i) => {
     const lado = i % 2 === 0 ? 'left' : 'right';
     const fotoHtml = item.foto ? `<div class="story-split__photo"><img src="${item.foto}" onerror="this.parentElement.style.display='none'"/></div>` : '';
-    const textoHtml = `<div class="story-split__text">${item.titulo ? `<h3 style="font-family:var(--font-a);font-size:1.3rem;margin-bottom:.5rem;color:var(--rose-deep)">${item.titulo}</h3>` : ''}<p>${item.texto || ''}</p></div>`;
+    const textoHtml = `<div class="story-split__text">${item.titulo ? `<h3 style="font-family:var(--font-d);font-size:1.3rem;margin-bottom:.5rem;color:var(--rose-deep)">${item.titulo}</h3>` : ''}<p>${item.texto || ''}</p></div>`;
     return `<div class="story-split story-split--${lado} reveal-${lado}">${lado === 'left' ? fotoHtml + textoHtml : textoHtml + fotoHtml}</div>`;
   }).join('');
 }
@@ -423,16 +423,13 @@ function buildTimelineIlustrado() {
     if (seccion) seccion.style.display = 'none';
     return;
   }
-  wrap.innerHTML = C.timeline.map((item, i) => {
-    const body = `<div class="tl-body"><span class="tl-fecha">${item.hora || ''}</span><h3 class="tl-titulo">${item.titulo || ''}</h3></div>`;
-    const dot = `<div class="tl-dot"><div class="tl-dot__icon">${TuBodaBackend.iconoTimelineHtml(item.icono)}</div></div>`;
-    const empty = `<div class="tl-empty"></div>`;
-    return `<div class="tl-item" data-i="${i}">${i % 2 === 0 ? body + dot + empty : empty + dot + body}</div>`;
-  }).join('');
-  document.querySelectorAll('.tl-item').forEach(el => {
-    const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target); } }), { threshold: 0.15 });
-    obs.observe(el);
-  });
+  wrap.innerHTML = C.timeline.map((item, i) => `
+    <div class="prog-item reveal">
+      <span class="prog-num">${i + 1}</span>
+      <span class="prog-titulo">${TuBodaBackend.iconoTimelineHtml(item.icono)}${item.titulo || ''}</span>
+      <span class="prog-hora">${item.hora || ''}</span>
+      ${i < C.timeline.length - 1 ? '<div class="prog-linea"></div>' : ''}
+    </div>`).join('');
 }
 
 // ── Vestimenta (texto + paleta de referencia por género) ──
