@@ -107,6 +107,20 @@ async function cargarConfig() {
       console.warn("get_event_extra2 no disponible todavía:", err);
     }
 
+    // Si el organizador pausó la invitación (evento ya distribuido pero
+    // aún no listo del todo), se corta aquí con un aviso — no es un error,
+    // es una pausa deliberada y reversible. Mismo criterio aislado: si el
+    // SQL todavía no existe, esto no bloquea nada.
+    try {
+      const pausado = await _rpc("get_event_pausado", { p_slug: slug });
+      if (pausado) {
+        mostrarInvitacionPausada();
+        return null;
+      }
+    } catch (err) {
+      console.warn("get_event_pausado no disponible todavía:", err);
+    }
+
     // Si la invitación tiene RSVP Premium y la URL trae un identificador de
     // invitado, se resuelve su nombre para personalizar el banner y (si
     // corresponde) la pantalla de mensaje personalizado.
@@ -136,6 +150,17 @@ function mostrarErrorCarga(mensaje) {
       <div>
         <p style="font-size:1.1rem;margin-bottom:.5rem">${mensaje}</p>
         <p style="opacity:.6;font-size:.85rem">Si crees que esto es un error, contacta a quienes te enviaron el link.</p>
+      </div>
+    </div>`;
+}
+
+function mostrarInvitacionPausada() {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
+      text-align:center;padding:2rem;font-family:sans-serif;background:#fdf6f0;color:#5a4a45">
+      <div>
+        <p style="font-size:1.15rem;margin-bottom:.5rem">Esta invitación está pausada por ahora.</p>
+        <p style="opacity:.75;font-size:.9rem">Vuelve a intentarlo más tarde.</p>
       </div>
     </div>`;
 }

@@ -345,17 +345,7 @@ const TEXTOS_EDITABLES = [
   { clave: 'etiquetaEnRevision', etiqueta: 'Etiqueta "en revisión"', porDefecto: 'En revisión' },
   { clave: 'eyebrowVestimenta', etiqueta: 'Texto pequeño arriba de vestimenta', porDefecto: '' },
   { clave: 'botonComoLlegar', etiqueta: 'Texto del botón "Cómo llegar"', porDefecto: 'Cómo Llegar' },
-  { clave: 'botonAgregarCalendario', etiqueta: 'Texto del botón agregar al calendario', porDefecto: 'Agregar al Calendario' },
-  // — Solo aplica a la plantilla "petalos" (acceso por invitado) —
-  { clave: 'gateDeniedTitulo', etiqueta: '[Pétalos] Título — enlace no habilitado', porDefecto: 'Este enlace no está habilitado' },
-  { clave: 'gateDeniedTexto', etiqueta: '[Pétalos] Texto — enlace no habilitado', porDefecto: 'Este enlace no corresponde a ninguna invitación.' },
-  { clave: 'gateBlockedTitulo', etiqueta: '[Pétalos] Título — invitación bloqueada', porDefecto: 'Esta invitación ya no está disponible' },
-  { clave: 'gateBlockedTexto', etiqueta: '[Pétalos] Texto — invitación bloqueada', porDefecto: 'Al no recibir tu confirmación antes de la fecha límite...' },
-  { clave: 'rsvpPersonalTitulo', etiqueta: '[Pétalos] Título — invitación personal', porDefecto: 'Esta invitación es personal e intransferible' },
-  { clave: 'rsvpPersonalMsg', etiqueta: '[Pétalos] Mensaje — invitación personal', porDefecto: 'Ha sido enviada especialmente para:' },
-  { clave: 'rsvpPersonalNota', etiqueta: '[Pétalos] Nota — invitación personal', porDefecto: 'Por favor no compartas este enlace con otras personas.' },
-  { clave: 'fraseFooter', etiqueta: '[Pétalos] Frase de despedida (footer)', porDefecto: 'Con amor, los esperamos.' },
-  { clave: 'tituloVestimenta', etiqueta: '[Pétalos] Subtítulo de vestimenta', porDefecto: 'Etiqueta formal, colores suaves' }
+  { clave: 'botonAgregarCalendario', etiqueta: 'Texto del botón agregar al calendario', porDefecto: 'Agregar al Calendario' }
 ];
 
 
@@ -476,6 +466,9 @@ async function renderEditar(id){
 
   document.getElementById('btn-guardar-evento').onclick = () => guardarEdicion(id, evento.cliente_id);
   document.getElementById('btn-publicar-evento').onclick = () => publicarEvento(id);
+  const btnPausar = document.getElementById('btn-pausar-evento');
+  btnPausar.textContent = evento.pausado ? 'Reactivar' : 'Pausar';
+  btnPausar.onclick = () => pausarEvento(id, !evento.pausado);
   document.getElementById('btn-duplicar-evento').onclick = () => duplicarEvento(id);
 }
 
@@ -543,6 +536,17 @@ async function publicarEvento(eventoId){
   } catch (err) {
     console.error(err);
     mostrarToast('Error al publicar');
+  }
+}
+
+async function pausarEvento(eventoId, pausar){
+  try {
+    await apiRpc('admin_pausar_evento', { p_evento_id: eventoId, p_pausado: pausar });
+    mostrarToast(pausar ? 'Invitación pausada — los invitados verán un aviso hasta que la reactives' : 'Invitación reactivada');
+    renderEditar(eventoId);
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Error al cambiar el estado de pausa');
   }
 }
 
