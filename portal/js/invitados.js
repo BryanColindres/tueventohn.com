@@ -465,6 +465,16 @@ function compartirWhatsapp(id) {
   window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
 }
 
+function compartirWhatsappFamilia(familiaId, nombreFamilia) {
+  const f = FAMILIAS.find(x => x.id === familiaId);
+  if (!f) return;
+  const conTelefono = INVITADOS.find(x => (x.familia || '') === nombreFamilia && x.telefono);
+  const telefono = (conTelefono?.telefono || '').replace(/\D/g, '');
+  const mensaje = encodeURIComponent(construirMensajeInvitacion(nombresDeFamilia(nombreFamilia), f.link));
+  const numero = telefono ? `504${telefono}` : '';
+  window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+}
+
 /* ============================================================ UTILS ===== */
 function escapar(texto) {
   const div = document.createElement('div');
@@ -521,13 +531,14 @@ function renderListaFamilias() {
       <div>
         <div class="ti-nombre">${escapar(f.nombre)}</div>
         <div class="ti-sub">
-          ${f.conteo_miembros} invitado(s) ligado(s) ·
+          ${nombresDeFamilia(f.nombre).map(escapar).join(', ') || `${f.conteo_miembros} invitado(s) ligado(s)`} ·
           <span>conteo a mostrar:</span>
           <input type="number" min="0" value="${conteo}" class="conteo-input" onchange="actualizarConteoFamilia('${f.id}', this.value)">
         </div>
       </div>
       <div class="ti-acciones">
         <button class="ti-icon-btn" title="Copiar solo el link familiar" onclick="copiarLinkFamilia('${f.id}')">${ICONO_LINK}</button>
+        <button class="ti-icon-btn" title="Enviar por WhatsApp (con mensaje)" onclick="compartirWhatsappFamilia('${f.id}', '${escapar(f.nombre).replace(/'/g, "\\'")}')">${ICONO_WHATSAPP}</button>
         <button class="ti-icon-btn" title="Editar nombre de la familia" onclick="renombrarFamilia('${f.id}', '${escapar(f.nombre).replace(/'/g, "\\'")}')">✎</button>
       </div>
     </div>`;
