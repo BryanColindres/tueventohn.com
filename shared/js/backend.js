@@ -127,7 +127,18 @@ async function cargarConfig() {
     data.invitado = null;
     if (data.modules && data.modules.rsvp_premium && idInvitado) {
       const invitado = await obtenerInvitado(slug, idInvitado);
-      if (invitado) data.invitado = { nombre: invitado.nombre, identificador: idInvitado };
+      if (invitado) {
+        let nombreMostrar = invitado.nombre;
+        if (invitado.es_familia) {
+          try {
+            const nombreFamilia = await _rpc("obtener_nombre_familia", { p_slug: slug, p_identificador: idInvitado });
+            if (nombreFamilia) nombreMostrar = nombreFamilia;
+          } catch (err) {
+            console.warn("obtener_nombre_familia no disponible todavía:", err);
+          }
+        }
+        data.invitado = { nombre: nombreMostrar, identificador: idInvitado };
+      }
     }
 
     // Si todavía no se completó el pago, se muestra una franja de "vista
