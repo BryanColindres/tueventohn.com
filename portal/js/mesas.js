@@ -8,9 +8,9 @@ let MESAS = [];
 let ZONAS = [];
 let SALON = { ancho: 700, alto: 420 };
 let MESAS_CARGADAS = false;
-let ARRASTRE = null;          // estado del drag/touch en curso (mover o redimensionar)
-let SELECCIONADO = null;      // invitado_id elegido con un toque, esperando asiento destino
-let MESAS_COLAPSADAS = {};    // { mesaId: true/false } — recuerda qué acordeones están abiertos
+let ARRASTRE = null; // estado del drag/touch en curso (mover o redimensionar)
+let SELECCIONADO = null; // invitado_id elegido con un toque, esperando asiento destino
+let MESAS_COLAPSADAS = {}; // { mesaId: true/false } — recuerda qué acordeones están abiertos
 
 const TAMANO_DEFECTO = { round: { ancho: 150, alto: 150 }, square: { ancho: 150, alto: 150 }, rect: { ancho: 210, alto: 120 } };
 const ETIQUETA_ZONA = { pista: '🎵 Pista de baile', barra: '🍸 Barra', entrada: '🚪 Entrada', escenario: '🎤 Escenario / DJ' };
@@ -37,12 +37,28 @@ async function cargarMesasDatos() {
   MESAS = data.mesas || [];
   ZONAS = data.zonas || [];
   SALON = data.salon || { ancho: 700, alto: 420 };
+
+  // Si alguien fue marcado como "no viene" (o vuelto a "pendiente") después
+  // de haber quedado sentado, se le quita el asiento automáticamente — en
+  // las mesas solo deben quedar los confirmados.
+  const idsAQuitar = [];
+  MESAS.forEach(m => m.asientos.forEach(a => {
+    const inv = (INVITADOS || []).find(g => g.id === a.invitado_id);
+    if (!inv || inv.estado !== 'confirmado') idsAQuitar.push(a.invitado_id);
+  }));
+  if (idsAQuitar.length) {
+    for (const id of idsAQuitar) await rpc('panel_quitar_asiento', { p_codigo: CODIGO, p_invitado_id: id });
+    const data2 = await rpc('panel_listar_mesas', { p_codigo: CODIGO });
+    if (!data2.error) { MESAS = data2.mesas || []; ZONAS = data2.zonas || []; SALON = data2.salon || SALON; }
+  }
+
   renderTodoMesas();
 }
 
 /* ============================================================ GÉNERO ==== */
 const NOMBRES_FEMENINOS = new Set(["carmen","pilar","soledad","raquel","ruth","abigail","esther","isis","luz","mar","dolores","guadalupe","itzel","ainhoa","xiomara","alondra","yamileth","yolanda","noemi","jazmin","jazmín","belen","belén","fatima","fátima"]);
 const EXCEPCIONES_MASCULINAS = new Set(["lucas","matias","matías","tobias","tobías","elias","elías","isaias","isaías","joshua","jonas","jonás","nicolas","nicolás","andres","andrés","moises","moisés","josue","josué","ezequiel","josé","jose","noe","noé","luca"]);
+
 function detectarGenero(nombreCompleto) {
   const primero = (nombreCompleto || '').trim().split(/\s+/)[0]?.toLowerCase() || '';
   if (NOMBRES_FEMENINOS.has(primero)) return 'F';
@@ -96,12 +112,10 @@ function crearElementoZona(z) {
   div.innerHTML = `<span>${ETIQUETA_ZONA[z.tipo]}</span>
     <button class="zona-borrar no-print" type="button">✕</button>
     <div class="resize-handle no-print"></div>`;
-
   div.querySelector('.zona-borrar').addEventListener('click', (e) => { e.stopPropagation(); eliminarZona(z.id); });
   const resizeHandle = div.querySelector('.resize-handle');
   agregarArrastre(resizeHandle, (e, punto) => { e.stopPropagation(); iniciarRedimensionZona(punto, z.id); });
   agregarArrastre(div, (e, punto) => { if (e.target.closest('button,.resize-handle')) return; iniciarArrastreZona(punto, z); });
-
   return div;
 }
 
@@ -109,7 +123,6 @@ function crearElementoMesa(m) {
   const wrap = document.createElement('div');
   wrap.className = 'mesa-en-canvas';
   wrap.style.left = m.pos_x + 'px'; wrap.style.top = m.pos_y + 'px'; wrap.style.width = m.ancho + 'px';
-
   const ocupadas = m.asientos.length;
   const llena = ocupadas >= m.capacidad;
 
@@ -234,6 +247,7 @@ function moverArrastre(e) {
     m.pos_x = nx; m.pos_y = ny;
     const wrap = document.querySelectorAll('.mesa-en-canvas')[MESAS.indexOf(m)];
     if (wrap) { wrap.style.left = nx + 'px'; wrap.style.top = ny + 'px'; wrap.querySelector('.mesa-shape').classList.toggle('pegada', pegada); }
+
   } else if (ARRASTRE.tipo === 'resize-mesa') {
     const m = MESAS.find(x => x.id === ARRASTRE.id);
     if (m.forma === 'rect') {
@@ -253,18 +267,21 @@ function moverArrastre(e) {
       const shape = wrap.querySelector('.mesa-shape');
       if (shape) { shape.style.width = m.ancho + 'px'; shape.style.height = m.alto + 'px'; }
     }
+
   } else if (ARRASTRE.tipo === 'zona') {
     const z = ZONAS.find(x => x.id === ARRASTRE.id);
     z.pos_x = clamp(punto.clientX - rect.left - ARRASTRE.offsetX, 0, SALON.ancho - z.ancho);
     z.pos_y = clamp(punto.clientY - rect.top - ARRASTRE.offsetY, 0, SALON.alto - z.alto - 24);
     const el = document.querySelectorAll('.zona-en-canvas')[ZONAS.indexOf(z)];
     if (el) { el.style.left = z.pos_x + 'px'; el.style.top = z.pos_y + 'px'; }
+
   } else if (ARRASTRE.tipo === 'resize-zona') {
     const z = ZONAS.find(x => x.id === ARRASTRE.id);
     z.ancho = Math.max(70, ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX));
     z.alto = Math.max(50, ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY));
     const el = document.querySelectorAll('.zona-en-canvas')[ZONAS.indexOf(z)];
     if (el) { el.style.width = z.ancho + 'px'; el.style.height = z.alto + 'px'; }
+
   } else if (ARRASTRE.tipo === 'resize-canvas') {
     SALON.ancho = Math.max(680, ARRASTRE.startAncho + (punto.clientX - ARRASTRE.startX));
     SALON.alto = Math.max(380, ARRASTRE.startAlto + (punto.clientY - ARRASTRE.startY));
@@ -277,7 +294,6 @@ async function soltarArrastre() {
   if (!ARRASTRE) return;
   const tipo = ARRASTRE.tipo, id = ARRASTRE.id;
   ARRASTRE = null;
-
   if (tipo === 'mesa' || tipo === 'resize-mesa') { await persistirMesa(MESAS.find(m => m.id === id)); }
   else if (tipo === 'zona' || tipo === 'resize-zona') { await persistirZona(ZONAS.find(z => z.id === id)); }
   else if (tipo === 'resize-canvas') { await rpc('panel_guardar_salon', { p_codigo: CODIGO, p_ancho: SALON.ancho, p_alto: SALON.alto }); }
@@ -304,6 +320,7 @@ function iniciarRedimensionZona(punto, id) {
   const z = ZONAS.find(x => x.id === id);
   ARRASTRE = { tipo: 'resize-zona', id, startAncho: z.ancho, startAlto: z.alto, startX: punto.clientX, startY: punto.clientY };
 }
+
 agregarArrastre(document.getElementById('canvas-resize-handle'), (e, punto) => {
   ARRASTRE = { tipo: 'resize-canvas', startAncho: SALON.ancho, startAlto: SALON.alto, startX: punto.clientX, startY: punto.clientY };
 });
@@ -326,6 +343,7 @@ function togglePopoverForma(id) {
   document.querySelectorAll('.menu-flotante').forEach(el => { if (el.id !== `popover-forma-${id}`) el.classList.add('oculto'); });
   document.getElementById(`popover-forma-${id}`).classList.toggle('oculto');
 }
+
 async function cambiarFormaMesa(id, forma) {
   const m = MESAS.find(x => x.id === id);
   m.forma = forma;
@@ -333,6 +351,7 @@ async function cambiarFormaMesa(id, forma) {
   await persistirMesa(m);
   renderTodoMesas();
 }
+
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.menu-flotante') && !e.target.closest('.btn-forma')) {
     document.querySelectorAll('.menu-flotante').forEach(el => el.classList.add('oculto'));
@@ -354,6 +373,7 @@ function cerrarModalMesa() { document.getElementById('modal-mesa').classList.add
 function elegirForma(forma) {
   document.querySelectorAll('.forma-op').forEach(b => b.classList.toggle('activo', b.dataset.forma === forma));
 }
+
 // Si el nombre sigue en su valor automático ("Mesa N"), lo cambia a un
 // nombre más apropiado al marcar/desmarcar "mesa de honor".
 function alTogglearNovios(marcado) {
@@ -371,7 +391,6 @@ async function guardarMesaNueva() {
   const esNovios = document.getElementById('mesa-es-novios').checked;
   const tam = TAMANO_DEFECTO[forma];
   const n = MESAS.length;
-
   const res = await rpc('panel_guardar_mesa', {
     p_codigo: CODIGO, p_mesa_id: null, p_nombre: nombre, p_forma: forma, p_capacidad: capacidad,
     p_es_novios: esNovios, p_pos_x: 40 + (n % 3) * 60, p_pos_y: 40 + Math.floor(n / 3) * 60,
@@ -379,6 +398,7 @@ async function guardarMesaNueva() {
   });
   if (res.ok) { cerrarModalMesa(); await cargarMesasDatos(); mostrarToast('Mesa creada'); }
 }
+
 async function eliminarMesa(id) {
   if (!confirm('¿Eliminar esta mesa? Los invitados sentados quedarán sin mesa.')) return;
   const res = await rpc('panel_eliminar_mesa', { p_codigo: CODIGO, p_mesa_id: id });
@@ -390,6 +410,7 @@ function toggleMenuZona(e) {
   if (e) e.stopPropagation();
   document.getElementById('menu-zona').classList.toggle('oculto');
 }
+
 async function agregarZona(tipo) {
   document.getElementById('menu-zona').classList.add('oculto');
   const res = await rpc('panel_guardar_zona', {
@@ -399,10 +420,12 @@ async function agregarZona(tipo) {
   });
   if (res.ok) await cargarMesasDatos();
 }
+
 async function eliminarZona(id) {
   const res = await rpc('panel_eliminar_zona', { p_codigo: CODIGO, p_zona_id: id });
   if (res.ok) await cargarMesasDatos();
 }
+
 // Cierra el menú de zona si el clic fue fuera de él (y no fue el propio botón +Zona)
 document.addEventListener('click', (e) => {
   if (!e.target.closest('#menu-zona') && !e.target.closest('[onclick*="toggleMenuZona"]')) {
@@ -415,7 +438,6 @@ document.addEventListener('click', (e) => {
 // 1) tocas/clic un invitado pendiente o ya sentado -> queda "seleccionado"
 // 2) tocas/clic un asiento (vacío u ocupado) -> lo sienta ahí (intercambia si había alguien)
 // El arrastrar-y-soltar sigue funcionando en computadora como atajo adicional.
-
 function alTocarAsiento(mesaId, asientoIndex, invitadoActualId) {
   if (SELECCIONADO) {
     if (SELECCIONADO === invitadoActualId) { SELECCIONADO = null; renderTodoMesas(); return; }
@@ -438,14 +460,17 @@ function soltarEnMesa(e, mesaId) {
   if (!payload) return;
   asignarAsientoAuto(payload.invitado_id, mesaId);
 }
+
 function soltarEnAsiento(e, mesaId, asientoIndex) {
   const payload = leerPayloadDrag(e);
   if (!payload) return;
   asignarAsiento(payload.invitado_id, mesaId, asientoIndex);
 }
+
 function leerPayloadDrag(e) {
   try { return JSON.parse(e.dataTransfer.getData('text/plain')); } catch { return null; }
 }
+
 async function asignarAsientoAuto(invitadoId, mesaId) {
   const m = MESAS.find(x => x.id === mesaId);
   const ocupados = new Set(m.asientos.map(a => a.asiento_index));
@@ -454,10 +479,12 @@ async function asignarAsientoAuto(invitadoId, mesaId) {
   if (libre === -1) { mostrarToast(`${m.nombre} está completa`); return; }
   await asignarAsiento(invitadoId, mesaId, libre);
 }
+
 async function asignarAsiento(invitadoId, mesaId, asientoIndex) {
   const res = await rpc('panel_asignar_asiento', { p_codigo: CODIGO, p_invitado_id: invitadoId, p_mesa_id: mesaId, p_asiento_index: asientoIndex });
   if (res.ok) { await cargarMesasDatos(); await cargarTodo(); }
 }
+
 async function quitarAsiento(invitadoId) {
   const res = await rpc('panel_quitar_asiento', { p_codigo: CODIGO, p_invitado_id: invitadoId });
   if (res.ok) { await cargarMesasDatos(); await cargarTodo(); }
@@ -472,9 +499,7 @@ function renderSidebarPendientes() {
   const pendientes = (INVITADOS || []).filter(g =>
     g.estado === 'confirmado' && !sentadosIds.has(g.id) && g.nombre.toLowerCase().includes(busqueda)
   );
-
   if (!pendientes.length) { cont.innerHTML = `<p class="desc" style="font-size:.75rem">Todos los confirmados tienen mesa.</p>`; return; }
-
   cont.innerHTML = '';
   pendientes.forEach(g => {
     const genero = detectarGenero(g.nombre);
@@ -486,7 +511,6 @@ function renderSidebarPendientes() {
     chip.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', JSON.stringify({ invitado_id: g.id })));
     cont.appendChild(chip);
   });
-
   if (SELECCIONADO && pendientes.some(g => g.id === SELECCIONADO)) {
     mostrarToast('Ahora toca el asiento donde quieres sentarlo');
   }
@@ -496,12 +520,10 @@ function renderDetalleMesas() {
   const cont = document.getElementById('detalle-mesas');
   if (!cont) return;
   cont.innerHTML = '';
-
   MESAS.forEach(m => {
     const grupo = document.createElement('div');
     grupo.className = 'mesa-detalle-grupo';
     const colapsado = MESAS_COLAPSADAS[m.id] !== false; // colapsado por defecto
-
     const titulo = document.createElement('div');
     titulo.className = 'mesa-detalle-titulo';
     titulo.innerHTML = `${m.es_novios ? '♛ ' : ''}${escaparTexto(m.nombre)}
@@ -586,7 +608,6 @@ function prepararImpresion() {
     lista += `<div><div style="border-bottom:1.5px solid #C98B86;padding-bottom:4px;margin-bottom:6px"><strong>Pendientes de asignar</strong></div>
       <ol>${pendientes.map(g => `<li>${escaparTexto(g.nombre)}</li>`).join('')}</ol></div>`;
   }
-
   cont.innerHTML = plano + lista;
   setTimeout(() => window.print(), 50); // deja que el DOM pinte antes de abrir el diálogo
 }
@@ -603,7 +624,6 @@ function exportarExcelMesas() {
   const sentadosIds = new Set(MESAS.flatMap(m => m.asientos.map(a => a.invitado_id)));
   const pendientes = (INVITADOS || []).filter(g => g.estado === 'confirmado' && !sentadosIds.has(g.id));
   if (pendientes.length) { filas.push(['Pendientes de asignar']); pendientes.forEach(g => filas.push([g.nombre])); }
-
   const ws = XLSX.utils.aoa_to_sheet(filas);
   ws['!cols'] = [{ wch: 32 }];
   const wb = XLSX.utils.book_new();
