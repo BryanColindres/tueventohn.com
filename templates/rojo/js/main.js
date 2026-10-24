@@ -669,13 +669,21 @@ function pintarCancion(){
     if (esSpotify) {
       embedWrap.innerHTML = `<iframe src="${urlEmbebida}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
     } else if (esYoutube) {
-      // YouTube no puede pintar una lista de canciones fija como Spotify: el panel de la
-      // lista vive dentro del reproductor. Por eso el reproductor va más alto (cabe el panel)
-      // y se ofrece abrir la playlist completa en YouTube.
-      const idLista = (urlEmbebida.match(/[?&]list=([a-zA-Z0-9_-]+)/) || [])[1];
-      const enlaceLista = idLista ? `https://www.youtube.com/playlist?list=${idLista}` : null;
-      embedWrap.innerHTML = `<iframe class="cancion-yt" width="100%" height="400" src="${urlEmbebida}" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy"></iframe>`
-        + (enlaceLista ? `<a href="${enlaceLista}" target="_blank" rel="noopener" class="btn btn-outline cancion-ver-lista">Ver lista completa</a>` : '');
+      // YouTube no puede pintar una lista de canciones fija como Spotify: la lista vive dentro
+      // del reproductor, por eso va más alto. Para agregar canciones, el invitado debe abrir el
+      // link ORIGINAL que pegó el cliente (si es una playlist colaborativa, ese link trae la
+      // invitación; reconstruirlo desde el ID la perdería).
+      embedWrap.innerHTML = `<iframe class="cancion-yt" width="100%" height="400" src="${urlEmbebida}" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+      const original = String(C.cancionEmbedUrl || '').trim();
+      if (/^https:\/\/(www\.|music\.|m\.)?youtube\.com\//.test(original) || /^https:\/\/youtu\.be\//.test(original)) {
+        const a = document.createElement('a');
+        a.href = original;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.className = 'btn btn-outline cancion-ver-lista';
+        a.textContent = 'Abrir y agregar canciones';
+        embedWrap.appendChild(a);
+      }
     } else {
       embedWrap.innerHTML = `<a href="${urlEmbebida}" target="_blank" class="btn btn-outline">Abrir playlist</a>`;
     }
