@@ -350,7 +350,8 @@ function pintarVideoInterno() {
     if (seccion) seccion.style.display = 'none';
     return;
   }
-  const v = $('videoInternoEl'); if (v) v.src = C.videoInterno.url;
+  const v = $('videoInternoEl');
+  if (v) { v.src = C.videoInterno.url; TuBodaBackend.silenciarMusicaMientrasSuena(v, () => document.getElementById('bgMusic')); }
   set('videoInternoFrase', C.videoInterno.frase || '');
 }
 
@@ -620,6 +621,7 @@ function initVoice() {
   const btn = $('voiceBtn'), aud = $('voiceMsg'), prog = $('voiceProgress'), fill = $('voiceProgressFill'), lbl = $('voiceLabel'), ico = $('voiceIcon');
   if (!btn || !aud || !aud.src) return;
   let playing = false;
+  TuBodaBackend.silenciarMusicaMientrasSuena(aud, () => document.getElementById('bgMusic'));
 
   function startPlay() {
     const bg = $('bgMusic');
@@ -629,20 +631,17 @@ function initVoice() {
   function doPlay(bg) {
     aud.play().then(() => {
       playing = true; ico.textContent = '⏸'; lbl.textContent = 'Pausar'; prog.classList.add('active');
-      if (bg && musicOn) fadeVol(bg, bg.volume, .07, 1500);
     }).catch(() => { playing = false; ico.textContent = '▶'; lbl.textContent = 'Toca de nuevo para escuchar'; });
   }
   btn.addEventListener('click', () => {
     if (!playing) startPlay();
     else {
       aud.pause(); playing = false; ico.textContent = '▶'; lbl.textContent = 'Escuchar mensaje';
-      const bg = $('bgMusic'); if (bg && musicOn) fadeVol(bg, bg.volume, .28, 1500);
     }
   });
   aud.addEventListener('timeupdate', () => { if (aud.duration) fill.style.width = (aud.currentTime / aud.duration * 100) + '%'; });
   aud.addEventListener('ended', () => {
     playing = false; ico.textContent = '▶'; lbl.textContent = 'Escuchar de nuevo';
-    const bg = $('bgMusic'); if (bg && musicOn) fadeVol(bg, bg.volume, .28, 2000);
   });
 }
 

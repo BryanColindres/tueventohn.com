@@ -431,7 +431,9 @@ function pintarVideoInterno(){
     seccion.style.display = 'none';
     return;
   }
-  document.getElementById('video-interno-el').src = C.videoInterno.url;
+  const videoInterno = document.getElementById('video-interno-el');
+  videoInterno.src = C.videoInterno.url;
+  TuBodaBackend.silenciarMusicaMientrasSuena(videoInterno, () => document.getElementById('musica-audio'));
   document.getElementById('video-interno-frase').textContent = C.videoInterno.frase || '';
 }
 
@@ -593,11 +595,13 @@ function pintarMensajeVoz(){
     document.getElementById('voice-progress').style.display = 'none';
     const video = document.getElementById('voice-video');
     video.src = C.mensajePersonalizado.url;
+    TuBodaBackend.silenciarMusicaMientrasSuena(video, () => document.getElementById('musica-audio'));
     video.classList.remove('oculto');
     return;
   }
 
   const audio = new Audio(C.mensajePersonalizado.url);
+  TuBodaBackend.silenciarMusicaMientrasSuena(audio, () => document.getElementById('musica-audio'));
   const btn = document.getElementById('voice-btn');
   const icon = document.getElementById('voice-icon');
   const label = document.getElementById('voice-label');
@@ -610,14 +614,12 @@ function pintarMensajeVoz(){
         reproduciendo = true;
         icon.textContent = '⏸';
         label.textContent = 'Pausar';
-        duckMusica(true);
       }).catch(() => { label.textContent = 'Toca de nuevo para escuchar'; });
     } else {
       audio.pause();
       reproduciendo = false;
       icon.textContent = '▶';
       label.textContent = 'Escuchar mensaje';
-      duckMusica(false);
     }
   });
 
@@ -628,14 +630,7 @@ function pintarMensajeVoz(){
     reproduciendo = false;
     icon.textContent = '▶';
     label.textContent = 'Escuchar de nuevo';
-    duckMusica(false);
   });
-}
-
-function duckMusica(bajar){
-  const musica = document.getElementById('musica-audio');
-  if (!musica || !musica.src) return;
-  musica.volume = bajar ? 0.08 : 0.5;
 }
 
 function iniciarReveal(){

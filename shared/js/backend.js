@@ -609,6 +609,25 @@ function pintarUbicacionRecepcion(C){
   puntoInsercion.parentElement.insertBefore(bloque, puntoInsercion.nextSibling);
 }
 
+// ---------------- MÚSICA DE FONDO: silencio mientras suena un video/audio ----------------
+// Se usa `muted` y NO `volume`: en iPhone/iPad (Safari) el volumen de un <audio> es de
+// solo lectura y nunca baja, pero `muted` sí funciona en todos los navegadores.
+// Mientras `media` suena, la música queda en silencio; al pausar, terminar o fallar,
+// vuelve sola. Si el invitado apagó la música con el botón, sigue apagada.
+// Si suenan varios a la vez (video + voz), vuelve hasta que todos terminen.
+const _fuentesSilenciando = new Set();
+function silenciarMusicaMientrasSuena(media, obtenerMusica) {
+  if (!media || typeof obtenerMusica !== 'function') return;
+  const aplicar = () => {
+    const musica = obtenerMusica();
+    if (musica) musica.muted = _fuentesSilenciando.size > 0;
+  };
+  const activar = () => { _fuentesSilenciando.add(media); aplicar(); };
+  const soltar = () => { _fuentesSilenciando.delete(media); aplicar(); };
+  media.addEventListener('playing', activar);
+  ['pause', 'ended', 'emptied', 'abort', 'error'].forEach(ev => media.addEventListener(ev, soltar));
+}
+
 window.TuBodaBackend = {
   cargarConfig,
   enviarFirma,
@@ -633,5 +652,6 @@ window.TuBodaBackend = {
   pintarVersiculoCierre,
   pintarFotoIntermedia,
   pintarMarcaAguaPrueba,
-  pintarUbicacionRecepcion
+  pintarUbicacionRecepcion,
+  silenciarMusicaMientrasSuena
 };
