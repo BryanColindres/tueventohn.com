@@ -1,14 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,500;1,400&family=Jost:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
 
 :root{
-  --marfil:#FFFFFF; --marfil-deep:#F4F1F1;
-  --vino:#B0121F; --vino-deep:#0F0F0F; --rosa:#D41F2E; --rosa-suave:#FFFFFF;
-  --linea:#DDD6D6; --forma:rgba(176,18,31,.22);
-  --texto:#111111; --texto-mid:#2B2627; --texto-light:#6B6566;
+  --marfil:#FBF8F2; --marfil-deep:#F1EADD;
+  --vino:#9E1322; --vino-deep:#14100F; --rosa:#A8182A; --rosa-suave:#FBF8F2;
+  --oro:#A98B4F; --linea:#D9CFBC; --forma:rgba(158,19,34,.22);
+  --texto:#14100F; --texto-mid:#2B2523; --texto-light:#6B635F;
   --font-display:'Pinyon Script','Great Vibes',cursive;
-  --font-num:'Cormorant Garamond',Georgia,serif;
-  --font-serif:'Cormorant Garamond',Georgia,serif;
-  --font-sans:'Jost',sans-serif;
+  --font-label:'Cinzel',Georgia,serif;
+  --font-num:'EB Garamond',Georgia,serif;
+  --font-serif:'EB Garamond',Georgia,serif;
+  --font-sans:'EB Garamond',Georgia,serif;
   --ease:cubic-bezier(.25,.46,.45,.94);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -316,3 +317,95 @@ a{text-decoration:none;color:inherit}
 .rsvp-resumen{margin-top:1rem}
 .rsvp-resumen-lista{list-style:none;padding:0;margin:.6rem 0 0}
 .rsvp-resumen-lista li{padding:.3rem 0}
+
+
+/* ══════════════════════════════════════════════════════════
+   TEMA CLÁSICO — antiguo, tipo castillo: arcos, marcos dobles,
+   inscripción romana (Cinzel), negro + marfil, rojo vino solo
+   en detalles y filetes finos en oro viejo (--oro).
+   ══════════════════════════════════════════════════════════ */
+body{background:radial-gradient(ellipse at 50% 0%,#FFFDF9 0%,var(--marfil) 62%);font-weight:400}
+
+/* etiquetas en mayúsculas: letra de inscripción romana */
+.eyebrow,.video-overlay__pre,.video-overlay__date,.video-overlay__hint,.hero__date-top,.hero__apellidos,
+.cd-item p,.footer__date,.banner-personal__linea1,.story-hint,.tag-revision,.name-screen__pre,
+.btn,.voice-btn,.bloqueado-btn{font-family:var(--font-label)}
+.eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.3em}
+.hero__date-top{font-size:.7rem;letter-spacing:.22em}
+.hero__apellidos{font-size:.66rem;letter-spacing:.2em}
+.video-overlay__pre{font-size:.62rem;letter-spacing:.26em}
+.video-overlay__date{font-size:.7rem;letter-spacing:.2em}
+.video-overlay__hint{font-size:.58rem;letter-spacing:.22em}
+.cd-item p{font-size:.58rem;letter-spacing:.18em;color:var(--oro)}
+.footer__date{font-size:.64rem;letter-spacing:.2em}
+.banner-personal__linea1{font-size:.64rem;letter-spacing:.14em}
+.name-screen__pre{font-size:.64rem;letter-spacing:.16em}
+
+/* texto corrido en serif: un punto más grande para que se lea bien */
+.historia-item__texto p,.map-block p,.rsvp-desc,.regalos-texto,.vestimenta-texto,.detalle-card p,
+.firma-item .mensaje,.cancion-embed-wrap+p,.subtitulo,#cancion-intro{font-size:1.04rem;line-height:1.75}
+.form-firma input,.form-firma textarea,.cancion-form input{font-size:1rem}
+.mensaje-card p{font-size:clamp(1.25rem,2.6vw,1.5rem)}
+.prog-titulo{font-size:1.15rem}
+.detalle-card h3{font-size:1.2rem;font-weight:500}
+
+/* botones: esquinas rectas, rotulación romana */
+.btn{font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;border-radius:0;padding:.95rem 1.7rem}
+.voice-btn,.bloqueado-btn{border-radius:0;font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+
+/* divisor ornamental: filetes en oro con rombo vino al centro */
+.linea-corta{width:150px;height:14px;margin:1.15rem auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 14'%3E%3Cpath d='M0 7H60M90 7H150' stroke='%23A98B4F' stroke-width='1'/%3E%3Cpath d='M75 1L81 7L75 13L69 7Z' fill='%239E1322'/%3E%3Cpath d='M64 7L66 5L68 7L66 9ZM82 7L84 5L86 7L84 9Z' fill='%23A98B4F'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* formas geométricas modernas fuera */
+.forma{display:none}
+
+/* HERO: foto en arco con doble marco */
+.hero{background:var(--marfil-deep)}
+.hero__photo-wrap{width:230px;height:300px;margin:0 auto 2.2rem}
+.hero__photo-wrap::after{content:'';position:absolute;inset:-9px;border:1px solid var(--oro);border-radius:999px 999px 0 0;pointer-events:none}
+.hero__photo{border-radius:999px 999px 0 0;border:2px solid var(--vino);box-shadow:none}
+.hero__date-top{margin-bottom:1.3rem}
+
+/* marcos dobles en tarjetas */
+.banner-personal,.detalle-card,.voice-card,.bloqueado-card,.regalos-detalle{border-radius:2px;border:1px solid var(--oro);outline:1px solid var(--oro);outline-offset:-7px;box-shadow:none}
+.bloqueado-card{border-style:solid}
+.banner-personal{background:var(--marfil-deep)}
+.voice-card__foto{width:88px;height:108px;border-radius:999px 999px 0 0;border:1px solid var(--oro)}
+
+/* video, mapa y story con filete */
+.map-foto,.video-interno-el,.story{border-radius:2px}
+.video-interno-el,.map-foto{outline:1px solid var(--oro);outline-offset:6px}
+.map-foto{margin-bottom:2rem;width:calc(100% - 3rem)}
+.banner-personal{width:calc(100% - 2.5rem)}
+
+/* cuenta regresiva: banda negra con marco de oro */
+.section-countdown{border:none;background:var(--vino-deep);box-shadow:inset 0 0 0 9px var(--vino-deep),inset 0 0 0 10px var(--oro);padding:4.2rem 0}
+.section-countdown .eyebrow{color:var(--oro) !important}
+.cd-item span{font-family:var(--font-num);font-weight:500;font-variant-numeric:lining-nums}
+
+/* itinerario: filetes punteados */
+.prog-item{border-bottom:1px dotted var(--oro)}
+.prog-item:last-child{border-bottom:none}
+
+/* historia y galería: arcos */
+.historia-item__foto,.historia-item:nth-child(3n) .historia-item__foto{width:150px;height:200px;border-radius:999px 999px 0 0;border:1px solid var(--vino)}
+.historia-item__foto-wrap::before{border-radius:999px 999px 0 0;border:1px solid var(--oro)}
+.gal-item{border-width:5px;border-radius:999px 999px 0 0;outline-color:var(--vino)}
+.gal-item:nth-child(4n+2){width:120px;height:150px;border-radius:999px 999px 0 0}
+.gal-item:nth-child(4n){width:100px;height:130px;border-radius:999px 999px 0 0}
+.rsvp-foto,.firmas-foto{max-width:170px;height:225px;border-radius:999px 999px 0 0;border:1px solid var(--oro);outline:1px solid var(--oro);outline-offset:5px;margin-bottom:2rem}
+
+/* portada de video y pantalla de nombre: marco doble de invitación antigua */
+.video-overlay::before,.name-screen::before{content:'';position:absolute;inset:16px;border:1px solid rgba(169,139,79,.75);pointer-events:none}
+.video-overlay::after,.name-screen::after{content:'';position:absolute;inset:23px;border:1px solid rgba(169,139,79,.35);pointer-events:none}
+.video-overlay__tap{border-color:var(--oro)}
+.video-overlay__tap svg{color:var(--oro)}
+.video-tap-ring{border-color:rgba(169,139,79,.55)}
+
+/* pie */
+.footer::before{content:'';position:absolute;inset:16px;border:1px solid rgba(169,139,79,.6);z-index:2;pointer-events:none}
+.footer__phrase{font-size:1.15rem}
+
+@media(max-width:640px){
+  .historia-item,.historia-item:nth-child(even){flex-direction:column;text-align:center}
+}
