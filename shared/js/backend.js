@@ -191,8 +191,19 @@ async function enviarFirma(eventoId, nombre, mensaje, invitadoId, extra) {
   await _insert("firmas", [fila]);
 }
 
+// Solo se muestran las firmas que el organizador APROBÓ en el panel. Se filtra aquí
+// además de en la base de datos: una firma rechazada o pendiente nunca debe salir
+// en la invitación aunque la política de lectura de la tabla sea más amplia.
 async function cargarFirmas(eventoId) {
-  return _select("firmas", `evento_id=eq.${eventoId}&order=fecha.desc&select=nombre,mensaje,emoji,foto_url,privado`);
+  const base = `evento_id=eq.${eventoId}&order=fecha.desc&select=nombre,mensaje,emoji,foto_url,privado`;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/firmas?${base}&estado=eq.aprobado`, {
+      headers: { "apikey": SUPABASE_ANON_KEY, "Authorization": `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    if (res.ok) return res.json();
+  } catch (err) { console.error(err); }
+  // Si la base no acepta ese filtro (esquema sin columna `estado`), se usa la consulta de siempre.
+  return _select("firmas", base);
 }
 
 // ---------------- ACCESO PERSONALIZADO POR INVITADO ----------------
