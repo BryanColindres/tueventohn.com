@@ -409,3 +409,23 @@ body{background:radial-gradient(ellipse at 50% 0%,#FFFDF9 0%,var(--marfil) 62%);
 @media(max-width:640px){
   .historia-item,.historia-item:nth-child(even){flex-direction:column;text-align:center}
 }
+
+/* ══════════════════════════════════════════════════════════
+   ÁLBUM DE FOTOS (QR) — después de la confirmación
+   ══════════════════════════════════════════════════════════ */
+.section-album{padding:4.5rem 2rem;text-align:center;background:var(--marfil-deep)}
+.album-intro{max-width:420px;margin:0 auto 2.2rem;font-size:1.04rem;line-height:1.75;color:var(--texto-mid)}
+.album-qr{margin:0 auto 2.4rem}
+.album-qr__marco{position:relative;display:inline-block;padding:24px;background:#fff;border:1px solid var(--oro);outline:1px solid var(--oro);outline-offset:-8px}
+.album-qr__marco::before,.album-qr__marco::after{content:'';position:absolute;left:50%;width:9px;height:9px;margin-left:-4.5px;background:var(--vino);transform:rotate(45deg)}
+.album-qr__marco::before{top:-5px}
+.album-qr__marco::after{bottom:-5px}
+.album-qr__codigo{width:176px;height:176px;color:var(--texto)}
+.album-qr__codigo svg{display:block;width:100%;height:100%}
+.album-qr__leyenda{margin-top:1.3rem;font-family:var(--font-label);font-size:.64rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--vino)}
+.album-pasos{list-style:none;max-width:380px;margin:0 auto 2.2rem;text-align:left}
+.album-pasos li{display:flex;align-items:center;gap:1rem;padding:.8rem 0;border-bottom:1px dotted var(--oro)}
+.album-pasos li:last-child{border-bottom:none}
+.album-pasos span{flex:0 0 2.6rem;text-align:center;font-family:var(--font-label);font-size:.78rem;font-weight:600;letter-spacing:.08em;color:var(--vino)}
+.album-pasos p{font-size:1.04rem;line-height:1.5;color:var(--texto)}
+.album-nota{margin-top:1rem;font-style:italic;font-size:.95rem;color:var(--texto-light)}

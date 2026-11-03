@@ -107,6 +107,10 @@ async function cargarConfig() {
       console.warn("get_event_extra2 no disponible todavía:", err);
     }
 
+    // Datos fijos por evento (ej. enlace del álbum de fotos) — shared/js/eventos-extra.js.
+    // Si el archivo no se carga en esta plantilla, simplemente no se agrega nada.
+    if (window.EVENTOS_EXTRA && window.EVENTOS_EXTRA[slug]) Object.assign(data, window.EVENTOS_EXTRA[slug]);
+
     // Si el organizador pausó la invitación (evento ya distribuido pero
     // aún no listo del todo), se corta aquí con un aviso — no es un error,
     // es una pausa deliberada y reversible. Mismo criterio aislado: si el

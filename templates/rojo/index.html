@@ -231,6 +231,27 @@
       <p class="rsvp-sin-link oculto" id="rsvp-sin-link">Este enlace no trae tu identificador de invitado. Escríbenos si necesitas ayuda para confirmar.</p>
     </section>
 
+    <!-- ÁLBUM DE FOTOS: QR para que los invitados suban sus fotos (solo si el evento tiene enlace) -->
+    <section class="section-album oculto" id="section-album">
+      <span class="eyebrow">Recuerdos</span>
+      <h2 class="titulo-display">Comparte tus fotos</h2>
+      <div class="linea-corta"></div>
+      <p class="album-intro">Ayúdanos a guardar cada momento de este día. Escanea el código y sube tus fotos y videos al álbum de los novios.</p>
+      <div class="album-qr">
+        <div class="album-qr__marco">
+          <div class="album-qr__codigo" id="album-qr" role="img" aria-label="Código QR para subir fotos al álbum de la boda"></div>
+        </div>
+        <p class="album-qr__leyenda">Escanea para subir</p>
+      </div>
+      <ol class="album-pasos">
+        <li><span>I</span><p>Escanea el código con la cámara de tu celular</p></li>
+        <li><span>II</span><p>Abre el álbum y toca «Subir» o el signo +</p></li>
+        <li><span>III</span><p>Elige tus fotos y videos favoritos</p></li>
+      </ol>
+      <a id="album-enlace" href="#" target="_blank" rel="noopener" class="btn btn-vino">Abrir álbum</a>
+      <p class="album-nota">¿Estás en tu celular? Toca el botón.</p>
+    </section>
+
     <div id="section-versiculo-cierre" class="section-versiculo-cierre"></div>
     <footer class="footer">
       <div class="footer__photo" id="footer-photo"></div>
@@ -244,7 +265,9 @@
 
   </div>
 
+  <script src="../../shared/js/vendor/qrcode.min.js"></script>
   <script src="../../shared/js/config-demo.js"></script>
+  <script src="../../shared/js/eventos-extra.js"></script>
   <script src="../../shared/js/backend.js"></script>
   <script src="../../shared/js/textos.js"></script>
   <script src="js/main.js"></script>

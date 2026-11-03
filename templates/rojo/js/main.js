@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   pintarAddons();
   pintarCancion();
   pintarRSVP();
+  pintarAlbumFotos();
   pintarFooter();
   TuBodaBackend.pintarVersiculoCierre(C);
   pintarVideoInterno();
@@ -637,6 +638,25 @@ function pintarMensajeVoz(){
     icon.textContent = '▶';
     label.textContent = 'Escuchar de nuevo';
   });
+}
+
+// ---------------- ÁLBUM DE FOTOS (QR) ----------------
+// El enlace del álbum (carpeta de Google Drive de los novios) viene en la config del
+// evento como `albumFotosUrl` (ver shared/js/eventos-extra.js). Sin enlace válido, la
+// sección se queda oculta: nunca se ve un QR vacío o roto.
+function pintarAlbumFotos(){
+  const seccion = document.getElementById('section-album');
+  if (!seccion) return;
+  const url = String(C.albumFotosUrl || '').trim();
+  if (!/^https:\/\//i.test(url) || typeof qrcode !== 'function') return;
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    document.getElementById('album-qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0 });
+  } catch (err) { console.error(err); return; }
+  document.getElementById('album-enlace').href = url;
+  seccion.classList.remove('oculto');
 }
 
 function iniciarReveal(){
